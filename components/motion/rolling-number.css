@@ -1,0 +1,60 @@
+/*
+  Odometer-style digits for RollingNumber. Each digit is a column one line tall that shows a strip of
+  digits; --roll-to is the strip position of the final digit and --roll-count the number of digits in
+  the strip. The strip rests on the final digit by default, so values are correct without JavaScript.
+  Only translate animates, by a percentage of the strip's own height, so the distance depends only on
+  how many digits the strip holds, not on the line height at each breakpoint.
+*/
+.ww-roll__digit {
+  position: relative;
+  display: inline-block;
+  /* Clips only vertically, so wider digits rolling past are never cut at the sides. */
+  clip-path: inset(0 -0.5em);
+}
+
+.ww-roll__strip {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  translate: -50% calc(var(--roll-to) / var(--roll-count) * -100%);
+}
+
+.ww-roll__strip > span {
+  display: block;
+  height: 1lh;
+}
+
+/*
+  Waiting to be scrolled to: the number is invisible, with every column already at 0, so it appears
+  at 0 when reached. Opacity keeps its space, so nothing moves. Screen-reader text is not affected.
+*/
+[data-roll="pending"] .ww-roll__visual {
+  opacity: 0;
+}
+
+[data-roll="pending"] .ww-roll__strip {
+  translate: -50% 0;
+}
+
+[data-roll="running"] .ww-roll__visual {
+  transition: opacity 300ms ease-out;
+}
+
+/*
+  One shared timing, so every digit rolls in step. The delay lets the stats bar finish its Reveal fade
+  (about 1s from the same trigger) before most of the roll, and the easing starts gently and settles
+  slowly, so the movement stays visible throughout.
+*/
+[data-roll="running"] .ww-roll__strip {
+  transition: translate 2.8s cubic-bezier(0.45, 0.05, 0.25, 1) 600ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ww-roll__strip {
+    transition: none !important;
+    translate: -50% calc(var(--roll-to) / var(--roll-count) * -100%) !important;
+  }
+}

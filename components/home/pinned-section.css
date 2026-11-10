@@ -1,0 +1,57 @@
+/*
+  The same structure as Our Work's cards: a sticky element, an empty spacer that gives it room to stay
+  pinned, and a negative margin that cancels the spacer, so section and page heights do not change.
+
+  --pin-cover is the distance the next section needs to cover this one. The next section must be
+  positioned, or this one paints over it.
+
+  --pin-hold (PinnedSection's `hold`, 0 by default) lengthens the spacer but not the negative margin,
+  so the next section arrives that much later: the section stays pinned and fully visible for the
+  hold, then is covered as usual. The page grows by exactly the hold.
+
+  Until --pin-height is set, these values are invalid and fall back to normal flow.
+*/
+@media (prefers-reduced-motion: no-preference) {
+  .pin-wrapper {
+    --pin-cover: min(100svh, var(--pin-height), var(--pin-limit, var(--pin-height)));
+    margin-bottom: calc(-1 * var(--pin-cover));
+  }
+
+  .pin-wrapper::after {
+    content: "";
+    display: block;
+    height: calc(var(--pin-cover) + var(--pin-hold, 0px));
+  }
+
+  .pin-body {
+    position: sticky;
+    top: min(0px, calc(100svh - var(--pin-height)));
+  }
+
+  /*
+    A held section shorter than the screen pins at the top, and the hold below it would show as an
+    empty band until the next section arrives. So it is at least one screen tall, its section
+    stretching to fill: the background extends below, the content stays where it is. Times zero
+    --pin-height, so this only applies once JavaScript has measured, like the rest of the pin.
+  */
+  .pin-wrapper[data-hold] > .pin-body {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100svh + 0 * var(--pin-height));
+  }
+
+  .pin-wrapper[data-hold] > .pin-body > * {
+    flex-grow: 1;
+  }
+
+  /* A keyboard user must never land on a link hidden under the rising section. */
+  .pin-body:has(:focus-visible):not([data-pointer-focus]) {
+    position: relative;
+    top: auto;
+  }
+
+  /* While released that way, drop the hold too, so it never leaves an empty gap below the section. */
+  .pin-wrapper:has(> .pin-body :focus-visible):not(:has(> .pin-body[data-pointer-focus]))::after {
+    height: var(--pin-cover);
+  }
+}

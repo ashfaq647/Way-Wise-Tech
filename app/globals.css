@@ -1,0 +1,64 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #231f20;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-brand: #d71920;
+  --color-brand-dark: #b5141a;
+  --color-ink: #231f20;
+
+  /*
+    Repeated colours from the Figma sections, for new pages. Existing sections still use their own
+    hex values and are not switched over without the owner's approval.
+  */
+  /* Headings and body text on navy-toned sections: Our Work, Final CTA, Our Process, FAQ. */
+  --color-navy: #0d1d44;
+  /* Names and labels next to navy text: Final CTA team and promises, Our Work details and client. */
+  --color-navy-muted: #1b3447;
+  /* Secondary body text next to navy text: card descriptions, roles, FAQ answers. */
+  --color-steel: #3d4e5c;
+  /* Secondary body text next to ink text: Services descriptions, Navbar profile card. */
+  --color-ink-muted: #626262;
+  /* Section background shared by Services and FAQ. */
+  --color-sand: #eae2dd;
+
+  --font-sans: var(--font-outfit);
+}
+
+@theme {
+  --animate-hero-text: hero-text 0.6s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  --animate-hero-image: hero-image 0.7s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  --animate-hero-fade: hero-fade 0.6s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+
+  @keyframes hero-text {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+  }
+
+  @keyframes hero-image {
+    from {
+      opacity: 0;
+      transform: scale(0.97);
+    }
+  }
+
+  @keyframes hero-fade {
+    from {
+      opacity: 0;
+    }
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-outfit), Arial, Helvetica, sans-serif;
+  overflow-x: clip;
+}

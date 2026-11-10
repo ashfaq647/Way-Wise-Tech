@@ -1,0 +1,94 @@
+/*
+  Industry Solutions only: a layered, scroll-linked card stack on top of the sticky stacking in
+  IndustriesSolutions.tsx. CSS scroll-driven animations tie every frame to the scroll position, so
+  scrolling up reverses it exactly; there are no scroll listeners. Browsers without
+  `animation-timeline: view()`, and anyone preferring reduced motion, get the plain sticky stack.
+
+  Each card (the sticky <li>) names its own view timeline. The ranges run from the card's top meeting
+  the screen bottom to 40% of its cover range, so each card arrives settled as it pins.
+    - The incoming card leans back slightly and flattens as it slides up; its image settles from a
+      gentle zoom to full size.
+    - The card underneath follows the next card's timeline: it recedes a little (scale and a small
+      tilt away) and dims, so the layers read clearly while its top edge stays visible.
+  Only transform, scale and opacity animate.
+*/
+.ws-solutions {
+  timeline-scope: --ws-solution-0, --ws-solution-1, --ws-solution-2, --ws-solution-3;
+}
+
+/* Clips the zoomed image to the frame's rounded corners, as drawn in the design. */
+.ws-solution__media {
+  overflow: hidden;
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .ws-solution {
+      view-timeline-name: var(--self);
+      transform-origin: 50% 0;
+    }
+
+    .ws-solution__card {
+      transform-origin: 50% 100%;
+      animation: ws-solution-enter linear both;
+      animation-timeline: var(--self);
+      animation-range: entry 0% cover 40%;
+    }
+
+    .ws-solution__media img {
+      animation: ws-solution-zoom linear both;
+      animation-timeline: var(--self);
+      animation-range: entry 0% cover 40%;
+    }
+
+    /* Covered by the next card. The last card has no --next, so it never recedes. */
+    .ws-solution[style*="--next"] {
+      animation: ws-solution-recede linear both;
+      animation-timeline: var(--next);
+      animation-range: entry 0% cover 40%;
+    }
+
+    .ws-solution[style*="--next"]::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 1rem;
+      background: rgb(13 29 68);
+      opacity: 0;
+      pointer-events: none;
+      animation: ws-solution-dim linear both;
+      animation-timeline: var(--next);
+      animation-range: entry 0% cover 40%;
+    }
+  }
+}
+
+@keyframes ws-solution-enter {
+  from {
+    transform: perspective(1600px) rotateX(9deg) translateY(3%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes ws-solution-zoom {
+  from {
+    scale: 1.14;
+  }
+  to {
+    scale: 1;
+  }
+}
+
+@keyframes ws-solution-recede {
+  to {
+    transform: perspective(1600px) rotateX(-3deg) scale(0.95);
+  }
+}
+
+@keyframes ws-solution-dim {
+  to {
+    opacity: 0.12;
+  }
+}

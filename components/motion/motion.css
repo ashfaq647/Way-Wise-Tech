@@ -1,0 +1,131 @@
+/*
+  Shared motion for the /services sections and the Footer. Everything animates translate and opacity,
+  so no section or page height changes and pinned sections are unaffected.
+  Plain prefixed classes: CSS Modules do not work in this project (see next.config.ts).
+*/
+
+/* ---- Masked headline line: clip-path, because it clips without affecting layout. ---- */
+.ww-line {
+  display: block;
+  /* Leaves room for ascenders and descenders on tight line heights. */
+  clip-path: inset(-0.12em -1em -0.22em -1em);
+}
+
+.ww-line__text {
+  display: block;
+}
+
+/* On page load, with no JavaScript. Reduced motion gets a fade with no movement. */
+@keyframes ww-line-rise {
+  from {
+    translate: 0 125%;
+  }
+}
+
+.ww-line--load > .ww-line__text {
+  animation: ww-line-rise 700ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  animation-delay: calc(var(--ww-i, 0) * 90ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ww-line--load > .ww-line__text {
+    /* From the theme in globals.css. */
+    animation-name: hero-fade;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* ---- Scroll reveals: Reveal.tsx sets data-reveal, so everything shows without JavaScript. ---- */
+  [data-reveal="pending"] .ww-line > .ww-line__text {
+    translate: 0 125%;
+  }
+
+  [data-reveal="running"] .ww-line > .ww-line__text {
+    transition: translate 700ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: calc(var(--ww-i, 0) * 80ms);
+  }
+
+  [data-reveal="pending"] .ww-rise,
+  .ww-rise[data-reveal="pending"] {
+    opacity: 0;
+    translate: 0 12px;
+  }
+
+  [data-reveal="running"] .ww-rise,
+  .ww-rise[data-reveal="running"] {
+    transition:
+      opacity 600ms ease-out,
+      translate 600ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: calc(var(--ww-i, 0) * 80ms);
+  }
+
+  /* ---- Letter stagger on hover or keyboard focus. ---- */
+  .ww-stagger__char {
+    transition: translate 350ms cubic-bezier(0.77, 0, 0.175, 1);
+    transition-delay: calc(var(--ww-c) * 15ms);
+  }
+
+  a:focus-visible .ww-stagger__char {
+    translate: 0 -100%;
+  }
+
+  @media (hover: hover) {
+    a:hover .ww-stagger__char {
+      translate: 0 -100%;
+    }
+  }
+}
+
+/*
+  The text shadow is the incoming copy of each letter, sitting exactly one line below it, so no text
+  is duplicated. currentColor keeps it right when a button's text colour changes on hover.
+*/
+.ww-stagger {
+  position: relative;
+  display: inline-block;
+}
+
+.ww-stagger__text {
+  --ww-line-height: 1.25em;
+  display: block;
+  overflow: clip;
+  line-height: var(--ww-line-height);
+  text-shadow: 0 var(--ww-line-height) 0 currentColor;
+}
+
+.ww-stagger__char {
+  display: inline-block;
+  white-space: pre;
+}
+
+/* ---- Our Process sliding panel: five-across layout only, and only with a real pointer. ---- */
+.ww-process__panel {
+  display: none;
+}
+
+@media (min-width: 1280px) and (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .ww-process__panel {
+    /* --ww-gap must match the xl:gap-x value on the list in OurProcess.tsx. */
+    --ww-gap: clamp(32px, 3.333vw, 64px);
+    --ww-pad: calc(var(--ww-gap) * 0.375);
+    position: absolute;
+    top: -24px;
+    bottom: -24px;
+    left: calc(var(--ww-pad) * -1);
+    display: block;
+    width: calc((100% - 4 * var(--ww-gap)) / 5 + 2 * var(--ww-pad));
+    border-radius: 16px;
+    background: rgb(255 255 255 / 0.7);
+    box-shadow: 0 8px 24px rgb(35 31 32 / 0.05);
+    opacity: 0;
+    translate: calc(var(--ww-step, 0) * (100% + var(--ww-gap) - 2 * var(--ww-pad))) 0;
+    transition:
+      opacity 250ms ease-out,
+      translate 500ms cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+  }
+
+  .ww-process__panel[data-active] {
+    opacity: 1;
+  }
+}

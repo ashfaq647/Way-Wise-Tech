@@ -1,0 +1,161 @@
+/*
+  Light layers stay invisible and the artwork stays still unless the visitor allows motion.
+  Only transform and opacity animate, so nothing here causes layout or repaints the PNG.
+  Every gradient ends transparent, so a light layer has no visible edge.
+*/
+.footer-bg-glow-left,
+.footer-bg-glow-right,
+.footer-bg-sweep-cyan,
+.footer-bg-sweep-gold {
+  position: absolute;
+  opacity: 0;
+}
+
+/* Screen lifts the artwork gently and evenly. */
+.footer-bg-glow-left,
+.footer-bg-glow-right {
+  top: 0;
+  bottom: 0;
+  width: 58%;
+  mix-blend-mode: screen;
+}
+
+.footer-bg-glow-left {
+  left: -6%;
+  background: radial-gradient(closest-side, rgb(46 140 255 / 0.24), rgb(46 140 255 / 0));
+}
+
+.footer-bg-glow-right {
+  right: -6%;
+  background: radial-gradient(closest-side, rgb(64 200 240 / 0.2), rgb(64 200 240 / 0));
+}
+
+/*
+  Colour dodge multiplies what is already there, so the beams light up the filaments as they pass and
+  only tint the navy. Stronger colours overexpose the bright knots behind the footer links. In gold, too
+  little blue turns the navy green and too little green turns the filaments pink.
+*/
+.footer-bg-sweep-cyan,
+.footer-bg-sweep-gold {
+  top: -30%;
+  left: 0;
+  height: 160%;
+  width: max(36%, 300px);
+  mix-blend-mode: color-dodge;
+}
+
+.footer-bg-sweep-cyan {
+  background: radial-gradient(
+    closest-side,
+    rgb(24 80 112),
+    rgb(24 80 112 / 0.45) 45%,
+    rgb(24 80 112 / 0)
+  );
+}
+
+.footer-bg-sweep-gold {
+  background: radial-gradient(
+    closest-side,
+    rgb(165 92 62),
+    rgb(165 92 62 / 0.45) 45%,
+    rgb(165 92 62 / 0)
+  );
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .footer-bg-drift {
+    animation: footer-drift 26s ease-in-out infinite;
+  }
+
+  .footer-bg-glow-left {
+    animation: footer-glow-left 19s ease-in-out infinite;
+  }
+
+  .footer-bg-glow-right {
+    animation: footer-glow-right 23s ease-in-out -7s infinite;
+  }
+
+  .footer-bg-sweep-cyan,
+  .footer-bg-sweep-gold {
+    opacity: 0.9;
+  }
+
+  /* The artwork band is narrow here, so a full-strength beam reads as a vertical pillar. */
+  @media (max-width: 767px) {
+    .footer-bg-sweep-cyan,
+    .footer-bg-sweep-gold {
+      opacity: 0.6;
+    }
+  }
+
+  .footer-bg-sweep-cyan {
+    animation: footer-sweep-right 12s linear infinite;
+  }
+
+  .footer-bg-sweep-gold {
+    animation: footer-sweep-left 16s linear -5s infinite;
+  }
+
+  .footer-bg[data-paused] * {
+    animation-play-state: paused;
+  }
+}
+
+/* Starts and ends at the original framing. The zoom always covers the pan, so no edge shows. */
+@keyframes footer-drift {
+  0%,
+  100% {
+    transform: none;
+  }
+
+  50% {
+    transform: scale(1.05) translate3d(-1.2%, 0.5%, 0);
+  }
+}
+
+@keyframes footer-glow-left {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: translate3d(-8%, 0, 0);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translate3d(30%, 0, 0);
+  }
+}
+
+@keyframes footer-glow-right {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: translate3d(8%, 0, 0);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translate3d(-30%, 0, 0);
+  }
+}
+
+/* Each beam loops fully off-screen, so it never fades or jumps. The 160px clears its rotated tips. */
+@keyframes footer-sweep-right {
+  from {
+    transform: translate3d(calc(-100% - 160px), 0, 0) rotate(-16deg);
+  }
+
+  to {
+    transform: translate3d(calc(100vw + 160px), 0, 0) rotate(-16deg);
+  }
+}
+
+@keyframes footer-sweep-left {
+  from {
+    transform: translate3d(calc(100vw + 160px), 0, 0) rotate(16deg);
+  }
+
+  to {
+    transform: translate3d(calc(-100% - 160px), 0, 0) rotate(16deg);
+  }
+}

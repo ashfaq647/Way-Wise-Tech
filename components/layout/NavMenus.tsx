@@ -94,11 +94,17 @@ export function DesktopNav({ items, openMenu, onOpenMenuChange, compact }: Deskt
 
   useEffect(() => () => window.clearTimeout(closeTimer.current), []);
 
+  // The sheets are absolutely positioned from these measurements even while closed (closed sheets
+  // are only invisible, so they still count towards the page's scrollable width). So they are
+  // measured from the start and whenever the bar or nav changes size, not only while a menu is open:
+  // unmeasured, a sheet would fall back to its static position beside its trigger at its full
+  // width and widen the page. Until the first measurement the sheets are not laid out at all
+  // (see data-measured below).
   useLayoutEffect(() => {
     const el = nav.current;
     const content = el?.parentElement;
     const bar = content?.parentElement;
-    if (!anyOpen || !el || !content || !bar) return;
+    if (!el || !content || !bar) return;
     const place = () => {
       const styles = getComputedStyle(content);
       const box = content.getBoundingClientRect();
@@ -107,15 +113,18 @@ export function DesktopNav({ items, openMenu, onOpenMenuChange, compact }: Deskt
       const origin = el.getBoundingClientRect();
       el.style.setProperty("--sheet-left", `${left - origin.left}px`);
       el.style.setProperty("--sheet-width", `${right - left}px`);
-      el.style.setProperty(
-        "--sheet-top",
-        `${bar.getBoundingClientRect().bottom - origin.top - (compact ? 5 : 0)}px`,
-      );
+      const edge = bar.getBoundingClientRect().bottom - (compact ? 5 : 0);
+      el.style.setProperty("--sheet-top", `${edge - origin.top}px`);
+      el.style.setProperty("--dim-top", `${edge}px`);
+      el.dataset.measured = "";
     };
     place();
-    window.addEventListener("resize", place);
-    return () => window.removeEventListener("resize", place);
-  }, [anyOpen, compact]);
+    // Covers window resizes, a scrollbar appearing or going, and the nav first showing at xl.
+    const observer = new ResizeObserver(place);
+    observer.observe(content);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [compact]);
 
   useEffect(() => {
     if (!openMenu) return;
@@ -161,7 +170,18 @@ export function DesktopNav({ items, openMenu, onOpenMenuChange, compact }: Deskt
   };
 
   return (
-    <nav ref={nav} aria-label="Primary" className="relative -top-px hidden xl:block">
+    <nav ref={nav} aria-label="Primary" className="group/nav relative -top-px hidden xl:block">
+      {/*
+        While a menu is open, the page below the bar is dimmed slightly, so the bar and its sheet
+        read as one raised layer above the page. It never takes clicks: a click on the page still
+        reaches it and closes the menu (see the pointerdown listener above).
+      */}
+      <div
+        aria-hidden="true"
+        className={`pointer-events-none fixed inset-x-0 top-[var(--dim-top,100%)] bottom-0 z-[5] bg-navy/20 transition-opacity duration-300 motion-reduce:transition-none ${
+          anyOpen ? "opacity-100" : "opacity-0"
+        }`}
+      />
       <ul className="flex items-center min-[1440px]:gap-4">
         {items.map((item) =>
           item.menu ? (
@@ -276,8 +296,8 @@ function DesktopMenuItem({
   };
 
   // While open, an invisible strip below the trigger keeps the pointer inside this item on its way
-  // down across the bar to the sheet.
-  const bridge = `relative after:absolute after:inset-x-0 after:top-full after:h-[34px] ${
+  // down across the bar and the 10px gap to the sheet.
+  const bridge = `relative after:absolute after:inset-x-0 after:top-full after:h-[46px] ${
     isOpen ? "after:block" : "after:hidden"
   }`;
 
@@ -335,68 +355,103 @@ type DropdownSheetProps = {
 };
 
 /**
- * One dropdown: a white sheet attached to the bar, its links on a 12-column grid with hairline
- * dividers, and the navy brand card on the right holding the menu's action. Links with a
- * description (the six main services) show it; the others sit in a quieter row underneath. Menus
- * without descriptions use larger single-line links on aligned columns (three, or four for more
- * than six links), leaving the last cells open rather than stretching a row.
+ * One dropdown: a floating ivory sheet 10px below the bar, so the bar and the menu read as two
+ * layers. It has two parts.
+ * - The body: the menu's red label above its main links, with hairline dividers, beside the navy
+ *   brand card, which runs from the label's top to the last divider.
+ * - The action bar along the bottom: the column's extra links on the left (smaller), and the red
+ *   action button on the right, the same in every menu.
+ * Each menu is laid out for its content. Services (links with descriptions) spans the bar's full
+ * content width on three columns. Short lists are only as wide as their content and centred:
+ * five links or fewer run down two columns (Industries), six on three columns of two rows
+ * (Company).
  */
 function DropdownSheet({ ref, id, menu, isOpen, switching, onNavigate, onKeyDown }: DropdownSheetProps) {
   const pathname = usePathname();
   const rich = menu.links.some((link) => link.description);
-  const gridLinks = rich ? menu.links.filter((link) => link.description) : menu.links;
-  const extraLinks = rich ? menu.links.filter((link) => !link.description) : [];
-  const span = rich || menu.links.length <= 6 ? "col-span-4" : "col-span-3";
-  // Opening unfolds the sheet down from the bar (a clip, as in the headline reveals); switching
-  // between menus swaps it in place. Reduced motion shows and hides it at once.
-  const unfold = switching || !isOpen ? "duration-0" : `duration-[450ms] ${settle}`;
-  const focusRing =
-    "rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink";
+  const extra = menu.extra ?? [];
+  const isCurrent = (href: string) => href !== "#" && href === pathname;
+
+  // Short lists size their columns to their labels (plus room for the hover arrow), so the links
+  // stay together instead of spreading across fixed-width columns.
+  const columns = rich ? 3 : menu.links.length <= 5 ? 2 : 3;
+  const list = rich
+    ? "grid-cols-3"
+    : columns === 2
+      ? `grid-flow-col grid-cols-[repeat(2,clamp(290px,15.6vw,300px))] ${
+          menu.links.length > 2 ? "grid-rows-3" : ""
+        }`
+      : "grid-cols-[repeat(3,minmax(152px,max-content))]";
+  // The brand card is as tall as its own text. Beside a list taller than the card (Services,
+  // Industries) it starts with the first row of links; beside a short list (Company) it runs from
+  // the label so its foot meets the list's foot.
+  const tallList = rich || Math.ceil(menu.links.length / columns) >= 3;
+  const cardPlace = tallList ? "row-start-2 mt-4 self-start" : "row-span-2 row-start-1 self-start";
+
+  // Opening fades the sheet in as it settles 8px; switching between menus swaps it in place.
+  // Reduced motion shows and hides it at once.
+  const motion = switching || !isOpen ? "duration-0" : `duration-300 ${settle}`;
 
   return (
     <div
       ref={ref}
       id={id}
       onKeyDown={onKeyDown}
-      className={`absolute top-[var(--sheet-top)] left-[var(--sheet-left)] z-10 w-[var(--sheet-width)] ${
-        isOpen ? "visible" : "pointer-events-none invisible"
+      // Spans the bar's content width; the sheet inside is centred in it. Only the sheet takes the
+      // pointer, so the empty space beside a narrow sheet does not keep a menu open.
+      className={`pointer-events-none absolute top-[calc(var(--sheet-top)+10px)] left-[var(--sheet-left)] z-10 w-[var(--sheet-width)] ${
+        isOpen ? "visible" : "invisible"
       }`}
     >
+      {/*
+        The sheet: ivory (#fbf9f6) against the white bar, a fine warm border, a soft two-part navy
+        shadow, and rounded on every corner, so it reads as its own layer below the bar.
+      */}
       <div
-        className={`grid grid-cols-[1fr_clamp(260px,17.7vw,340px)] gap-[clamp(28px,2.5vw,48px)] rounded-b-[24px] border border-[#e6dfd8] border-t-[#efe9e3] bg-white py-[clamp(28px,2vw,36px)] pr-[clamp(28px,2vw,36px)] pl-[clamp(32px,2.3vw,44px)] transition-[clip-path] motion-reduce:transition-none ${unfold} ${
-          isOpen
-            ? "[clip-path:inset(0_0_0_0_round_0_0_24px_24px)]"
-            : "[clip-path:inset(0_0_100%_0_round_0_0_24px_24px)]"
-        }`}
+        className={`overflow-hidden rounded-[20px] border border-[#e3dbd2] bg-[#fbf9f6] shadow-[0_28px_56px_-20px_rgb(13_29_68/0.34),0_6px_16px_-6px_rgb(13_29_68/0.12)] transition-[opacity,translate] motion-reduce:transition-none ${motion} ${
+          rich ? "w-full" : "mx-auto w-fit"
+        } ${isOpen ? "pointer-events-auto translate-y-0 opacity-100" : "-translate-y-2 opacity-0"}`}
       >
-        <div>
+        <div
+          className={`grid grid-rows-[auto_1fr] gap-x-[clamp(28px,2.3vw,44px)] px-[clamp(28px,2vw,36px)] pt-[clamp(24px,1.7vw,30px)] pb-[clamp(24px,1.7vw,30px)] ${
+            rich
+              ? "grid-cols-[1fr_clamp(260px,16.2vw,310px)]"
+              : // Short menus have width to spare, so the card keeps 300px, where its text
+                // fits in four lines, and stays as tall as the label and list beside it.
+                "grid-cols-[auto_300px]"
+          }`}
+        >
           <p
             aria-hidden="true"
-            className="flex items-center gap-2.5 text-[14px] leading-[18px] font-semibold tracking-[0.078em] text-brand uppercase"
+            className="col-start-1 row-start-1 flex items-center gap-2.5 text-[14px] leading-[18px] font-semibold tracking-[0.078em] text-brand uppercase"
           >
             <span className="h-0.5 w-[22px] bg-brand" />
             {menu.title}
           </p>
 
-          <ul className="mt-5 grid grid-cols-12 gap-x-[clamp(20px,1.6vw,32px)] border-b border-[#ebe5df]">
-            {gridLinks.map((link, index) => {
-              const current = link.href !== "#" && link.href === pathname;
+          <ul
+            className={`col-start-1 row-start-2 mt-4 grid gap-x-[clamp(20px,1.6vw,32px)] border-b border-[#e9e2da] ${list} ${
+              rich ? "" : "self-start"
+            }`}
+          >
+            {menu.links.map((link, index) => {
+              const current = isCurrent(link.href);
               return (
                 <li
                   key={link.label}
                   // Links rise in one after another as the sheet opens.
-                  style={{ transitionDelay: isOpen ? `${120 + index * 35}ms` : "0ms" }}
-                  className={`${span} transition-[opacity,translate] duration-500 motion-reduce:transition-none ${settle} ${
-                    isOpen ? "translate-y-0 opacity-100" : "opacity-0 motion-safe:translate-y-2.5"
+                  style={{ transitionDelay: isOpen ? `${80 + index * 30}ms` : "0ms" }}
+                  className={`transition-[opacity,translate] duration-500 motion-reduce:transition-none ${settle} ${
+                    isOpen ? "translate-y-0 opacity-100" : "opacity-0 motion-safe:translate-y-2"
                   }`}
                 >
                   <Link
                     href={link.href}
                     onClick={onNavigate}
                     aria-current={current ? "page" : undefined}
-                    className={`group/link relative block h-full border-t border-[#ebe5df] text-ink outline-none before:absolute before:inset-x-0 before:-top-px before:h-0.5 before:origin-left before:bg-brand before:transition-transform before:duration-[400ms] before:ease-[cubic-bezier(0.2,0.7,0.2,1)] hover:before:scale-x-100 focus-visible:before:scale-x-100 motion-reduce:before:transition-none ${
+                    className={`group/link relative flex h-full flex-col border-t border-[#e9e2da] text-ink outline-none before:absolute before:inset-x-0 before:-top-px before:h-0.5 before:origin-left before:bg-brand before:transition-transform before:duration-[400ms] before:ease-[cubic-bezier(0.2,0.7,0.2,1)] hover:before:scale-x-100 focus-visible:before:scale-x-100 motion-reduce:before:transition-none ${
                       current ? "before:scale-x-100" : "before:scale-x-0"
-                    } ${rich ? "pt-[18px] pb-5" : "pt-[26px] pb-7"}`}
+                    } ${rich ? "pt-[18px] pb-5" : "justify-center py-4"}`}
                   >
                     <span
                       className={`block pr-[26px] leading-[26px] tracking-[-0.01em] transition-colors duration-200 group-hover/link:text-brand group-focus-visible/link:text-brand ${
@@ -404,7 +459,7 @@ function DropdownSheet({ ref, id, menu, isOpen, switching, onNavigate, onKeyDown
                       } ${
                         rich
                           ? "text-[clamp(17px,1vw,19px)] font-semibold"
-                          : "text-[clamp(17px,1.04vw,20px)] font-medium"
+                          : "text-[clamp(17px,0.94vw,18px)] font-medium"
                       }`}
                     >
                       {link.label}
@@ -416,7 +471,7 @@ function DropdownSheet({ ref, id, menu, isOpen, switching, onNavigate, onKeyDown
                     )}
                     <Arrow
                       className={`absolute right-0 -translate-x-1.5 text-brand opacity-0 transition-[opacity,translate] duration-[250ms] group-hover/link:translate-x-0 group-hover/link:opacity-100 group-focus-visible/link:translate-x-0 group-focus-visible/link:opacity-100 motion-reduce:transition-none ${
-                        rich ? "top-[23px]" : "top-[31px]"
+                        rich ? "top-[23px]" : "top-1/2 -mt-2"
                       }`}
                     />
                   </Link>
@@ -425,43 +480,48 @@ function DropdownSheet({ ref, id, menu, isOpen, switching, onNavigate, onKeyDown
             })}
           </ul>
 
-          {extraLinks.length > 0 && (
-            <ul className="flex flex-wrap gap-x-9 gap-y-2 pt-4">
-              {extraLinks.map((link) => (
+          {/*
+            The brand card: the Footer's own introduction; two CSS glows echo the Footer's light
+            beams. Placed per menu (see cardPlace).
+          */}
+          <div
+            className={`relative isolate col-start-2 flex flex-col gap-3 overflow-hidden rounded-2xl bg-navy px-6 py-[22px] text-white ${cardPlace}`}
+          >
+            <span
+              aria-hidden="true"
+              className="absolute -inset-[40%] -z-10 bg-[radial-gradient(40%_35%_at_85%_15%,rgb(64_196_255/0.22),transparent_70%),radial-gradient(45%_40%_at_10%_100%,rgb(255_184_77/0.14),transparent_70%)]"
+            />
+            <p className="text-[15px] leading-[1.5] text-white/86">{navBrandCard.intro}</p>
+            <p className="text-[12px] leading-4 tracking-[0.16em] text-white/50 uppercase">
+              {navBrandCard.regions}
+            </p>
+          </div>
+        </div>
+
+        {/* The action bar: extra links on the left, the menu's action on the right. */}
+        <div className="flex items-center gap-8 border-t border-[#e9e2da] bg-[#f4efe9] px-[clamp(28px,2vw,36px)] py-3.5">
+          {extra.length > 0 && (
+            <ul className="flex flex-wrap gap-x-8 gap-y-1">
+              {extra.map((link) => (
                 <li key={link.label}>
                   <Link
                     href={link.href}
                     onClick={onNavigate}
-                    aria-current={link.href !== "#" && link.href === pathname ? "page" : undefined}
-                    className={`inline-flex text-[16px] leading-6 font-medium text-ink transition-colors duration-200 hover:text-brand ${focusRing}`}
+                    aria-current={isCurrent(link.href) ? "page" : undefined}
+                    className="group/extra inline-flex items-center gap-2 rounded-sm text-[16px] leading-6 font-medium text-ink transition-colors duration-200 hover:text-brand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
                   >
                     {link.label}
+                    <Arrow className="text-brand opacity-0 transition-opacity duration-200 group-hover/extra:opacity-100" />
                   </Link>
                 </li>
               ))}
             </ul>
           )}
-        </div>
-
-        {/* The brand card: the Footer's own introduction, and the menu's action as its one button. */}
-        <div className="relative isolate flex flex-col overflow-hidden rounded-[18px] bg-navy p-[clamp(22px,1.4vw,28px)] text-white">
-          {/* Two soft glows echo the Footer's cyan and gold light beams. CSS only, no image. */}
-          <span
-            aria-hidden="true"
-            className="absolute -inset-[40%] -z-10 bg-[radial-gradient(40%_35%_at_85%_15%,rgb(64_196_255/0.22),transparent_70%),radial-gradient(45%_40%_at_10%_100%,rgb(255_184_77/0.14),transparent_70%)]"
-          />
-          <p className="text-[clamp(15px,0.84vw,16px)] leading-[1.5] text-white/86">
-            {navBrandCard.intro}
-          </p>
-          <p className="mt-3 text-[12px] leading-4 tracking-[0.16em] text-white/50 uppercase">
-            {navBrandCard.regions}
-          </p>
-          <span aria-hidden="true" className="min-h-6 flex-1" />
           <Link
             href={menu.action.href}
             onClick={onNavigate}
-            aria-current={menu.action.href === pathname ? "page" : undefined}
-            className="group/action flex h-[50px] items-center justify-between gap-3 rounded-xl bg-brand px-5 text-[16px] leading-6 font-semibold text-white transition-colors duration-200 hover:bg-brand-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            aria-current={isCurrent(menu.action.href) ? "page" : undefined}
+            className="group/action ml-auto flex h-11 shrink-0 items-center gap-3 rounded-[10px] bg-brand px-5 text-[15px] leading-6 font-semibold whitespace-nowrap text-white transition-colors duration-200 hover:bg-brand-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
           >
             {menu.action.label}
             <Arrow className="transition-[translate] duration-200 group-hover/action:translate-x-[3px] motion-reduce:transition-none motion-reduce:group-hover/action:translate-x-0" />
@@ -541,7 +601,8 @@ export function MobileNavItem({ item, onNavigate }: { item: NavItem; onNavigate:
         <div className="overflow-hidden" inert={!expanded}>
           <div className="mt-1 mb-3 rounded-2xl border border-ink/[0.07] bg-[linear-gradient(160deg,#f8f3ee,#fdf3f2)] p-1.5">
             <ul>
-              {item.menu.links.map((link) => (
+              {/* Main links then extras: the Footer column's full list, in its order. */}
+              {[...item.menu.links, ...(item.menu.extra ?? [])].map((link) => (
                 <li key={link.label}>
                   <Link
                     href={link.href}

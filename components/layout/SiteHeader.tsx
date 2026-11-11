@@ -34,7 +34,7 @@ function ProfileCard({ showThumbnail = true }: { showThumbnail?: boolean }) {
         </span>
         <span className="flex flex-col">
           <span className="text-[18px] leading-[21px] font-medium text-black">Our Profile</span>
-          <span className="mt-[3px] text-[14px] leading-[18px] text-[#626262]">Download PDF</span>
+          <span className="mt-[3px] text-[14px] leading-[18px] text-[#626262]">View PDF</span>
         </span>
       </span>
     </Link>
@@ -98,6 +98,10 @@ export function SiteHeader({ showBanner = true }: SiteHeaderProps) {
               compact
                 ? `-translate-y-1 shadow-[0_1px_8px_rgba(35,31,32,0.06)] xl:-translate-y-[5px] ${open || openMenu ? "bg-white" : "bg-white/92 backdrop-blur-sm"}`
                 : "bg-white"
+            } ${
+              // While a desktop menu is open the bar gets its own edge (a warm hairline and a soft
+              // shadow), so it reads as a separate layer above the floating dropdown sheet.
+              openMenu ? "xl:shadow-[0_1px_0_#e3dbd2,0_10px_24px_-14px_rgb(13_29_68/0.28)]" : ""
             }`}
           />
           <div className="pointer-events-auto relative h-full">

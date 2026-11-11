@@ -21,10 +21,9 @@ export default function ServicesPage() {
     <>
       <SiteHeader showBanner={false} />
       <main>
+        {/* Hero + Client Logo strip standard: one combined section, pinned as one unit. */}
         <PinnedSection>
           <ServicesHero />
-        </PinnedSection>
-        <PinnedSection>
           <ClientLogos />
         </PinnedSection>
         <PinnedSection>

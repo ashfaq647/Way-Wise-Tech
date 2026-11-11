@@ -1,0 +1,307 @@
+/*
+  FAQ page questions section: the card's question mark (FaqQuestionMark.tsx).
+
+  Static look (no JavaScript, reduced motion): the drawing as in the reference, a gold question mark
+  with a loose pale outline offset up and to the left, surrounded by thin rays.
+
+  Motion, only with prefers-reduced-motion: no-preference:
+    - Entrance, once, when the card is revealed (Reveal sets data-reveal on the card): the question
+      mark pops up from a small, tilted state with a soft overshoot, then the rays draw outwards from
+      the centre, one after another clockwise.
+    - Idle loop: the question mark floats and tilts gently (5.2s); its hand-drawn outline drifts
+      against the gold on the same beat, so the offset breathes like a print slightly out of
+      register; a soft light sheen crosses the gold every 6s; and a shimmer runs round the rays
+      (3.6s), each ray brightening and stretching outwards in turn, like a slow radar sweep.
+    - Hovering the card (hover-capable pointers only) opens the rays out slightly.
+  Only transform, opacity and stroke-dashoffset animate. Motion is written as a single transform:
+  separate translate and scale declarations beside transform were dropped from compiled keyframes in
+  this pipeline (see about-presence.css).
+*/
+
+/*
+  The rays' shimmer (x1.1) and the card hover (x1.07) stretch the outer ray tips up to about 4 units
+  past the 180x175 box; they stay well inside the card's padding, so they must not be clipped there.
+*/
+.wf-mark {
+  overflow: visible;
+}
+
+.wf-mark__ray-line {
+  stroke: #d9c8a3;
+  stroke-width: 0.7;
+  stroke-linecap: round;
+  opacity: 0.85;
+}
+
+.wf-mark__fill path {
+  fill: #bb9b62;
+}
+
+.wf-mark__outline {
+  transform: translate(-4px, -1.5px);
+}
+
+.wf-mark__outline path {
+  fill: none;
+  stroke: #d9c8a3;
+  stroke-width: 0.8;
+  stroke-linejoin: round;
+}
+
+.wf-mark__outline--inner path {
+  stroke: #4b2524;
+}
+
+/* Parked outside the gold until it sweeps across. */
+.wf-mark__sheen {
+  transform: translateX(-60px) skewX(-18deg);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .wf-mark__rays,
+  .wf-mark__ray,
+  .wf-mark__glyph {
+    transform-box: view-box;
+    transform-origin: 93px 88px;
+  }
+
+  .wf-mark__float {
+    transform-box: view-box;
+    transform-origin: 96px 134px;
+    animation: wf-mark-float 5.2s ease-in-out infinite;
+  }
+
+  .wf-mark__outline {
+    animation: wf-mark-outline 5.2s ease-in-out infinite;
+  }
+
+  .wf-mark__sheen {
+    animation: wf-mark-sheen 6s ease-in-out 1.6s infinite;
+  }
+
+  /* Negative delays start every ray at its own point in the sweep, so it runs clockwise at once. */
+  .wf-mark__ray {
+    animation: wf-mark-ray 3.6s ease-in-out infinite;
+    animation-delay: calc(var(--wf-turn, 0) * 3.6s - 3.6s);
+  }
+
+  .wf-mark__rays {
+    transition:
+      transform 700ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 700ms ease-out;
+  }
+
+  @media (hover: hover) {
+    .wf-card:hover .wf-mark__rays {
+      transform: scale(1.07);
+    }
+  }
+
+  /* Entrance: hidden while the card waits to be revealed, played once when it is. */
+  .wf-card[data-reveal="pending"] .wf-mark__glyph {
+    opacity: 0;
+    transform: scale(0.6) rotate(-14deg);
+  }
+
+  .wf-card[data-reveal="pending"] .wf-mark__ray-line {
+    stroke-dasharray: 1 1;
+    stroke-dashoffset: 1;
+  }
+
+  .wf-card[data-reveal="running"] .wf-mark__glyph {
+    animation: wf-mark-pop 900ms cubic-bezier(0.34, 1.56, 0.64, 1) 150ms both;
+  }
+
+  .wf-card[data-reveal="running"] .wf-mark__ray-line {
+    stroke-dasharray: 1 1;
+    animation: wf-mark-draw 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: calc(450ms + var(--wf-turn, 0) * 600ms);
+  }
+}
+
+@keyframes wf-mark-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.6) rotate(-14deg);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes wf-mark-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes wf-mark-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-3px) rotate(-3deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(0deg);
+  }
+  75% {
+    transform: translateY(-3px) rotate(3deg);
+  }
+}
+
+@keyframes wf-mark-outline {
+  0%,
+  100% {
+    transform: translate(-4px, -1.5px);
+  }
+  50% {
+    transform: translate(-1.5px, 0.5px);
+  }
+}
+
+@keyframes wf-mark-sheen {
+  0% {
+    transform: translateX(-60px) skewX(-18deg);
+  }
+  45%,
+  100% {
+    transform: translateX(160px) skewX(-18deg);
+  }
+}
+
+@keyframes wf-mark-ray {
+  0%,
+  40%,
+  100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  14% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
+/*
+  ---- FAQ timeline (FaqQuestions.tsx) ----
+  From the owner's screen recording and its live reference (behaviour and geometry only; colours are
+  WayWise's): a 2px line beside the question list whose fill draws downward with the scroll, and a
+  12px point at the middle of each question row that pops into its active state as the fill reaches
+  it. Reference geometry at 1920: the line runs the list's full height, the rows start 34px right of
+  the line, and here the card sits 40px left of it (the grid gap is 76px: 40 + 2 + 34).
+
+  The fill is one full-height bar scaled from the top (transform only), driven by a CSS scroll-driven
+  animation on the FAQ PinnedSection wrapper's view timeline (--wf-line), between --wf-a and --wf-b
+  (measured in FaqQuestions.tsx): 1:1 with the scroll, both ways, including the pin hold. The points
+  switch with data-hit (set by FaqQuestions.tsx at the exact scroll position) and use the reference's
+  timed transition: colour and ring 0.4s, a 1.15x pop over 0.5s with a slight overshoot.
+
+  md: the line sits in the 32px page gutter (the card is above the list). Below md: hidden.
+  Reduced motion, no scroll-timeline support before JavaScript, or before measuring: the static track
+  with inactive points (no fill).
+*/
+.wf-list {
+  position: relative;
+  --wf-x: 16px;
+  --wf-node: 12px;
+}
+
+@media (min-width: 1024px) {
+  .wf-list {
+    /* The line's centre from the rows: 35px at 1920 (rows 34px from its left edge). */
+    --wf-x: clamp(24px, 1.823vw, 35px);
+    --wf-node: clamp(10px, 0.625vw, 12px);
+  }
+}
+
+.wf-rail,
+.wf-node {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .wf-rail {
+    display: block;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(-1 * var(--wf-x) - 1px);
+    width: 2px;
+    pointer-events: none;
+  }
+
+  .wf-rail__track,
+  .wf-rail__fill {
+    position: absolute;
+    inset: 0;
+    border-radius: 2px;
+  }
+
+  .wf-rail__track {
+    background: #ddd3c7;
+  }
+
+  .wf-rail__fill {
+    background: #d71920;
+    box-shadow: 0 0 12px rgb(215 25 32 / 0.55);
+    transform: scaleY(0);
+    transform-origin: 50% 0;
+  }
+
+  .wf-node {
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: calc(-1 * var(--wf-x) - var(--wf-node) / 2);
+    width: var(--wf-node);
+    height: var(--wf-node);
+    margin-top: calc(var(--wf-node) / -2);
+    border-radius: 50%;
+    background: #f4f0e9;
+    box-shadow: inset 0 0 0 2px #ddd3c7;
+    pointer-events: none;
+  }
+
+  /* Active: the line's red, ringed in the FAQ card's maroon, slightly larger. */
+  .wf-node[data-hit] {
+    background: #d71920;
+    box-shadow: inset 0 0 0 2px #4b2524;
+    transform: scale(1.15);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .wf-node {
+      transition:
+        background-color 0.4s,
+        box-shadow 0.4s,
+        transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @supports (animation-timeline: view()) {
+      .pin-wrapper:has(> .pin-body > #faq-questions) {
+        view-timeline: --wf-line block;
+      }
+
+      .wf-list[data-wf-ready] .wf-rail__fill {
+        animation: wf-fill linear both;
+        animation-timeline: --wf-line;
+        animation-range: cover var(--wf-a) cover var(--wf-b);
+      }
+    }
+  }
+}
+
+@keyframes wf-fill {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}

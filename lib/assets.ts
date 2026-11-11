@@ -102,6 +102,42 @@ export const assets = {
   contactOfficeLosAngeles: "/images/contact%20us/usa.png",
   contactOfficeDubai: "/images/contact%20us/dubai.png",
   contactOfficeDhaka: "/images/contact%20us/dhaka.png",
+  // About Us page Hero: sunlit desk with a laptop, phone and plants, 3840x1614 (2x its 1920x807
+  // section). Matches the reference's background exactly, so no overlay is drawn on top.
+  aboutHero: "/images/about%20us/Hero%20Image.png",
+  // About Us "Our Story" photo cards, each 706x573 (2x its 353x286.5 card), rounded corners in the
+  // files. Mapped to the reference by pixel comparison.
+  aboutStoryTeam: "/images/about%20us/team.png", // the team in their office
+  aboutStoryCalifornia: "/images/about%20us/california.png", // city skyline at sunset over water
+  aboutStoryDubai: "/images/about%20us/dubai.png", // Dubai skyline with the Burj Khalifa
+  aboutStoryDhaka: "/images/about%20us/dhaka.png", // aerial city view at dusk
+  // About Us leadership portraits, each 480x800 (2x its 240x400 frame), square corners (the
+  // frame rounds them).
+  aboutChairman: "/images/about%20us/chairman.png", // the Chairman beside a Way-Wise Global sign
+  aboutCeo: "/images/about%20us/ceo.png", // the CEO seated at his desk with a laptop
+  // About Us "Our Global Presence" office photos, each 1008x700 (2x its 504x350 card image), top
+  // corners rounded in the files. Mapped to the reference by pixel comparison.
+  aboutOfficeUsa: "/images/about%20us/usa.png", // Statue of Liberty, US flag and New York skyline
+  aboutOfficeUae: "/images/about%20us/uae.png", // Dubai skyline with the Burj Khalifa at dusk
+  aboutOfficeInternational: "/images/about%20us/international.png", // city lights along a river at night
+  // FAQ page Hero: a glossy red question mark on a marble table, 3840x1614 (2x its 1920x807
+  // section). Matches the reference's background exactly, so no overlay is drawn on top.
+  faqHero: "/images/faq/Hero%20Image.png",
+  // Insights (Blog List) page Hero: a laptop and phone showing a property website on a sunlit
+  // table, 3840x1614 (2x its 1920x807 section). Matches the reference's background exactly, so no
+  // overlay is drawn on top.
+  insightsHero: "/images/Blog%20List/Hero%20Image.png",
+  // Insights article card images, each 978x560 (2x its 489x280 card image). Mapped to the
+  // reference cards (Frame 2147239113.png, left to right, top to bottom) by pixel comparison.
+  insightsArticle1: "/images/Blog%20List/blog%20image.png", // figure at a desk in a glowing data room
+  insightsArticle2: "/images/Blog%20List/blog%20image%20(8).png", // laptop at a desk among rocks
+  insightsArticle3: "/images/Blog%20List/blog%20image%20(1).png", // man at a laptop among clouds
+  insightsArticle4: "/images/Blog%20List/blog%20image%20(2).png", // man between server walls
+  insightsArticle5: "/images/Blog%20List/blog%20image%20(3).png", // desk on a red circuit landscape
+  insightsArticle6: "/images/Blog%20List/blog%20image%20(4).png", // red-lit corridor with reflections
+  insightsArticle7: "/images/Blog%20List/blog%20image%20(5).png", // desk by water in golden light
+  insightsArticle8: "/images/Blog%20List/blog%20image%20(6).png", // laptop on the ground before a fire
+  insightsArticle9: "/images/Blog%20List/blog%20image%20(7).png", // woman with a laptop among papers
   footerBackground: "/images/footer/footer-background.png",
   footerLogo: "/images/footer/logo-white.svg",
   footerLinkedin: "/images/footer/Button.svg",

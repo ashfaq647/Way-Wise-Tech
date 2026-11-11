@@ -1,0 +1,167 @@
+/*
+  Our Global Presence cards only (About Us): "Split convergence with subtle depth", scroll-linked.
+  CSS scroll-driven animations tie every frame to the scroll position, so scrolling up reverses it
+  exactly; there are no scroll listeners and no JavaScript.
+
+  Desktop (lg, three across): one shared timeline, the card row (--wp-row), so the three move as one
+  piece inside a shared perspective.
+    - The left card enters from the left and the right card from the right, each turned slightly
+      inward; the centre card stays in place and comes forward out of depth.
+    - All three converge into their exact positions (no transform, opacity 1) over the longest window
+      the layout allows: from the moment the row first appears (entry 0%) until just after the whole
+      row is on screen (entry 100% plus min(40px, 2.5vw)). That margin is always smaller than the
+      section's bottom padding (56px or more), which lies below the row, so the cards are settled
+      before the section pins; while pinned they do not move against the screen, so they hold still.
+    - Cards and photos share one gentle ease-out (sine) and one range, so the tilt, depth and photo
+      parallax stay in step: movement is spread through the scroll and decelerates softly, with no
+      sudden start and no hard stop.
+  Tablet (md, two plus one): per-card timelines (--wp-card). Top left from the left, top right from
+  the right, the centred third card from depth.
+  Mobile: no sideways movement (cards sliding in from a phone's edge feel jumpy and get clipped); each
+  card only settles out of depth on its own timeline.
+  Photos: each photo settles from a gentle zoom, a little low, and drifting slightly against its
+  card's sideways movement, on the same timeline as its card, so the picture moves inside its frame.
+  The frame clips with overflow: hidden (a scroll container, so the photo cannot use its own view()).
+
+  Notes:
+    - Motion is written as a single transform: separate translate and scale declarations beside
+      transform were dropped from compiled keyframes in this pipeline.
+    - The section has overflow-x: clip, so cards entering from the sides never widen the page.
+    - Where this runs, the cards' one-time Reveal rise is switched off (translate: none), so the two
+      never stack; the animation also overrides the Reveal opacity. Browsers without
+      `animation-timeline` keep that Reveal, and reduced motion keeps everything still.
+*/
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .wp-presence-row {
+      view-timeline-name: --wp-row;
+    }
+
+    .wp-presence-card {
+      --wp-shift: 0%;
+      --wp-turn: 0deg;
+      --wp-photo-shift: 0%;
+      view-timeline-name: --wp-card;
+      translate: none !important;
+      animation: wp-presence-depth both cubic-bezier(0.39, 0.575, 0.565, 1);
+      animation-timeline: --wp-card;
+      animation-range: entry 0% entry calc(100% + min(40px, 2.5vw));
+    }
+
+    .wp-presence-card__media img {
+      animation: wp-presence-photo both cubic-bezier(0.39, 0.575, 0.565, 1);
+      animation-timeline: --wp-card;
+      animation-range: entry 0% entry calc(100% + min(40px, 2.5vw));
+    }
+
+    /*
+      Tablet and desktop: the row carries one shared perspective, so the cards turn and recede
+      towards the same vanishing point; depth cards then use the keyframes without their own
+      perspective().
+    */
+    @media (min-width: 768px) {
+      .wp-presence-row {
+        perspective: 1800px;
+      }
+
+      .wp-presence-card {
+        animation-name: wp-presence-depth-shared;
+      }
+    }
+
+    /* Tablet: two plus one. */
+    @media (min-width: 768px) and (max-width: 1023.98px) {
+      .wp-presence-card:nth-child(1) {
+        --wp-shift: -12%;
+        --wp-turn: 9deg;
+        --wp-photo-shift: 3%;
+        animation-name: wp-presence-side;
+      }
+
+      .wp-presence-card:nth-child(2) {
+        --wp-shift: 12%;
+        --wp-turn: -9deg;
+        --wp-photo-shift: -3%;
+        animation-name: wp-presence-side;
+      }
+    }
+
+    /* Desktop: three across, one shared row timeline. */
+    @media (min-width: 1024px) {
+      .wp-presence-card,
+      .wp-presence-card__media img {
+        animation-timeline: --wp-row;
+      }
+
+      .wp-presence-card:nth-child(1) {
+        --wp-shift: -14%;
+        --wp-turn: 10deg;
+        --wp-photo-shift: 3%;
+        animation-name: wp-presence-side;
+      }
+
+      .wp-presence-card:nth-child(3) {
+        --wp-shift: 14%;
+        --wp-turn: -10deg;
+        --wp-photo-shift: -3%;
+        animation-name: wp-presence-side;
+      }
+    }
+
+    /* From 1280 the side movement opens up: about 110px at 1920. */
+    @media (min-width: 1280px) {
+      .wp-presence-card:nth-child(1) {
+        --wp-shift: -22%;
+      }
+
+      .wp-presence-card:nth-child(3) {
+        --wp-shift: 22%;
+      }
+    }
+  }
+}
+
+/* Side cards: from their side, turned inward, slightly smaller and partly faded. */
+@keyframes wp-presence-side {
+  from {
+    opacity: 0.55;
+    transform: translateX(var(--wp-shift)) rotateY(var(--wp-turn)) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Centre card on tablet and desktop: anchored in place, coming forward out of the row's depth. */
+@keyframes wp-presence-depth-shared {
+  from {
+    opacity: 0.55;
+    transform: translateY(28px) translateZ(-90px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Every card on mobile, which has no shared perspective: the same, with its own perspective. */
+@keyframes wp-presence-depth {
+  from {
+    opacity: 0.55;
+    transform: perspective(1800px) translateY(28px) translateZ(-90px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes wp-presence-photo {
+  from {
+    transform: translate(var(--wp-photo-shift), 4%) scale(1.1);
+  }
+  to {
+    transform: none;
+  }
+}

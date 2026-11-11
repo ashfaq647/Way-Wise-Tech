@@ -27,11 +27,12 @@ export default function ContactPage() {
       {/* The red banner is Homepage only. */}
       <SiteHeader showBanner={false} />
       <main>
+        {/*
+          Hero + Client Logo strip standard: one combined section, pinned as one unit, held while
+          Client Overview rises over both.
+        */}
         <PinnedSection>
           <ContactHero />
-        </PinnedSection>
-        {/* Held while Client Overview rises over it, as on /services and the Details pages. */}
-        <PinnedSection>
           <ClientLogos />
         </PinnedSection>
         {/*

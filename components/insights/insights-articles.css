@@ -1,0 +1,525 @@
+/*
+  Insights article grid (InsightsArticles.tsx). Plain prefixed classes: CSS Modules do not work in
+  this project (see next.config.ts).
+
+  Card sizes are the reference's 1920 values in "u", one reference pixel scaled by the card's own
+  width (container units: the card is 487px inside its border at 1920), with readable minimums.
+
+  "Read More" positions follow the reference: the title and excerpt block always reserves two title
+  lines and two excerpt lines, and "Read More" follows that block. A one-line title (cards 6 and 8)
+  therefore keeps "Read More" level with its row, while the first, featured card's larger title
+  pushes its own "Read More" 12px lower, as drawn. Cards are not stretched internally, so the other
+  cards in a row keep their positions.
+
+  Motion ("3D Stacked Editorial", owner-approved 2026-11-11; refines the Editorial cascade), only
+  with prefers-reduced-motion: no-preference:
+    - Entrance, once per card as it is reached (Reveal sets data-reveal on each card), never
+      replayed or reversed: the card plane rises out of depth and settles flat, on its own
+      perspective() so every column moves alike. From lg: 32px low, 70px back, tipped back 6deg
+      about its bottom edge; md: 28px, 60px, 4deg; below md: 24px, 50px, no tip. The card starts
+      smaller than its cell (92-96%), so it never reaches a gap or a neighbour. Cards ripple in a
+      diagonal wave, (column + row) x 70ms (rows counted only within the first screenful-ish: lg
+      rows 1-3, md rows 1-2; none below md). Its photo then uncovers upwards while settling from 1.08x
+      (+120ms), and the meta row, title, excerpt and "Read More" follow 60ms apart (+320ms).
+      It ends at transform: none, so the resting card is exactly the reference (no shadow, no layer).
+    - Scroll-linked drift (CSS scroll-driven animation, where supported): the photo drifts gently
+      inside its frame as the card crosses the screen, so it reverses exactly when scrolling up.
+    - Pointer tilt (ArticleTiltGrid.tsx; real mouse, lg and up only): the card lifts 4px and leans at
+      most 2.5deg sideways and 2deg vertically, the photo shifts up to 4px/3px against the tilt, and
+      a soft shadow fades in. The hovered card is found from layout boxes, so it never flickers.
+      While tilting it has data-tilt and the --wi-* variables; at rest it has neither.
+    - Other hover (mouse below lg) and keyboard focus: the card lifts 4px (translate) with the
+      shadow, as before. Everywhere: photo zoom 1.04x, "Read More" underline and arrow slide.
+  Only transform, translate, scale, opacity, clip-path and (hover only) box-shadow animate.
+  Entrance and tilt use transform; the simple lift uses translate, so their timings never mix.
+*/
+
+.wi-articles {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 1560px;
+  padding: 56px 20px;
+}
+
+@media (min-width: 768px) {
+  .wi-articles {
+    padding: 80px 32px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .wi-articles {
+    padding-block: clamp(64px, 5.208vw, 100px);
+  }
+}
+
+@media (min-width: 1280px) {
+  .wi-articles {
+    padding-inline: 20px;
+  }
+}
+
+.wi-grid {
+  /* Positioned so the cards' offsetLeft/Top are measured from the grid (pointer tilt). */
+  position: relative;
+  display: grid;
+  gap: 24px;
+}
+
+/* Tablet: two across on four tracks, so the ninth card sits centred on its own row. */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .wi-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 24px 20px;
+  }
+
+  .wi-card {
+    grid-column: span 2;
+  }
+
+  .wi-card:last-child:nth-child(odd) {
+    grid-column: 2 / span 2;
+  }
+}
+
+@media (min-width: 1024px) {
+  .wi-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(16px, 1.25vw, 24px) clamp(16px, 1.328vw, 25.5px);
+  }
+}
+
+/* ---- Card ---- */
+
+.wi-card {
+  position: relative;
+  container-type: inline-size;
+  overflow: clip;
+  border: 1px solid #d0d8e0;
+  border-radius: 8px;
+  background: #fff;
+  transition:
+    translate 350ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 350ms ease-out;
+}
+
+.wi-card > * {
+  --u: min(1px, calc(100cqi / 487));
+  --wi-title: max(19px, calc(26 * var(--u)));
+  --wi-excerpt: max(16px, calc(22 * var(--u)));
+}
+
+.wi-card__frame {
+  position: relative;
+  aspect-ratio: 487 / 280;
+  overflow: hidden;
+}
+
+.wi-card__drift {
+  position: absolute;
+  inset: 0;
+}
+
+.wi-card__img {
+  transition: scale 700ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.wi-card__body {
+  padding: max(18px, calc(24 * var(--u))) max(16px, calc(24 * var(--u))) max(18px, calc(21 * var(--u)));
+}
+
+.wi-card__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.wi-card__tag {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  height: max(26px, calc(30 * var(--u)));
+  padding-inline: max(8px, calc(10 * var(--u)));
+  border-radius: 4px;
+  background: #fdebd1;
+  color: #043461;
+  font-size: max(15px, calc(20 * var(--u)));
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.wi-card__date {
+  flex-shrink: 0;
+  color: #6f6c8f;
+  font-size: max(15px, calc(20 * var(--u)));
+  line-height: 1;
+}
+
+/* Always room for two title lines and two excerpt lines, so "Read More" lines up across a row. */
+.wi-card__text {
+  margin-top: max(15px, calc(21 * var(--u)));
+  min-height: calc(2 * var(--wi-title) * 1.346 + max(5px, calc(7 * var(--u))) + 2 * var(--wi-excerpt) * 1.409);
+}
+
+.wi-card__title {
+  color: #043461;
+  font-size: var(--wi-title);
+  font-weight: 600;
+  line-height: 1.346;
+  text-wrap: pretty;
+}
+
+/* The first, latest article: a larger title, as in the reference. */
+.wi-card--featured .wi-card__title {
+  font-size: max(21px, calc(30 * var(--u)));
+  line-height: 1.3;
+}
+
+/* Its excerpt sits a little further from the larger title, as drawn. */
+.wi-card--featured .wi-card__excerpt {
+  margin-top: max(7px, calc(10 * var(--u)));
+}
+
+.wi-card__link {
+  outline: none;
+}
+
+/* The title's link covers the whole card, so the card is one link. */
+.wi-card__link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: 7px;
+}
+
+.wi-card__link:focus-visible::after {
+  outline: 2px solid #231f20;
+  outline-offset: -4px;
+}
+
+.wi-card__excerpt {
+  display: -webkit-box;
+  margin-top: max(5px, calc(7 * var(--u)));
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  color: #000;
+  font-size: var(--wi-excerpt);
+  line-height: 1.409;
+}
+
+.wi-card__more {
+  display: inline-flex;
+  align-items: center;
+  gap: max(8px, calc(11 * var(--u)));
+  margin-top: max(12px, calc(17 * var(--u)));
+  color: #043461;
+  font-size: max(17px, calc(24 * var(--u)));
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.wi-card__more-label {
+  background: linear-gradient(currentColor, currentColor) 0 100% / 0% 1.5px no-repeat;
+  transition: background-size 400ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.wi-card__more-arrow {
+  width: max(14px, calc(18 * var(--u)));
+  height: max(14px, calc(18 * var(--u)));
+  transition: translate 400ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/*
+  Hover and keyboard focus: the underline and the shadow also show with reduced motion (they are not
+  movement). Hover only: the resting card has no shadow. While the pointer tilt runs
+  (data-tilt-ready on the grid), the hovered card is marked data-hover instead of using :hover.
+*/
+.wi-card:has(.wi-card__link:focus-visible) .wi-card__more-label,
+.wi-card[data-hover] .wi-card__more-label {
+  background-size: 100% 1.5px;
+}
+
+@media (hover: hover) {
+  .wi-grid:not([data-tilt-ready]) .wi-card:hover {
+    box-shadow:
+      0 2px 6px -2px rgb(13 29 68 / 0.1),
+      0 18px 36px -22px rgb(13 29 68 / 0.38);
+  }
+
+  .wi-grid:not([data-tilt-ready]) .wi-card:hover .wi-card__more-label {
+    background-size: 100% 1.5px;
+  }
+}
+
+.wi-card[data-hover],
+.wi-card:has(.wi-card__link:focus-visible) {
+  box-shadow:
+    0 2px 6px -2px rgb(13 29 68 / 0.1),
+    0 18px 36px -22px rgb(13 29 68 / 0.38);
+}
+
+/* ---- Pagination ---- */
+
+.wi-pager {
+  margin-top: clamp(24px, 1.667vw, 32px);
+}
+
+.wi-pager__list {
+  display: flex;
+  justify-content: center;
+  gap: clamp(10px, 0.833vw, 16px);
+}
+
+.wi-pager__item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(44px, 2.865vw, 55px);
+  height: clamp(44px, 3.125vw, 60px);
+  border: 1px solid #d0d8e0;
+  border-radius: 6px;
+  background: #fff;
+  color: #1d2123;
+  font-size: clamp(17px, 1.146vw, 22px);
+  font-weight: 500;
+}
+
+/* Six 44px buttons do not fit a 320 screen: narrower buttons (still 44px tall) below 400px. */
+@media (max-width: 399.98px) {
+  .wi-pager__list {
+    gap: 6px;
+  }
+
+  .wi-pager__item {
+    width: 38px;
+  }
+}
+
+.wi-pager__item--current {
+  background: #eeb877;
+}
+
+/* Only one page of articles exists: the other pages and both arrows are visibly unavailable. */
+.wi-pager__item:disabled {
+  cursor: not-allowed;
+  color: #9a9a9a;
+  background: #faf9f7;
+}
+
+.wi-pager__arrow {
+  width: clamp(16px, 0.99vw, 19px);
+  height: clamp(16px, 0.99vw, 19px);
+}
+
+/* ---- Motion ---- */
+
+@media (prefers-reduced-motion: no-preference) {
+  /*
+    Diagonal wave: (column + row) x 70ms. Rows only add delay where several can enter together
+    (lg rows 1-3, md rows 1-2); a later row reached on its own then starts almost at once.
+  */
+  .wi-card {
+    --wi-col: 0;
+    --wi-row: 0;
+    --wi-d: calc((var(--wi-col) + var(--wi-row)) * 70ms);
+  }
+
+  @media (min-width: 768px) and (max-width: 1023.98px) {
+    .wi-card:nth-child(2n) {
+      --wi-col: 1;
+    }
+
+    .wi-card:nth-child(n + 3) {
+      --wi-row: 1;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .wi-card:nth-child(3n + 2) {
+      --wi-col: 1;
+    }
+
+    .wi-card:nth-child(3n) {
+      --wi-col: 2;
+    }
+
+    .wi-card:nth-child(n + 4) {
+      --wi-row: 1;
+    }
+
+    .wi-card:nth-child(n + 7) {
+      --wi-row: 2;
+    }
+  }
+
+  /*
+    Entrance: the card plane rises out of depth on its own perspective (the shared rise's translate
+    is switched off), tipped back about its bottom edge, and settles to transform: none.
+  */
+  .wi-card.ww-rise[data-reveal="pending"] {
+    translate: none;
+    transform: perspective(1600px) translate3d(0, 24px, -50px);
+    transform-origin: 50% 100%;
+  }
+
+  .wi-card.ww-rise[data-reveal="running"] {
+    transform-origin: 50% 100%;
+    transition:
+      opacity 650ms ease-out var(--wi-d),
+      transform 700ms cubic-bezier(0.22, 1, 0.36, 1) var(--wi-d),
+      translate 350ms cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 350ms ease-out;
+  }
+
+  @media (min-width: 768px) {
+    .wi-card.ww-rise[data-reveal="pending"] {
+      transform: perspective(1600px) translate3d(0, 28px, -60px) rotateX(4deg);
+    }
+
+    .wi-card.ww-rise[data-reveal="running"] {
+      transition:
+        opacity 650ms ease-out var(--wi-d),
+        transform 900ms cubic-bezier(0.22, 1, 0.36, 1) var(--wi-d),
+        translate 350ms cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 350ms ease-out;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .wi-card.ww-rise[data-reveal="pending"] {
+      transform: perspective(1600px) translate3d(0, 32px, -70px) rotateX(6deg);
+    }
+  }
+
+  /* The photo uncovers upwards and settles from a gentle zoom, just behind its card. */
+  .wi-card[data-reveal="pending"] .wi-card__frame {
+    clip-path: inset(100% 0 0 0);
+  }
+
+  .wi-card[data-reveal="pending"] .wi-card__drift {
+    scale: 1.08;
+  }
+
+  .wi-card[data-reveal="running"] .wi-card__frame {
+    transition: clip-path 950ms cubic-bezier(0.22, 1, 0.36, 1) calc(var(--wi-d) + 120ms);
+  }
+
+  .wi-card[data-reveal="running"] .wi-card__drift {
+    transition: scale 1300ms cubic-bezier(0.22, 1, 0.36, 1) calc(var(--wi-d) + 120ms);
+  }
+
+  /* The text follows, 60ms apart. */
+  .wi-card__meta {
+    --wi-k: 0;
+  }
+
+  .wi-card__title {
+    --wi-k: 1;
+  }
+
+  .wi-card__excerpt {
+    --wi-k: 2;
+  }
+
+  .wi-card__more {
+    --wi-k: 3;
+  }
+
+  .wi-card[data-reveal="pending"] .wi-card__stagger {
+    opacity: 0;
+    translate: 0 10px;
+  }
+
+  .wi-card[data-reveal="running"] .wi-card__stagger {
+    transition:
+      opacity 600ms ease-out,
+      translate 700ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: calc(var(--wi-d) + 320ms + var(--wi-k) * 60ms);
+  }
+
+  /*
+    Pointer tilt (ArticleTiltGrid.tsx sets data-tilt and the --wi-* variables, eased per frame, so
+    no transform transition here). Its own perspective, about the card's centre.
+  */
+  .wi-card.ww-rise[data-tilt] {
+    transform: perspective(1400px) translateY(calc(var(--wi-lift, 0) * -1px))
+      rotateX(var(--wi-rx, 0deg)) rotateY(var(--wi-ry, 0deg));
+    transform-origin: 50% 50%;
+    transition:
+      opacity 650ms ease-out,
+      translate 350ms cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 350ms ease-out;
+    will-change: transform;
+  }
+
+  .wi-card[data-tilt] .wi-card__img {
+    translate: var(--wi-ix, 0px) var(--wi-iy, 0px);
+  }
+
+  .wi-card[data-hover] .wi-card__img {
+    scale: 1.04;
+  }
+
+  .wi-card[data-hover] .wi-card__more-arrow {
+    translate: 4px 0;
+  }
+
+  /* Hover without the pointer tilt (a mouse below lg): the simple 4px lift. */
+  @media (hover: hover) {
+    .wi-grid:not([data-tilt-ready]) .wi-card:hover {
+      translate: 0 -4px;
+    }
+
+    .wi-grid:not([data-tilt-ready]) .wi-card:hover .wi-card__img {
+      scale: 1.04;
+    }
+
+    .wi-grid:not([data-tilt-ready]) .wi-card:hover .wi-card__more-arrow {
+      translate: 4px 0;
+    }
+  }
+
+  /* Keyboard focus: the same lift (the tilt's own lift covers a card that is also hovered). */
+  .wi-card:not([data-tilt]):has(.wi-card__link:focus-visible) {
+    translate: 0 -4px;
+  }
+
+  .wi-card:has(.wi-card__link:focus-visible) .wi-card__more-arrow {
+    translate: 4px 0;
+  }
+
+  .wi-pager__item:not(:disabled):not(.wi-pager__item--current) {
+    transition: translate 250ms ease-out;
+  }
+
+  /*
+    Scroll-linked drift: the photo moves slightly slower than its card as the card crosses the
+    screen. Kept at 1.065x so the +-3% travel never shows an edge. A named timeline, because the
+    frame (overflow: hidden) is a scroll container.
+  */
+  @supports (animation-timeline: view()) {
+    .wi-card {
+      view-timeline-name: --wi-card;
+    }
+
+    .wi-card__drift {
+      animation: wi-drift linear both;
+      animation-timeline: --wi-card;
+      animation-range: cover 0% cover 100%;
+    }
+  }
+}
+
+@keyframes wi-drift {
+  from {
+    transform: translateY(-3%) scale(1.065);
+  }
+  to {
+    transform: translateY(3%) scale(1.065);
+  }
+}

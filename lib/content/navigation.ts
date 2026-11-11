@@ -19,10 +19,15 @@ export type NavLink = {
   description?: string;
 };
 
-/** A Navbar dropdown: one Footer column, ending in its action link. */
+/**
+ * A Navbar dropdown: one Footer column, ending in its action link. `links` are the main links;
+ * `extra` are the column's remaining links, shown smaller in the dropdown's action bar. The Footer
+ * order is `links` then `extra`.
+ */
 export type NavMenu = {
   title: string;
   links: NavLink[];
+  extra?: NavLink[];
   action: NavLink;
 };
 
@@ -42,13 +47,17 @@ const serviceRoutes: Record<string, string> = {
   "Branding & Digital Growth": "/services/branding-digital-growth",
 };
 
+const serviceLinks: NavLink[] = services.map(({ title, card }) => ({
+  label: title,
+  href: serviceRoutes[title] ?? "#",
+  description: card?.description,
+}));
+
+/** The six services with a Services-section card are the main links; the other two are extras. */
 export const servicesMenu: NavMenu = {
   title: "Services",
-  links: services.map(({ title, card }) => ({
-    label: title,
-    href: serviceRoutes[title] ?? "#",
-    description: card?.description,
-  })),
+  links: serviceLinks.filter((link) => link.description),
+  extra: serviceLinks.filter((link) => !link.description),
   action: { label: "View All Services", href: "/services" },
 };
 
@@ -59,20 +68,25 @@ export const industriesMenu: NavMenu = {
   action: { label: "View All Industries", href: "/industries" },
 };
 
+/** The About Us page. The Footer looks this link up too, so the destination lives in one place. */
+export const aboutUsLink: NavLink = { label: "About Us", href: "/about" };
+
 /** The Footer's "Company" column. "Our Work" is listed here, while the Navbar also has it at the top level. */
 export const companyLinks: NavLink[] = [
-  { label: "About Us", href: "#" },
+  aboutUsLink,
   { label: "How We Work", href: "#" },
   { label: "Our Team", href: "#" },
   { label: "Global Delivery", href: "#" },
   { label: "Careers", href: "#" },
-  { label: "Insights", href: "#" },
+  { label: "Insights", href: "/insights" },
   { label: "Our Work", href: "/our-work" },
 ];
 
+/** "Our Work" is an extra here, because the Navbar also lists it at the top level. */
 export const companyMenu: NavMenu = {
   title: "Company",
-  links: companyLinks,
+  links: companyLinks.filter((link) => link.label !== "Our Work"),
+  extra: companyLinks.filter((link) => link.label === "Our Work"),
   action: { label: "Contact Us", href: "/contact" },
 };
 
@@ -93,7 +107,9 @@ export const primaryNav: NavItem[] = [
 ];
 
 /** The Footer's three link columns, each ending in its action link (the same lists as the dropdowns). */
-export const footerColumns: NavMenu[] = [servicesMenu, industriesMenu, companyMenu];
+export const footerColumns: NavMenu[] = [servicesMenu, industriesMenu, companyMenu].map(
+  ({ extra = [], ...menu }) => ({ ...menu, links: [...menu.links, ...extra] }),
+);
 
 export const legalLinks: NavLink[] = [
   { label: "Cookie Policy", href: "#" },

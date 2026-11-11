@@ -5,9 +5,20 @@ import { revealOrder } from "@/components/motion/revealOrder";
 import { StaggerText } from "@/components/motion/StaggerText";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { assets } from "@/lib/assets";
+import { aboutUsLink, companyLinks } from "@/lib/content/navigation";
 import { FooterBackground } from "./FooterBackground";
 
-// All destinations are placeholders until real URLs are provided.
+/*
+  Destinations for column links that have a page: About Us and Insights so far (owner, 2026-11-11),
+  read from the Navbar's navigation data so each URL lives in one place. Every other link stays a
+  "#" placeholder until the owner provides or approves its destination.
+*/
+const insightsLink = companyLinks.find((link) => link.label === "Insights");
+const linkHrefs: Record<string, string> = {
+  [aboutUsLink.label]: aboutUsLink.href,
+  ...(insightsLink && { [insightsLink.label]: insightsLink.href }),
+};
+
 const columns = [
   {
     title: "Services",
@@ -137,7 +148,7 @@ export function SiteFooter() {
                   {column.links.map((link) => (
                     <li key={link}>
                       <Link
-                        href="#"
+                        href={linkHrefs[link] ?? "#"}
                         className={`inline-block text-[16px] leading-6 transition-opacity duration-200 hover:opacity-70 ${focusRing}`}
                       >
                         {link}

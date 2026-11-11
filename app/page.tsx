@@ -13,13 +13,15 @@ export default function Home() {
     <>
       <SiteHeader />
       <main>
+        {/*
+          Hero + Client Logo strip standard: the strip is attached beneath the Hero and both pin as
+          one unit, so Services rises over the whole combined section.
+        */}
         <PinnedSection>
           <Hero />
-        </PinnedSection>
-        {/* Positioned so each paints over the pinned section above it. Client Logos never pins. */}
-        <div className="relative">
           <ClientLogos />
-        </div>
+        </PinnedSection>
+        {/* Each section after this is positioned, so it paints over the pinned section above it. */}
         <PinnedSection>
           <Services />
         </PinnedSection>

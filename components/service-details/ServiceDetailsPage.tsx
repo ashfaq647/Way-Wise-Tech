@@ -23,10 +23,9 @@ export function ServiceDetailsPage({ service }: { service: ServiceDetails }) {
       {/* The red banner is Homepage only. */}
       <SiteHeader showBanner={false} />
       <main>
+        {/* Hero + Client Logo strip standard: one combined section, pinned as one unit. */}
         <PinnedSection>
           <ServiceDetailsHero {...service.hero} />
-        </PinnedSection>
-        <PinnedSection>
           <ClientLogos />
         </PinnedSection>
         <PinnedSection>

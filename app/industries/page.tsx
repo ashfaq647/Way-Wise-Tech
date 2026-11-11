@@ -17,8 +17,8 @@ export const metadata: Metadata = {
 
 /*
   The Industries page. Built so far: Hero, Client Logo strip, Industries at a Glance, the trust
-  section and Industry Solutions, then the shared Final CTA and Footer. As on the Homepage,
-  the Hero holds while Client Logos rises over it.
+  section and Industry Solutions, then the shared Final CTA and Footer. The Hero and Client Logo
+  strip form one combined section that holds while Industries at a Glance rises over it.
 */
 export default function IndustriesPage() {
   return (
@@ -26,13 +26,14 @@ export default function IndustriesPage() {
       {/* The red banner is Homepage only. */}
       <SiteHeader showBanner={false} />
       <main>
+        {/*
+          Hero + Client Logo strip standard: one combined section, pinned as one unit, so Industries
+          at a Glance rises over both.
+        */}
         <PinnedSection>
           <IndustriesHero />
-        </PinnedSection>
-        {/* Positioned so they paint over the pinned Hero. */}
-        <div className="relative">
           <ClientLogos />
-        </div>
+        </PinnedSection>
         {/* Held while the trust section rises over it, as Services is on the Homepage. */}
         <PinnedSection>
           <IndustriesAtAGlance />

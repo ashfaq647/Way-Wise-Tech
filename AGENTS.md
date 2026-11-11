@@ -31,7 +31,7 @@ Before the final response, run one reporting pass. If candidates remain, from th
 
 # Way Wise Tech website: project handoff
 
-Last updated 2026-11-10. Read this before changing anything. Details were verified in Chrome only, unless noted. The 2026-11-09 update came from a full read-only inspection of the project. The 2026-11-10 update came from a read-only audit of this file against the code, and records the Industries, Our Portfolio and Contact Us pages, the three newer Service Details pages and the approved Services card links. A later 2026-11-10 update records the Contact "Send Us a Message / Our Offices" section, the restored World Map description spacing and the Navbar's Contact link, plus the project roadmap and the folder-structure audit (see "Roadmap and architecture").
+Last updated 2026-11-10. Read this before changing anything. Details were verified in Chrome only, unless noted. The 2026-11-09 update came from a full read-only inspection of the project. The 2026-11-10 update came from a read-only audit of this file against the code, and records the Industries, Our Portfolio and Contact Us pages, the three newer Service Details pages and the approved Services card links. A later 2026-11-10 update records the Contact "Send Us a Message / Our Offices" section, the restored World Map description spacing and the Navbar's Contact link, plus the project roadmap and the folder-structure audit (see "Roadmap and architecture"). The last 2026-11-10 update records the shared FAQ and Footer on `/contact` and the Navbar dropdown menus (see "Navbar dropdown menus"), which were being reviewed by the owner when work stopped for the day.
 
 ## Roadmap and architecture (owner, 2026-11-10)
 
@@ -86,7 +86,7 @@ The six static Service Details route files stay unchanged for now. Any future fo
   They are not to be moved: moving them would touch frozen files for clarity only.
 - **Content inside components:** the older, mostly frozen components still hold their own text (see "Central content").
 - **Duplicated data:**
-  - Navigation exists three times: `navigation.ts` (unused and out of date), `SiteHeader.tsx` and `SiteFooter.tsx`.
+  - Navigation existed three times: `navigation.ts`, `SiteHeader.tsx` and `SiteFooter.tsx`. Update 2026-11-10: `navigation.ts` is now the Navbar's single source; the Footer still keeps its own copy.
   - Service and industry lists are duplicated (see "Central content").
 - **Styling in data:** Contact Overview stores hex colours, and the Homepage pricing cards in `Industries.tsx` store Tailwind classes.
 - **Mixed assets:** `lib/assets.ts` mixes design artwork with content images, and image sizes are spread across files.
@@ -96,7 +96,7 @@ The six static Service Details route files stay unchanged for now. Any future fo
 
 **Recommendations, frontend phase** (each needs the owner's approval where it touches frozen, protected or under-review files):
 - **New sections:** follow the content-separation guidelines above.
-- **Navigation source:** when the Navbar or Footer is next changed by the owner's instruction, consider making `navigation.ts` its single source.
+- **Navigation source:** done for the Navbar on 2026-11-10 (`navigation.ts` drives it). The Footer still has its own copy; switch it only on the owner's instruction.
 - **Owner decisions needed:** the main industry list and the brand-name spelling.
 - **Frozen text:** optionally move frozen sections' text into `lib/content/`, one section at a time, with before/after pixel checks.
 
@@ -125,6 +125,18 @@ No CMS-readiness score is recorded: any percentage would be a subjective estimat
 - Do not add packages or edit global styles unless necessary.
 - Keep changes to the files the task names. Do not refactor, restyle or "tidy up" anything else.
 
+## Hero + Client Logo Strip standard (owner, 2026-11-11)
+
+Project-wide, for **every page including the Homepage**. The reference implementation is the About Us Hero (`components/about/AboutHero.tsx`, see "About Us page").
+
+**Status: implemented on every page 2026-11-11 (owner-authorised); awaiting the owner's visual review.** About Us nests `ClientLogos` inside `AboutHero`'s own `<section>`. Every other page groups the two at page level: `<PinnedSection><Hero /><ClientLogos /></PinnedSection>` in `app/page.tsx`, `app/services/page.tsx`, `ServiceDetailsPage.tsx` (all six Details pages), `app/industries/page.tsx` and `app/contact/page.tsx`. `/our-work` uses a `relative` wrapper, because the combined section ends that page (last-section rule). No Hero component and no `ClientLogos` file was changed.
+
+- **One section:** the main Hero and the Client Logo strip form one continuous section, with the strip attached directly beneath the Hero content: no gap, no separate section boundary.
+- **One pin:** they are pinned as one unit (one `PinnedSection` around both), never as two separate pinned sections. The next section rises over the whole combined section.
+- **Consistency:** keep the same design, positioning, spacing, alignment and responsive behaviour on every page. Each page keeps its own Hero content, imagery and visual identity. Reuse the frozen `ClientLogos` unchanged.
+- **New pages:** build the Hero and Client Logo strip as one combined section from the start, pinned as one unit (or in a `relative` wrapper while it ends the page).
+- **QA 2026-11-11** (Chrome, same-origin iframes at 1920×1080, 1280×720 and 390×844, on `/`, `/services`, UI/UX and AI Details, `/industries`, `/our-work`, `/contact`, `/about`): 0px between Hero and strip everywhere. Both sit in the same unit, which holds still while the next section rises over it 1:1. No horizontal overflow from these sections (the 1280/1440 sideways scroll is the Navbar issue under "About Us page"). Reduced-motion behaviour needed no change: the pin CSS is unchanged, and grouped sections still fall back to normal flow.
+
 ## Global Content & SEO Policy (owner, 2026-11-09)
 
 Applies to the whole project: Homepage, `/services`, all Service Details pages, Navbar, Footer, shared sections and future pages.
@@ -151,8 +163,11 @@ Applies to the whole project: Homepage, `/services`, all Service Details pages, 
 | `/industries` | `app/industries/page.tsx` | Built 2026-11-09, section by section; **awaiting owner review**. See "Industries page" |
 | `/our-work` | `app/our-work/page.tsx` | "Our Portfolio". Hero and Client Logos built 2026-11-09; **second section ON HOLD** pending Figma team feedback. See "Our Portfolio page" |
 | `/contact` | `app/contact/page.tsx` | "Contact Us". In progress, section by section: five sections built 2026-11-09 to 2026-11-10. See "Contact Us page" |
+| `/about` | `app/about/page.tsx` | "About Us". Started 2026-11-11, one section at a time: the combined Hero + Client Logo section, Our Story, the leadership messages and Our Global Presence are built, followed by the shared Our Process, Final CTA and Footer (reused unchanged, 2026-11-11). The leadership messages and Our Global Presence are **approved and frozen** (2026-11-11); the Hero + logos and Our Story are **awaiting the owner's visual review**. Linked since 2026-11-11 from every existing About Us link (Navbar Company dropdown, mobile menu, Footer). See "About Us page" |
+| `/faq` | `app/faq/page.tsx` | "FAQ". Started 2026-11-11, one section at a time: the combined Hero + Client Logo section and the questions section (accordion and animated question mark), both **awaiting the owner's visual review**, then the shared Footer (reused unchanged, 2026-11-11). Not linked from anywhere yet. See "FAQ page" |
+| `/insights` | `app/insights/page.tsx` | "Insights" (the Blog List design). Started 2026-11-11, one section at a time: the combined Hero + Client Logo section and the article grid (with the approved "3D Stacked Editorial" motion), both **awaiting the owner's visual review**. Linked from the Navbar Company dropdown and the mobile menu (Insights). See "Insights page" |
 
-These 11 are the only routes. **How they are reached today:** the six Services cards (Homepage and `/services`) link to the six Details pages (approved, see "Approved decisions"); the Navbar's Services item links to `/services` and its Contact item to `/contact` (approved 2026-11-10); the logo and the Details breadcrumb link to `/`. Nothing links to `/industries` or `/our-work` yet: the Navbar's Industries, Our Work and Company items are still `#`, and every Footer link except the logo is `#`.
+These 13 are the only routes. Nothing links to `/faq` yet; the Navbar's Company → Insights links to `/insights` (2026-11-11), and so does the Footer's Insights (2026-11-11). **How they are reached today:** the six Services cards (Homepage and `/services`) link to the six Details pages (approved, see "Approved decisions"); the Navbar's Services item links to `/services` and its Contact item to `/contact` (approved 2026-11-10); the logo and the Details breadcrumb link to `/`. Nothing links to `/industries` or `/our-work` yet: the Navbar's Industries, Our Work and Company items are still `#`, and every Footer link except the logo and About Us is `#`. Since 2026-11-11 every existing About Us link goes to `/about` (see "About Us links").
 
 ## Section status
 
@@ -168,21 +183,23 @@ These 11 are the only routes. **How they are reached today:** the six Services c
 | Services | `components/home/Services.tsx` | **Approved and frozen**. Used on `/` and `/services`. Changed once after freezing (2026-11-09): each of the six cards now links to its Service Details page. The owner **approved this permanently** on 2026-11-10: the links must stay and must not be reverted. Everything else in the section stays frozen |
 | Industries | `components/home/Industries.tsx`, `IndustryCarousel.tsx` | **Frozen** (the owner listed it as approved and frozen). Used on `/` and `/services` |
 | FAQ | `components/services/Faq.tsx` | **Frozen** by the owner with the UI/UX Details page (2026-11-08). Shared by `/services` and every Details page |
-| Final CTA | `components/home/FinalCta.tsx` | **Frozen** by the owner with the UI/UX Details page (2026-11-08). Shared by `/`, `/services`, every Details page and `/industries`; not yet on `/our-work` or `/contact` |
+| Final CTA | `components/home/FinalCta.tsx` | **Frozen** by the owner with the UI/UX Details page (2026-11-08). Shared by `/`, `/services`, every Details page, `/industries` and `/about` (added 2026-11-11); not yet on `/our-work` or `/contact` |
 | UI/UX Details page | `app/services/ui-ux-product-design/page.tsx` and the `components/service-details/*` sections it renders | **Complete** (owner, 2026-11-08). The master Service Details design: any change to the shared template must keep this page pixel-identical |
+| About Us Our Global Presence | `components/about/AboutPresence.tsx`, `aboutPresence` in `lib/content/about.ts`, office photo entries `aboutOfficeUsa`/`aboutOfficeUae`/`aboutOfficeInternational` in `lib/assets.ts` | **Approved and frozen** by the owner 2026-11-11, including its tablet layout. The final implementation and QA, and the accepted 320px location wrapping and shorter third tablet card, are under "About Us page" |
+| About Us Leadership messages + stats bar | `components/about/AboutLeadership.tsx`, `aboutLeadership` in `lib/content/about.ts`, portrait entries `aboutChairman`/`aboutCeo` in `lib/assets.ts` | **Approved and frozen** by the owner 2026-11-11. Final implementation, QA and the accepted minor heading font-rendering difference are under "About Us page". Its stats bar repeats the Industries trust bar, so a change to either needs the owner's approval and must keep the two in step |
 
 ### Protected, not explicitly approved
 
 | Section | Component | Notes |
 |---|---|---|
-| Navbar | `components/layout/SiteHeader.tsx` | Was frozen, reopened by the owner for sticky behaviour; later requests say not to modify it. Final version not explicitly re-approved. One change since, **approved** by the owner 2026-11-10: the Contact item links to `/contact` (see "Approved decisions"). Make no further Navbar changes without the owner's instruction |
+| Navbar | `components/layout/SiteHeader.tsx` | Was frozen, reopened by the owner for sticky behaviour; later requests say not to modify it. Final version not explicitly re-approved. One change since, **approved** by the owner 2026-11-10: the Contact item links to `/contact` (see "Approved decisions"). Later on 2026-11-10 the owner asked for dropdown menus: these are built and **awaiting the owner's review** (see "Navbar dropdown menus"). The bar's own layout, logo, sizes, sticky/shrink behaviour and Contact link are unchanged. Make no further Navbar changes without the owner's instruction |
 | Our Work | `components/home/OurWork.tsx`, `CardStack.tsx` | Protected by later requests. `OurWork` is Homepage only; `CardStack` is also imported by Industry Solutions on `/industries`, so a change to it affects both |
 
 ### Implemented, awaiting owner review
 
 | Section | Component | Notes |
 |---|---|---|
-| Footer | `components/layout/SiteFooter.tsx`, `FooterBackground.tsx`, `footer-background.css` | Built; **awaiting owner review**. On every page except `/our-work` and `/contact` so far |
+| Footer | `components/layout/SiteFooter.tsx`, `FooterBackground.tsx`, `footer-background.css` | Built; **awaiting owner review**. On every page except `/our-work` so far (added to `/contact` 2026-11-10, `/faq` 2026-11-11 and `/about` 2026-11-11) |
 | Service List Hero (`/services`) | `components/services/ServicesHero.tsx` | Built; **awaiting owner visual review**. Responsive layout is not final until reviewed |
 | Our Process | `components/services/OurProcess.tsx` | Built; **awaiting owner visual review**. Shared by `/services` and every Details page |
 | Section motion | `components/motion/*` | Built 2026-11-06; **awaiting owner review** |
@@ -205,9 +222,9 @@ These 11 are the only routes. **How they are reached today:** the six Services c
 
 - All five non-UI/UX Service Details pages use the UI/UX images (see "Service Details pages").
 - `/industries` and `/our-work` are not linked from the Navbar or Footer yet; `/contact` is linked from the Navbar only (see Routes).
-- `/our-work` and `/contact` have no Final CTA or Footer yet; each ends on its last built section.
+- `/our-work` has no Final CTA or Footer yet and ends on its last built section. `/contact` ends with the shared FAQ and Footer (no Final CTA).
 - Pages behind the other Navbar and Footer links (Company, About Us, Careers, Insights, legal pages, Industry categories) do not exist.
-- The Final CTA form has no backend. Navbar dropdowns have no content.
+- The Final CTA form has no backend. The Navbar dropdowns (Services, Industries, Company) are built and awaiting review; "Our Work" keeps its chevron with no dropdown.
 - Full list under "Known limitations and pending tasks".
 
 ## Stack and structure
@@ -240,7 +257,7 @@ Every service page renders one shared template. The UI/UX & Product Design page 
 
 ### Files
 
-- `components/service-details/ServiceDetailsPage.tsx`: the template. It takes one `service: ServiceDetails` prop and renders `SiteHeader showBanner={false}`, then in `<main>`, each in its own `PinnedSection`: `ServiceDetailsHero`, `ClientLogos`, `WhyChoose`, `OurProcess`, `RecentProjects`, `WhyChooseUs`, `Faq`, `FinalCta`; then `SiteFooter`.
+- `components/service-details/ServiceDetailsPage.tsx`: the template. It takes one `service: ServiceDetails` prop and renders `SiteHeader showBanner={false}`, then in `<main>`, each in its own `PinnedSection` (except `ServiceDetailsHero` and `ClientLogos`, which share one as the combined Hero section): `ServiceDetailsHero`, `ClientLogos`, `WhyChoose`, `OurProcess`, `RecentProjects`, `WhyChooseUs`, `Faq`, `FinalCta`; then `SiteFooter`.
 - `ServiceDetailsHero.tsx`: breadcrumb (Home • service), two-line `h1`, description, "Get Started" and "Watch Our Work" (both `#`), and the hero artwork shown whole (`object-contain`). From `lg` the artwork fills a 1920/808 section with the text on top; below `lg` the text comes first and the artwork sits underneath with its top edge faded.
 - `WhyChoose.tsx`: image card beside eyebrow, heading, description and checklist. Uses `Container`, `SectionEyebrow`, `MaskLine`, `Reveal`.
 - `RecentProjects.tsx` and `ProjectCarousel.tsx`: heading and intro above a looping project carousel. `ProjectCarousel` repeats the frozen `IndustryCarousel`'s scrolling logic rather than sharing it; keep the two in step if one changes.
@@ -334,7 +351,7 @@ Labelled "Our Portfolio" (title "Our Portfolio | Way-Wise Tech"), at the URL of 
 
 ## Contact Us page (`/contact`)
 
-Being built section by section; the owner approves each one before the next starts. No Final CTA or Footer yet. Reached from the Navbar's Contact item (desktop and mobile).
+Being built section by section; the owner approves each one before the next starts. Ends with the shared FAQ and Footer (added 2026-11-10, no Final CTA). Reached from the Navbar's Contact item (desktop and mobile) and the Company dropdown's "Contact Us" button.
 
 | # | Section | File | Status |
 |---|---|---|---|
@@ -342,7 +359,9 @@ Being built section by section; the owner approves each one before the next star
 | 2 | Client Logos | `components/home/ClientLogos.tsx` | Frozen shared strip, pinned here |
 | 3 | Client Overview | `components/contact/ContactOverview.tsx`, `contactOverview` in `lib/content/contact.ts` | Built 2026-11-09 from `Frame 2147239128.png`. Text beside a 750×272 image, then four contact cards (Call Us, Email Us, Live Chat, Meeting), two across. The card icons repeat the Why Choose Us paths (keep them in step), and the card descriptions repeat the Why Choose Us text word for word, as drawn. No explicit approval recorded |
 | 4 | "Have a Project Idea? / Let's get started" (world map) | `components/contact/ContactLocations.tsx`, `contactLocations` in `lib/content/contact.ts` | Built 2026-11-10 from `Frame 2147239130 (1).png`. QA done; **APPROVED** by the owner 2026-11-10 |
-| 5 | "Send Us a Message / Our Offices" | `components/contact/ContactForm.tsx`, `contactMessage` and `contactOffices` in `lib/content/contact.ts` | Built 2026-11-10 from `section.png` (project root). Implementation and QA complete; **awaiting the owner's visual review**, not approved or frozen |
+| 5 | "Send Us a Message / Our Offices" | `components/contact/ContactForm.tsx`, `contactMessage` and `contactOffices` in `lib/content/contact.ts` | Built 2026-11-10 from `section.png` (project root). Implementation and QA complete; **awaiting the owner's visual review**, not approved or frozen. `section.png` is no longer in the project root |
+| 6 | FAQ (shared) | `components/services/Faq.tsx` | Added 2026-11-10 by the owner's instruction, reused unchanged (frozen component). Pinned over the form section; accordion checked on this page. **Awaiting the owner's visual review** |
+| 7 | Footer (shared) | `components/layout/SiteFooter.tsx` | Added 2026-11-10, reused unchanged. Rises over the pinned FAQ. **Awaiting the owner's visual review** |
 
 **World map section:**
 - **Layout:**
@@ -411,6 +430,318 @@ Being built section by section; the owner approves each one before the next star
   - **End of page:** no gap (±0.5px).
   - **Reduced motion:** verified at 1440×900, 1280×720 and 390×844: all pins static, sections in normal flow, text shown.
 
+## About Us page (`/about`)
+
+Started 2026-11-11, one section at a time; the owner reviews each before the next starts.
+
+- **Hero** (`components/about/AboutHero.tsx`, `aboutHero` in `lib/content/about.ts`, asset `aboutHero` → `about us/Hero Image.png`, 3840×1614): built from `Hero Section (1).png` (project root). **Awaiting the owner's visual review**; not approved or frozen.
+  - The artwork is the whole 1920×807 section and matches the reference's background exactly, so nothing is drawn over it. From `lg` it fills a 3840/1614 section, text vertically centred on the left; below `lg` the text comes first on `#e8d6c0`, then the whole artwork with its top 48px faded (the Portfolio/Contact Hero pattern).
+  - Type at 1920: eyebrow 18px bold at 0.095em; headline 72px, weight 630; description 26px, line height 1.385, 0.021em; buttons 59px (primary) and 61px (outline, 4px more padding on its arrow side), label-to-arrow 7px; checklist 18px at 0.01em with the Homepage Hero's orange checks.
+  - QA 2026-11-11 (headless Chrome at 1920×1080 against the reference): every text line and both buttons within 0–2px; description line breaks identical; mean pixel difference 4.1/255 over the section. Widths 2560, 1920, 1440, 1280, 1024, 768, 390 and 320 checked: no overflow from the Hero.
+  - Content: all copy is the reference's wording. "Get a Free Quote" is `#`; "Our Work" links to the existing `/our-work`.
+  - **Hero + Client Logo strip are ONE section (owner, 2026-11-11):** `AboutHero` renders one `<section aria-labelledby="about-hero-heading">` holding the Hero area and, directly beneath it, the frozen `ClientLogos` (reused unchanged, nested inside). There is no separate `PinnedSection` or `relative` wrapper for the logos. At 1920 the strip sits at y 907–1038 (132px), logos within 1–2px of the reference, mean difference 2.05/255.
+  - **Pinning:** the combined section is the page's only section, so under the last-section rule it is not pinned yet and sits in a `relative` wrapper. When the next section is added, wrap `AboutHero` as one unit in `PinnedSection` (never the logos separately), so the next section rises over the whole Hero + logos section.
+- **Our Story** (`components/about/AboutStory.tsx`, `aboutStory` in `lib/content/about.ts`): built 2026-11-11 from `Frame 2147239133.png` (project root). **Awaiting the owner's visual review**; not approved or frozen.
+  - **Layout at 1920:** a 1080px section on `bg-sand`, laid out as `minmax(0,830fr)_minmax(0,730fr)`.
+    - **Text:** `SectionEyebrow` "Our Story" (bold, 0.095em); `SectionHeading` (52/60px); three 22px paragraphs with 29px line spacing, 29px apart.
+    - **Cards:** a 2×2 grid of 353×286.5 photo cards, 24px apart.
+    - **Location labels:** white, 35px tall, 8px radius, 10px from the top-right corner, with an outlined red pin and 16px medium navy text. They are drawn in code; the photos have no labels.
+  - **Assets** (`lib/assets.ts`, mapped by pixel comparison): `team.png` → top-left, `california.png` → top-right, `dubai.png` → bottom-left, `dhaka.png` → bottom-right. Each is 706×573, with rounded corners in the file.
+  - **Content to confirm:** the reference labels both top cards "California, USA" (the first is the team photo), and it leaves a double-width gap before "Global Company". Both are kept as drawn.
+  - **Responsive:** below `lg` the text comes first, then the cards (two across from `sm`, one below). The labels scale down with the width (minimum 14px text).
+  - **QA 2026-11-11:**
+    - **1920:** every text line within 0–1px of the reference, with identical line breaks; cards and labels exact or within 1px; mean difference 1.92/255.
+    - **Other sizes:** 2560, 1920, 1440, 1280, 1024, 768, 390 and 320 checked. No overflow, no end gap, labels inside the cards, and the Hero + logos unit holds while Our Story rises over it.
+  - **Card hover (owner-approved 2026-11-11):** on hover, only the photo zooms to 1.03× over 0.5s ease-out. The photo sits in a frame clipped to the files' own baked corners (26px in each 706×573 file, so `rounded-[3.683%_/_4.538%]`, exact at any size). There is no card lift, shadow, border or label animation.
+    - **Conditions:** the rule applies only inside `(hover: hover)` and `(prefers-reduced-motion: no-preference)`, so touch-only devices and reduced motion get no zoom. The entrance reveal is unchanged.
+    - **Verified:** at rest, the cards are pixel-identical to before (mean difference 0.001). A real mouse hover zooms only the hovered photo; card size, label and the other cards are unchanged, and the corners stay clean.
+  - **Pinning:** `AboutHero` is now in a `PinnedSection` with `limitCoverTo='[aria-labelledby="about-story-heading"]'`, because Our Story (1080px) is shorter than the Hero unit at 2560 (about 1208px). Our Story is the last section, so it sits in a `relative` wrapper. Recheck the cap when the next section is added.
+- **Leadership messages + stats bar** (`components/about/AboutLeadership.tsx`, `aboutLeadership` in `lib/content/about.ts`, `id="about-leadership"`): built 2026-11-11 from `Frame 2147239134.png` (project root). **Approved and frozen by the owner 2026-11-11** after visual review. Do not modify it without the owner's permission.
+  - **Final QA status at approval:** 1920 match within 0–2px on every text line, with identical line breaks; portraits and stats bar exact. Responsive layout checked at 2560, 1920, 1440, 1280, 1024, 768, 390 and 320: no overflow, no end gap, the pin hand-over from Our Story works and the numbers roll in. Reduced motion verified (details below). The one accepted difference is the heading font rendering noted under "Remaining difference".
+  - **Layout at 1920:** a 1080px section on `#f4f0e9`, with two 750px `article`s 60px apart.
+    - **Each message:** a 240×400 portrait (12px CSS corners; `chairman.png` and `ceo.png` are 480×800 with square corners), 40px, then a 470px text column. The text is an eyebrow (18px bold, 0.095em), an `h2` (46px with 53px line spacing), three 22px paragraphs (28px line spacing, 11px apart), the name (26px semibold), then role and company (26px `ink-muted`).
+    - **Text overrun:** the text column runs 4px into the gap, so "long-" ends its line as in the reference.
+  - **Stats bar:** 78px below; it is the Industries trust bar repeated, because `IndustriesTrust` keeps its markup private (keep the two in step). It uses the shared `industryStats` and `RollingNumber`, and has `overflow-clip` (see below).
+  - **Responsive:** from `xl` the messages sit side by side, scaling with the width. Below `xl` they stack; the portrait sits beside the text from `md` and above it (max 240px) below `md`. The stats bar keeps the Industries behaviour.
+  - **QA 2026-11-11:**
+    - **1920:** the left message is within 1–2px on every line, with identical line breaks. Portraits and the stats bar are exact; mean difference 5.32/255 with the numbers not yet rolled.
+    - **Other sizes:** 2560, 1920, 1440, 1280, 1024, 768, 390 and 320 checked. No overflow, no end gap, Our Story holds while this section rises, and the numbers roll in.
+  - **Paragraph gaps (owner, 2026-11-11):** per message from `xl`, as in the reference: 11px for the Chairman and 15px for the CEO (`paragraphGap` in the component, by message order). Both columns are now within 0–2px on every line; mean difference 3.65/255.
+  - **Reduced motion (verified 2026-11-11, Chrome `--force-prefers-reduced-motion`):**
+    - **Layout:** identical to the normal render.
+    - **Numbers:** the stats show their final values at once, with no roll (`RollingNumber` checks the media query).
+    - **No animation:** there is no reveal or rise, because those rules are motion-safe only.
+    - **No pinning:** the page ends exactly at the sum of its sections (3200px at 1920).
+  - **Remaining difference:**
+    - **Heading red words:** they render up to about 13px wider or narrower than the reference ("Tomorrow" wider, "Success" narrower), which looks like font rendering in the reference.
+- **Our Global Presence** (`components/about/AboutPresence.tsx`, `aboutPresence` in `lib/content/about.ts`, `id="about-presence"`): built 2026-11-11 from `Frame 2147239135.png` (project root). **Approved and frozen by the owner 2026-11-11** after visual review, including the tablet layout. Do not modify it without the owner's permission.
+  - **Final QA status at approval:**
+    - **Desktop (`lg` and up):** three cards across; at 1920, 504px cards, 24px gaps and 739px equal heights, with every text line within 0–2px vertically and 0–3px in width of the reference (mean difference 3.00/255).
+    - **Tablet (`md` to `lg`):** two across with the third card centred at the same width.
+    - **Mobile (below `md`):** one card per row.
+    - **Pinned scroll:** the leadership section holds while this section rises, with no end gap.
+    - **Overflow:** none, horizontally or inside the cards, at 2560, 1920, 1440, 1280, 1024, 1023, 900, 768, 767, 390 and 320.
+    - **Accepted minor points:** at 320 two location lines wrap to a second line; on tablet the third card is shorter than the first two (four operations against five).
+  - **Layout at 1920:** a 1080px section on `#d0d0c8`.
+    - **Header:** the Industries trust pattern. The eyebrow and a navy `SectionHeading` ("A Global Team" / red "Working as One") sit on the left; the 22px `ink-muted` description, max 26.9em, sits on the right; the two share a bottom line.
+    - **Cards:** 40px below, three 504px cards, 24px apart and 739px tall (equal heights). Each is white, 16px radius, with a 504×350 photo whose top corners are rounded in the file.
+    - **Card body:** 32px side padding. The title is 28px semibold, the location 22px `ink-muted`, and "Key Operations:" 22px medium `#2a2a2a`. Below that is a list in `steel` at 20px and 0.03em (the reference's list looks like Inter), rows 42px apart, each with a 24px `#faeddc` circle holding a red arrow.
+  - **Assets** (mapped by pixel comparison): `usa.png` → Headquarters, `uae.png` → Development Center, `international.png` → Operations Office. Each is 1008×700.
+  - **Responsive:**
+    - **Below `lg`:** the header stacks.
+    - **Tablet, `md` to `lg` (owner, 2026-11-11):** two cards across on a four-track grid, each card spanning two tracks. The third card starts on track two, so it is centred on its own row at the same width. Verified at 768, 900 and 1023 (third card centred within 1px); the first row's cards match in height, and the third has its natural height.
+    - **Below `md`:** one card per row.
+    - **From `lg`:** three across, unchanged at 1920 (504px cards, 24px gaps, 739px tall).
+  - **QA 2026-11-11:**
+    - **1920:** every text line within 0–2px vertically and 0–3px in width; cards exact; mean difference 3.00/255.
+    - **Other sizes:** 2560, 1920, 1440, 1280, 1024, 768, 390 and 320 checked. No overflow, no end gap, no text overflow, and the leadership section holds while this one rises. At 320 two locations wrap to two lines.
+  - **Card animation, "Split convergence with subtle depth" (owner-approved concept 2026-11-11, after the freeze; replaced the earlier rise-and-cascade animation):** in `components/about/about-presence.css`. It is CSS scroll-driven (`animation-timeline`), with no JavaScript and no scroll listeners.
+    - **Hooks:** `.wp-presence-row` on the card list, `.wp-presence-card` on each card, `.wp-presence-card__media` on each photo frame. The section has `overflow-x-clip`, so side-entering cards never widen the page.
+    - **Desktop (`lg`+):** one shared row timeline (`--wp-row`) inside a shared `perspective: 1800px`.
+      - **Left card:** from `translateX(-22%) rotateY(10deg) scale(0.96)` (-14% from 1024 to 1279, where the gutters are narrow).
+      - **Right card:** the mirror of the left card.
+      - **Centre card:** stays in place, coming forward from `translateY(28px) translateZ(-90px)`.
+      - **Finish:** all three start at opacity 0.55 and converge to no transform and opacity 1 over the row's full range (see "Range and easing").
+    - **Tablet (`md`):** per-card timelines (`--wp-card`): card 1 from the left (-12%, 9deg), card 2 from the right, the centred third card from depth.
+    - **Mobile:** depth only per card, with its own `perspective()`; no sideways movement.
+    - **Photos:** settle from `translate(±3% against the card, 4%) scale(1.1)` on the card's timeline.
+    - **Range and easing (slowed by the owner's request, 2026-11-11):** the cards and photos share one range and one curve, so the tilt, depth and photo parallax stay in step.
+      - **Range:** `entry 0%` → `entry calc(100% + min(40px, 2.5vw))`, the longest window the layout allows, from the row's first appearance to just after it is fully on screen.
+      - **Easing:** a gentle ease-out sine, `cubic-bezier(0.39, 0.575, 0.565, 1)`; it replaced the front-loaded ease-out cubic.
+      - **Effect:** at the same scroll point, desktop progress went from 0.398 to 0.341.
+    - **Settling before the pin:** the end margin (at most 40px) is always smaller than the section's bottom padding (at least about 53px), which lies below the row, so the cards are settled before the section pins. While pinned they do not move against the screen, so they hold still. Verified 1px before the pin at 1920×945, 1280×720 (the tightest margin), 768×1024 and 390×844: every card and photo at progress 1, identity transform, opacity 1. It is identical deeper into the pin, and reversal reproduces the mid-entry values exactly.
+    - **Reveal:** where this runs, the cards' one-time Reveal rise is switched off (`translate: none !important`), so the two never stack.
+    - **Gotchas:**
+      - **Single `transform`:** keep motion in a single `transform`; separate `translate` and `scale` beside `transform` were dropped from compiled keyframes.
+      - **Named timeline:** the photo frame (`overflow-hidden`) is a scroll container, so photos must use the named card or row timeline, not `view()`.
+      - **No typed division:** the rotation uses its own `--wp-turn`, because dividing a percentage by a percentage in `calc()` is not reliably supported.
+    - **Verified 2026-11-11:**
+      - **Chrome, desktop (1920×945 window), tablet (768×1024) and mobile (390×844):**
+        - **Mid-entry:** the desktop cards share one progress value (0.398) with the side shift, turn and centre depth applied; tablet and mobile behave as designed.
+        - **Settled before the pin:** at the scroll position where the section pins, every card and photo has an identity transform and opacity 1.
+        - **Stable while pinned:** deeper into the pin the values are identical.
+        - **Reversal:** scrolling back up gives exactly the mid-entry values.
+        - **Overflow:** none (scroll width equals client width).
+      - **Reduced motion** (Chrome `--force-prefers-reduced-motion`): the cards sit static in the exact design layout (x 180–683 / 708–1211 / 1236–1739, y 262–1000 at 1920).
+      - **Fallback:** without `animation-timeline` support the one-time Reveal applies.
+    - **Testing note:** in a background tab or hidden iframe, scroll-timeline values in `getComputedStyle` go stale; force a frame (for example a screenshot) before reading them.
+  - **Pinning:** the frozen `AboutLeadership` is wrapped (on the page only, component unchanged) in `PinnedSection` with `limitCoverTo="#about-presence"`. That cap was needed while Our Global Presence ended the page; it now only shortens that hold on some screens. Since 2026-11-11 Our Global Presence is itself in a `PinnedSection` (no cap), held while Our Process rises.
+- **Shared Our Process, Final CTA and Footer (added 2026-11-11, owner's instruction):** `OurProcess` (`components/services/OurProcess.tsx`), `FinalCta` (`components/home/FinalCta.tsx`) and `SiteFooter` are reused exactly as on `/services`. None takes props, and none was modified.
+  - **Pinning:** Our Process and Final CTA are each in a `PinnedSection` with no `limitCoverTo`, as on `/services`. The Footer follows `<main>` and is at least one screen tall when motion is allowed, so the Final CTA pin never outlasts it.
+  - **Verified** (Chrome, same-origin iframes at 1920×1080, 1440×900, 1280×720, 768×1024 and 390×844): the section order is Hero + logos → Our Story → leadership → Our Global Presence → Our Process → Final CTA → Footer. For Presence→Process, Process→CTA and CTA→Footer, the lower section holds while the next rises 1:1. There is no horizontal overflow, and the page ends exactly at the Footer (no end gap).
+  - **Not run:** pixel comparison of the reused sections on this page (they are unchanged components) and a separate reduced-motion pass. The pin CSS is unchanged, so reduced motion falls back to normal flow as on the other pages.
+  - **Known effect:** the shared `our-process-heading` and `final-cta-heading` ids now also exist on `/about`, so they can appear twice in the DOM once `/services` or a Details page has been visited (see "Visited pages stay mounted").
+- **`RollingNumber` scroll overflow (found 2026-11-11, not fixed in the shared component):** each digit's 0–9 strip is hidden by `clip-path`, but it still counts towards the page's scrollable height. With a stats bar at the end of a page, phones got up to about 560px of blank scrolling. Fixed locally with `overflow-clip` on the About bar. On `/industries` content follows the bar, so it is masked there; a shared fix (`overflow: clip` on `.ww-roll__digit` with an `overflow-clip-margin`) needs the owner's approval.
+- **Navbar overflow seen during this QA: fixed 2026-11-11** (see "Navbar dropdown menus", "Overflow fix").
+
+## FAQ page (`/faq`)
+
+Started 2026-11-11, one section at a time; the owner reviews each before the next starts.
+
+- **Hero + Client Logos** (`components/faq/FaqHero.tsx`, `faqHero` in `lib/content/faq.ts`, asset `faqHero` → `faq/Hero Image.png`, 3840×1614): built 2026-11-11 from `Hero Section (1).png` in the project root (the file now holds the FAQ reference; the About Us reference of the same name was replaced). **Awaiting the owner's visual review**; not approved or frozen.
+  - **Structure:** the About Us Hero pattern. One `<section aria-labelledby="faq-hero-heading">` holds the Hero area and the frozen `ClientLogos`, reused unchanged. The artwork matches the reference's Hero area exactly (mean difference 0.38/255), so nothing is drawn over it. From `lg` it fills a 3840/1614 area with the text vertically centred on the left; below `lg` the text comes first on `#ecd9c9` (the artwork's average colour behind the text), then the whole artwork with its top 48px faded.
+  - **Type at 1920:** eyebrow 18px bold at 0.07em; headline 72px, weight 630, line height 1.052, second line red; description 26px, line height 1.385, 0.021em, max 25.5em; red button 252×59 with arrow, outline button 228×61 with no arrow, 20px apart.
+  - **Content:** the reference's wording. "Start Your Project" is `#`; "Contact Our Team" links to the existing `/contact`.
+  - **QA 2026-11-11 (headless Chrome, 1920×1080, against the reference):** every text line and both buttons within 0–2px vertically; widths within 0–1px except the description's second line (about 9px wider) and first line (about 5px narrower), the same font-rendering kind of difference as on other pages. Mean difference 4.42/255 over the Hero and logos. Spot checks at 1280, 1024, 768 and a narrow phone window; full responsive and scroll QA not run yet (owner's instruction).
+  - **Pinning:** since the questions section was added, `FaqHero` is pinned as one unit (`PinnedSection limitCoverTo="#faq-questions"`, because the questions section, 1080px, is shorter than the Hero unit on wide screens, about 1208px at 2560). Reference file note: `Hero Section (1).png` is no longer in the project root.
+- **Questions section** (`components/faq/FaqQuestions.tsx`, `FaqQuestionMark.tsx`, `faq-questions.css`, `faqQuestions` in `lib/content/faq.ts`, `id="faq-questions"`): built 2026-11-11 from `Frame 2147239138.png` (project root). **Awaiting the owner's visual review**; not approved or frozen.
+  - **Layout at 1920:** 1080px on `#f4f0e9`, content x 200–1720 (`max-w-[1560px]` with 20px padding, narrower than the usual 1560px content width, as drawn). A 428×433 card (`#4b2524`, 12px radius) 76px from nine 1016×72 white rows (since the FAQ timeline, owner-approved 2026-11-11; the reference drew 24px and 1068px) (10px radius, 16px apart), both starting at y 152. Card: the question mark, "Still have a question?" (30px light), a left-aligned 16px line in a centred block, and a 348×46 gold (`#ce9d43`) button "Speak with our team" → `/contact`. Rows: 22px medium black questions, an 18px plus. Below `lg` the card comes first, then the list.
+  - **Question mark:** no asset was supplied; the owner approved drawing it as an inline SVG (2026-11-11). Traced from the reference: the gold glyph (`#bb9b62`), its loose pale outline offset up-left (dark where it crosses the gold, via a clip path) and 22 thin rays.
+  - **Animation** (`faq-questions.css`, motion-safe only; static drawing with reduced motion or without JavaScript): on reveal (the card's `data-reveal`), the glyph pops up from a small tilted state with an overshoot and the rays draw outwards clockwise. Then an idle loop: the glyph floats and tilts (5.2s) while its outline drifts against the gold, a light sheen crosses the gold every 6s, and a shimmer sweeps round the rays (3.6s), each brightening and stretching outward in turn. Card hover (hover-capable pointers) opens the rays out slightly. Only transform, opacity and stroke-dashoffset animate.
+  - **Accordion:** items open independently (as in the shared FAQ). Real `<button>`s in `<h3>`s with `aria-expanded`/`aria-controls`; panels are `role="region"` labelled by their button, `invisible` when closed. The answer opens via `grid-template-rows` 0fr→1fr (500ms, ease-out-expo-like curve) while its text fades in and settles 6px after a 100ms delay; closing fades the text out in 200ms. The plus's vertical bar turns flat into a minus; the icon turns red on hover. Reduced motion: instant. A `noscript` style shows all answers.
+  - **Content:** the reference's first two questions kept ("What types of projects do you design?", "Do you also handle development?"); its other seven rows repeat a placeholder, so seven questions were written from existing site content (industries, the five Our Process steps, AI & automation, Branding & Digital Growth, support after launch, how cost is decided, where the team is based). No prices, timelines or guarantees.
+  - **QA 2026-11-11:** 1920×1080 against the reference (reduced-motion render): every row, question and plus within 0px; card text, illustration and button within 0–2px; mean difference 2.39/255 (card 5.56, mostly the hand-traced drawing). Chrome at 1920×945: the Hero + logos unit holds at top 0 while this section rises 1:1, no end gap; all animations running; mouse, Enter and Space toggle items. Full responsive QA not run (owner's instruction).
+  - **Pinning:** since the Footer was added (2026-11-11) this section is in a `PinnedSection` with no `limitCoverTo`, as on `/contact` and `/services`: the Footer is at least one screen tall when motion is allowed, so the pin never outlasts it. Since the FAQ timeline (2026-11-11) it also has `hold="var(--wf-hold, 0px)"`, a measured hold during which the timeline line finishes (see "FAQ timeline + sticky card").
+  - **Responsive QA 2026-11-11** (Chrome, same-origin iframes at 1920×1080, 1440×900, 1280×720, 1024×768, 768×1024, 390×844 and 320×640):
+    - **Layout:** no horizontal overflow and no clipped text anywhere. Below 1600 the content uses the usual 20px/32px gutters. From `lg` the card sits beside the list (card 266px wide at 1024, so its line wraps to three lines); below `lg` the card is full width above the list. Questions wrap to two or three lines at 390/320 and stay readable.
+    - **Accordion:** all nine answers open together and independently at every width, each to its full height, with no row overlap. Repeated rapid toggling settles correctly. Hover turns the icon red; Tab, Enter and Space work, with a visible focus ring.
+    - **Pin and page end:** the Hero + logos unit holds at its expected top (0, or `100svh - height` when taller than the screen) while this section rises 1:1, the reverse scroll is identical, and the page ends exactly at the section bottom, with answers closed or all open.
+    - **Reduced motion** (no-preference rules removed in the frame): no SVG animation, a static full drawing, instant open and close, pins off, and the page equals the sum of its sections.
+    - **Fixes:**
+      - `overflow: visible` on the SVG: the rays' shimmer plus the card-hover scale pushed ray tips up to about 4 units past the SVG box, where they were clipped.
+      - Below `lg`, the card line is centred and balanced (it wrapped left-aligned under the centred title, ending on a lone "step."). From `lg` it is unchanged.
+      - The 1920 render is unchanged (mean difference 2.39/255).
+    - **Testing note:** answer-height transitions do not progress in throttled background iframes; force frames (screenshots) before measuring.
+  - **FAQ timeline + sticky card (owner-approved plan 2026-11-11; built, awaiting the owner's visual review):**
+    - **Sources (behaviour and geometry only, WayWise colours):**
+      - **Recording:** `2026-11-11 16-36-29.mp4` in the project root (20.3s, 1920×1080). ffmpeg is not installed, so frames were extracted with headless Chrome.
+      - **Live site:** the one the recording shows, inspected in Chrome with programmatic and real wheel scrolling, both directions.
+    - **Reference measurements (1920 wide):**
+      - **Left column:** heading plus card, 588×574, `position: sticky; top: 110px`.
+      - **Track:** 2px, full list height. The question content starts 34px right of the line's left edge, and the left column ends 109px left of it.
+      - **Fill:** a full-height accent bar scaled from the top, with a 12px glow. Its end holds on a fixed line 551px from the viewport top (a fixed pixel value: unchanged at 945px and 889px viewport heights) and is limited to the list.
+      - **The reference fill is spring-smoothed:** it fell about 90px behind on a quick scroll and settled over 0.6–0.8s.
+      - **Points:** 12px circles, 36px below each row's top.
+        - **Inactive:** section background with a 2px inset ring in the track colour.
+        - **Active:** accent fill, 2px dark ring, `scale: 1.15`.
+        - **Switching:** a boolean flag is set when the line reaches the point's centre and removed on the way back. The colour and ring change over 0.4s, and the size over 0.5s with `cubic-bezier(.34,1.56,.64,1)`.
+    - **Owner decisions:** spacing option A (76px gap: 40px card→line, 34px line→rows); the measured pin hold; strict 1:1 line sync (the reference's spring lag dropped); the reference's timed point pop kept.
+    - **Layout change (approved):** from `lg` the grid is `minmax(0,428fr)_minmax(0,1016fr)` with a `clamp(52px,3.958vw,76px)` gap (was `1068fr`, 24px). So the rows are 1016px wide at 1920, 52px narrower. The card stays 428×433 at 1920. Typography, row height, content and accordion are unchanged.
+    - **Geometry, checked in Chrome at 1920:**
+      - **Positions:** card x 200–628; line 668–670; rows from 704.
+      - **Points:** 12px, centred on the line at the middle of each question row (`top: 50%` of its `h3`), so they stay aligned when answers open or close.
+      - **Smaller sizes:** from `lg` the line's centre sits `--wf-x: clamp(24px,1.823vw,35px)` left of the rows, with points `clamp(10px,0.625vw,12px)`. At `md` the line sits in the 32px gutter (16px). Below `md` it is hidden.
+    - **Styling:**
+      - **Line:** track `#ddd3c7`; fill brand red with a `0 0 12px rgb(215 25 32 / .55)` glow.
+      - **Inactive point:** `#f4f0e9` centre with a 2px `#ddd3c7` ring.
+      - **Active point:** brand-red fill, 2px `#4b2524` (card maroon) ring, `scale(1.15)`.
+    - **Sticky card:** `lg:motion-safe:sticky`, at 110px from `xl` (the reference value) and 96px at `lg`, where the Navbar is shorter. It lets go at the bottom of the list.
+    - **How it works** (`useFaqTimeline` in `FaqQuestions.tsx`, the "FAQ timeline" block in `faq-questions.css`):
+      - **Fill:** a full-height bar animated by `scaleY` only. It's a CSS scroll-driven animation on the FAQ `PinnedSection` wrapper's view timeline: `.pin-wrapper:has(> .pin-body > #faq-questions) { view-timeline: --wf-line }`, styled from the FAQ CSS only, with no change to `PinnedSection`.
+      - **Why the wrapper:** it is never sticky, so it moves 1:1 with the scroll even while the section inside is pinned.
+      - **Range:** `cover var(--wf-a)` to `cover var(--wf-b)`. Fill length always equals the scroll past its start, so the line is exactly 1:1 in both directions, including the hold.
+      - **Fixed line:** the fill's end holds at `min(551px, 60% of the screen height)` while the list moves (551px at 1920×1080 and 1440×900, 432px at 1280×720).
+      - **Pin hold:** `app/faq/page.tsx` passes `hold="var(--wf-hold, 0px)"` to the FAQ `PinnedSection`, and the hook sets `--wf-hold` on that wrapper. The value is the remaining line length once the section pins: `max(0, start + list height − pin start)`. During the hold the section stays fully in view and the fill runs down the still list at scroll speed, reaching the end of the list exactly as the Footer starts rising.
+      - **Measured holds:** 377px (1920×1080), 242 (1440×900), 186 (1280×720), 212 (1024×768), 393 (768×1024). With answers open they're recomputed: 246 (1440×900), 377 (1920×1080). The hold is 0 below `md` and with reduced motion.
+      - **Points:** one passive scroll listener compares the scroll position with precomputed point offsets. It toggles `data-hit` on a point only when it crosses. There are no layout reads, no React state and no wheel handling on scroll.
+      - **Measuring:** only when sizes change (a `ResizeObserver` on the list, the section and `<html>`, plus window resize and a media-query change). It uses layout offsets (`offsetTop` chains), so the pin's sticky shift and the rows' reveal translate never skew it.
+      - **Fallback:** without `animation-timeline` support, the scroll listener sets the fill's `scaleY` instead.
+    - **Reduced motion:** a static track with inactive points; no fill, hold, sticky card or point transitions. The pins are off as usual.
+    - **QA 2026-11-11** (headless Chrome, 37px steps, down then back up; 4–9px steps at 768):
+      - **Sizes:** 1920×1080, 1440×900, 1280×720, 1024×768 and 768×1024, plus 1440×900 and 1920×1080 with three answers open.
+      - **Sync:** the fill's end moved within 0.10px of 1:1 with the scroll at every step while it was neither empty nor full.
+      - **Points:** the state matched the fill position (point centre at or above the fill end) at every step in every run. Two early mismatches were probe artefacts: rows still in their 12px reveal rise, and a 0.75px probe tolerance.
+      - **Hand-off:** the fill completed at the same step the Footer began rising at every size (within about 2px at 768 with 4px steps). Reversing gave identical values.
+      - **Card:** held at 110px from 1280×720 while the list scrolled past.
+      - **General:** no horizontal overflow. 390×844: line hidden, hold 0.
+      - **Reduced motion** (`--force-prefers-reduced-motion`, 1440×900): no pin, no hold, no fill, inactive points; page length is the sum of the sections.
+      - **Checks:** `tsc` and `eslint .` pass.
+    - **Not checked:** Safari, Firefox (it would use the scroll-listener fill), real devices and trackpads, the 2560 width, and a pixel comparison of the new 1016px row layout (no 1920 reference for it; the earlier one is no longer on disk).
+- **Footer (shared, added 2026-11-11, owner's instruction):** `SiteFooter` reused exactly as on other pages, after `<main>`; not modified.
+  - **Page assembly:** `SiteHeader showBanner={false}` → `<main>`: `PinnedSection limitCoverTo="#faq-questions"` around `FaqHero` → `PinnedSection` (no cap) around `FaqQuestions` → `</main>` → `SiteFooter`. The page is complete as specified; no Final CTA (not in the request).
+  - **Verified** (Chrome, one same-origin iframe at a time, at 1920×1080, 1440×900, 1280×720, 768×1024, 390×844 and 320×640):
+    - **Handoff:** the questions section holds at its expected top (0, or `100svh - height` when taller than the screen: -151 at 1280×720, -322 at 768×1024, -530 at 390×844, -821 at 320×640) while the Footer rises 1:1. Reverse scrolling gives identical positions.
+    - **Page end:** the page ends exactly at the Footer bottom, with no gap and no horizontal overflow.
+    - **All answers open:** at 390×844, with all nine answers open (section 3381px), the hold and the page end are still correct.
+    - **Reduced motion** (no-preference rules removed in the frame): pins static, the Footer at its normal height (639px at 1440), and the page height equal to the Navbar plus the three sections.
+  - **Known behaviour, as on `/services` FAQ:** opening an answer while the Footer is already rising grows the pinned section, which re-anchors to the screen bottom, so content above moves up by the answer's height. Before the Footer starts rising nothing moves.
+  - **Testing note:** six iframes with the Footer's animations froze the test tab; test one width at a time.
+
+## Insights page (`/insights`)
+
+The Blog List design, called "Insights" on the site (owner, 2026-11-11). Started 2026-11-11, one section at a time; the owner reviews each before the next starts.
+
+- **Route and navigation:** `/insights`, the only route for this page (no `/blog-list`). The existing "Insights" entry in `companyLinks` (`lib/content/navigation.ts`) now points at it, so the desktop Company dropdown and the mobile menu's Company list both open it (verified in Chrome: from `/services` at 1440 and from `/` at 390, client-side navigation). No navigation entry was added. The Footer's Insights link also points at it (owner, 2026-11-11): `SiteFooter.tsx` looks it up from `companyLinks` in its `linkHrefs` map, beside About Us; every other Footer link stays `#`. Verified in Chrome: clicking it from `/`, `/contact` and `/faq` opens `/insights` with client-side navigation (no reload).
+- **Hero + Client Logos** (`components/insights/InsightsHero.tsx`, `insightsHero` in `lib/content/insights.ts`, asset `insightsHero` → `Blog List/Hero Image.png`, 3840×1614): built 2026-11-11 from `Hero Section (1).png` in the project root (the file now holds the Blog List reference). **Awaiting the owner's visual review**; not approved or frozen.
+  - **Structure:** the FAQ/About Us Hero pattern. One `<section aria-labelledby="insights-hero-heading">` holds the Hero area and the frozen `ClientLogos`, reused unchanged. The artwork matches the reference's Hero area exactly (mean difference 0.90/255), so nothing is drawn over it. Below `lg` the text comes first on `#ecd8c1` (the artwork's average colour behind the text), then the whole artwork with its top 48px faded.
+  - **Type at 1920:** eyebrow 18px bold at 0.082em; headline 72px, weight 630, line height 1.04, -0.0155em, both lines ink; description 26px, line height 1.385, 0.0155em, max 26em; red button 251×59 with arrow, outline button 284×61 with no arrow (18px label below 360px so it fits a 320 screen).
+  - **Content:** the reference's wording, except the buttons, renamed by the owner (2026-11-11): "Explore Insights" (`#` until the Insights content section exists) and "Discuss a Project" → `/contact`. Styling and padding unchanged; each button's width follows its label.
+  - **QA 2026-11-11 (headless Chrome, 1920×1080, against the reference):** every text line and both buttons within 0–1px vertically, with identical line breaks; widths within 0–1px except the description's second line (about 7px wider, font rendering). Mean difference 5.21/255. Chrome spot checks at 1440, 1024, 390 and 320: no horizontal overflow, headline on two lines. Full QA not run (owner's instruction).
+  - **Pinning (updated 2026-11-11):** since the article grid was added, `InsightsHero` is pinned as one unit in `PinnedSection` with no `limitCoverTo` (the grid is taller than the Hero unit at every width), and the grid sits in a `relative` wrapper as the last section.
+  - **No Footer** yet.
+- **Article grid** (`components/insights/InsightsArticles.tsx`, `ArticleTiltGrid.tsx`, `insights-articles.css`, `insightsArticles` and `insightsPagination` in `lib/content/insights.ts`, `id="insights-articles"`): built 2026-11-11 from `Frame 2147239044.png` (1920×1080) and `Frame 2147239113.png` (1520×1844, the nine cards and pagination, transparent background), both in the project root. Nine whole-card links (the title's link `::after` covers the card) in three columns from `lg` (489px cards at 1920, x 200–1720, 25.5px column and 24px row gaps), two from `md` (ninth card centred), one below; pagination with only page 1 real (other pages and arrows disabled, owner decision). Its build notes were not recorded here at the time; the layout itself is described in the comments of the two files. Not approved or frozen.
+  - **Motion, "3D Stacked Editorial" (owner-approved 2026-11-11, refining the earlier "Editorial cascade"):** all of it is inside `prefers-reduced-motion: no-preference`.
+    - **Entrance (one-time, never replayed or reversed):** each card is revealed by the shared `Reveal each` when reached. The card plane rises out of depth on its own `perspective(1600px)` and settles to `transform: none`. From `lg` it starts 32px low, 70px back and tipped back 6° about its bottom edge, over 900ms. From `md`: 28px, 60px, 4°, 900ms. Below `md`: 24px, 50px, no tip, 700ms. Because it starts further back, the card is 96–98.5% of its cell's width at its smallest, so it never reaches a gap or a neighbour.
+    - **Wave:** delay `(column + row) × 70ms` (`--wi-col`, `--wi-row`, `--wi-d`): rows 1–3 count from `lg`, rows 1–2 at `md`, and there is no delay below `md`. The longest delay is 280ms.
+    - **Photo and text:** the approved photo uncover and 1.08× settle at +120ms, then meta, title, excerpt and "Read More" 60ms apart from +320ms.
+    - **Scroll drift:** the scroll-linked photo drift (`wi-drift`, `animation-timeline`) is unchanged and reverses exactly with scroll.
+    - **Pointer tilt** (`ArticleTiltGrid.tsx`, a client `<ul>`): runs only with `(hover: hover) and (pointer: fine) and (min-width: 1024px) and (prefers-reduced-motion: no-preference)` and mouse pointer events. Touch, smaller screens and reduced motion never run it.
+      - **Hover target:** found from the cards' layout boxes (`offsetLeft`/`offsetTop`; the grid is `position: relative` for this), not from the tilted hit-box, so hover cannot flicker at the edges.
+      - **Motion:** one rAF loop eases each card (0.14 per 60fps frame) towards a 4px lift, at most 2.5° sideways (`rotateY`) and 2° vertically (`rotateX`), on its own `perspective(1400px)`. The point under the pointer presses slightly away, and the photo shifts up to 4px/3px against the tilt.
+      - **Markers:** the hovered card gets `data-hover` (soft two-layer navy shadow, 1.04× photo zoom, underline, arrow slide). While moving it has `data-tilt` and `--wi-rx`, `--wi-ry`, `--wi-lift`, `--wi-ix`, `--wi-iy`. When it has eased back, all of these are removed, so the resting card has no transform, no inline variables and no shadow. The grid gets `data-tilt-ready` while the tilt is active.
+      - **Not during the entrance:** cards still playing their entrance are skipped until the transform transition ends.
+      - **Scrolling:** a passive scroll listener (active only while the tilt runs) and `pointerover` re-check the card under a still pointer.
+    - **Other hover and keyboard focus:** with a mouse below `lg` (or wherever the tilt is off), `:hover` gives the 4px lift (`translate`), the shadow, the zoom, the underline and the arrow slide, as before. Keyboard focus (`:focus-visible` on the card link) gives the same lift, shadow, underline and arrow. Entrance and tilt use `transform`; the simple lift uses `translate`, so their timings never mix.
+    - **Reduced motion:** cards are shown at once with no entrance, tilt or drift. The underline and shadow still appear on hover and focus, because they are not movement.
+  - **QA 2026-11-11:**
+    - **Checks:** `tsc` and `eslint .` pass. No console errors.
+    - **Resting match at 1920** (headless Chrome against `Frame 2147239113.png` flattened onto `#f4f0e9`):
+      - **Final styles:** every card ends at `transform: none`, `translate: none`, `box-shadow: none`, opacity 1.
+      - **Positions:** x 200 / 715.2 / 1230.3; rows at 100, 699.3 and 1287.7 from the section top; cards 489.7 wide.
+      - **Card bodies:** mean difference 4.65/255, excluding the excerpt lines, whose wording differs from the reference's placeholder text (approved content).
+      - **Photos:** 6.99/255 with the scroll drift paused.
+    - **Entrance:** sampled frame by frame (63 frames): it moves steadily towards the final position, never backwards, and lands on `transform: none` with no jump.
+    - **Widths:** 1920, 1440, 1280, 1024, 768, 390 and 320 checked, scrolling through the whole grid:
+      - **Overflow:** no horizontal overflow.
+      - **Overhang:** no overhang during the entrance. A hovered tilted card overhangs its cell by at most 1.3px (1024).
+      - **Tilt:** on only from 1024.
+      - **Wave delays:** as specified.
+    - **Real mouse** (Chrome):
+      - **Tilt direction:** follows the pointer.
+      - **No flicker:** with the pointer held 2px inside the bottom of a card (below its lifted edge), `data-hover` stayed on for 1s with no toggling.
+      - **Leaving the grid:** clears every card back to `transform: none` and no inline variables.
+      - **Keyboard focus:** lift, shadow and underline.
+    - **Reduced motion** (Chrome `--force-prefers-reduced-motion`): even cards not yet reached are visible and untransformed, with no photo clip and no drift. The tilt is not active, and the 1920 match is the same 4.65/255.
+  - **Not verified:**
+    - **Scroll under a still pointer:** the tilt re-check could not be confirmed, because the test browser did not update hover after a synthetic scroll either.
+    - **Other environments:** Safari, Firefox, real touch devices and a physical trackpad.
+    - **Pinning:** the grid is not pinned yet (last section), so behaviour while pinned is untested. Transforms do not change its height, and the drift does not move while a section is pinned.
+
+## Navbar dropdown menus (built 2026-11-10, awaiting owner review)
+
+**Status:** implemented and checked; the owner was reviewing the latest version when work stopped on 2026-11-10. Not approved or frozen. **Resume here:** ask the owner for feedback on the current version before changing anything.
+
+### Files
+
+- `components/layout/NavMenus.tsx` (new): `Chevron`, `DesktopNav`, `DesktopMenuItem`, `DropdownSheet` and `MobileNavItem`.
+- `components/layout/SiteHeader.tsx`: renders `<DesktopNav items={primaryNav} openMenu compact … />` and `MobileNavItem`; holds `openMenu` state; the bar turns solid white while a menu is open and gets its own edge on desktop (`xl:shadow-[0_1px_0_#e3dbd2,0_10px_24px_-14px_rgb(13_29_68/0.28)]`). Layout, logo, sizes, sticky/shrink and the Contact link are unchanged (item positions verified identical at 1920).
+- `lib/content/navigation.ts`: all menu content (see "Central content").
+
+### Content (owner rule: Footer labels exactly, verified destinations only, nothing invented)
+
+The dropdowns list the Footer's Services, Industries and Company columns. The Footer's own links are all `#`; in the dropdowns a label links to a page only where that page already exists:
+
+| Menu | Main links (`links`) | Secondary (`extra`, in the action bar) | Button (`action`) |
+|---|---|---|---|
+| Services | The six services with cards, each with its Services-card description, linking to its Details page | Cloud, API & DevOps; Support & Maintenance (`#`) | View All Services → `/services` |
+| Industries | Healthcare & Medical; Legal & Professional Services; Real Estate & Construction; Finance, Insurance & Accounting; Retail, E-commerce & Logistics (all `#`) | none | View All Industries → `/industries` |
+| Company | About Us → `/about` (since 2026-11-11); Insights → `/insights` (since 2026-11-11); How We Work, Our Team, Global Delivery, Careers (all `#`) | Our Work → `/our-work` (it is also a top-level Navbar item) | Contact Us → `/contact` |
+
+The navy brand card shows `navBrandCard` (Footer intro sentence + "USA • UAE • Worldwide"). The top-level Industries, Our Work and Company items stay `#`; Our Work keeps its chevron with no dropdown (not part of the request).
+
+### Current design (desktop, from `xl`)
+
+- **Layers:** white bar with its own edge → a floating ivory sheet (`#fbf9f6`) 10px below the bar, rounded 20px, 1px `#e3dbd2` border, soft two-part navy shadow → the page dimmed with `bg-navy/20` (a fixed overlay below the bar, `pointer-events-none`, so clicks still reach the page and close the menu).
+- **Width and position:** measured from the bar's content box (logo left to "Start a Project" right) into CSS variables on the nav (`--sheet-left`, `--sheet-width`, `--sheet-top`, `--dim-top`; compact state lowers the edge by 5px). Services spans that full width; Industries and Company are `w-fit` and centred in it.
+- **Body grid:** label row (red uppercase label with bar) then the list; the navy card in a right column.
+  - Services: list `grid-cols-3` (six rich items: title 17–19px semibold, description 14–15px `ink-muted`, 2–3 lines); card column `clamp(260px,16.2vw,310px)`.
+  - Industries: two columns, column-major (`grid-flow-col grid-rows-3`), `clamp(290px,15.6vw,300px)` each (290 minimum, or "Finance, Insurance & Accounting" wraps at 1280).
+  - Company: `grid-cols-[repeat(3,minmax(152px,max-content))]`, so columns size to the labels (was fixed 207px, which caused large gaps).
+  - Short menus' card column is a fixed 300px (its text fits in four lines; at 260px it took five and overhung the list).
+  - Rows have hairline `#e9e2da` dividers; short lists are `self-start` (rows keep their 59px height).
+- **Brand card placement (`cardPlace`):** always its natural height (`self-start`, text at the top). Beside a list of three or more rows (Services, Industries) it starts at the first row (`row-start-2 mt-4`); beside a short list (Company) it runs from the label (`row-span-2 row-start-1`). Earlier versions stretched it with `justify-end`, leaving empty navy above the text; the owner rejected that.
+- **Action bar:** a full-width sand band (`#f4efe9`, top border) at the bottom of every menu: `extra` links on the left (16px medium), the red `action` button on the right (44px tall, 10px radius).
+- **Hover:** a red line draws along the item's top divider, the title turns red, an arrow slides in. Keyboard focus shows the same. The current page's link is red with the line shown and `aria-current="page"`.
+- **Motion:** the sheet fades in and settles 8px (300ms); links rise in one after another; switching between menus swaps instantly. All off with reduced motion (verified by simulation), including the dim.
+- **Measured (2026-11-10, latest):** 1920: Services 444px tall, Industries ~1,047px wide × 347px, Company ~935px wide. 1280: all fit inside 20–1260px, no horizontal overflow, no label wraps, Services descriptions 3 lines.
+
+### Overflow fix (2026-11-11, owner-requested)
+
+- **Bug:** at 1280 and 1440 wide, every page could be scrolled 170–250px sideways.
+- **Root cause:** closed sheets are only `invisible`, so they still count towards the page's scrollable width. Their `left`/`width` come from `--sheet-left`/`--sheet-width`, which were measured only while a menu was open. On every page load (before any menu opened), those variables were unset, so the sheets fell back to `left: auto` and `width: auto`: each sat beside its trigger at its full content width, reaching about x=1593 at 1440. After a menu closed, the resize listener was removed too, so later resizes left stale values.
+- **Fix** (`components/layout/NavMenus.tsx` only):
+  - The positions are measured on mount and whenever the bar's content box or the nav resizes (a `ResizeObserver`, which replaces the window `resize` listener). They are no longer measured only while a menu is open.
+  - The sheets stay `display: none` until the first measurement: the nav gets `data-measured` and the `group/nav` name, and each sheet has `hidden group-data-measured/nav:block`.
+  - Design, positions, sizes, animation and interaction are unchanged.
+- **Verified** (Chrome, same-origin iframes):
+  - Scroll width equals the viewport on `/`, `/services`, UI/UX Details, `/industries`, `/our-work`, `/contact` and `/about` at 1920, 1440, 1280, 1024, 768 and 390.
+  - Every dropdown was opened at 1920, 1440 and 1280. The sizes match the earlier measurements: at 1920, Services 1560×444, Industries 1048×347 and Company 935×297; at 1280, all within x 20–1260. There is no overflow while open, after closing, or after resizing 1920/1440 → 1280 and 1024 → 1440.
+  - The mobile menu accordions (Services, Industries, Company) open with their full lists at 390, 768 and 1024.
+  - One reading of 1483px right after a resize, taken while another test frame was running, did not reproduce in two isolated repeats.
+
+### Interaction (unchanged through all redesigns)
+
+- Mouse hover opens (`pointerType === "mouse"`), with a 140ms close delay; an invisible 46px strip under the open trigger keeps hover on the way down to the sheet. Clicking a trigger toggles (a click right after hover-open keeps it open).
+- Services: the label is a link to `/services`, the chevron is the toggle button. Industries and Company: the whole item is the toggle button.
+- Keyboard: Enter/Space toggle; ArrowDown opens and focuses the first link; Up/Down move and wrap (order: links, extras, button); Escape closes and returns focus to the trigger; focus leaving the item closes it. Closed sheets are `invisible`, so their links are out of the tab order.
+- Click outside closes; choosing a link closes. One menu open at a time. Disclosure pattern: buttons with `aria-expanded` and `aria-controls`.
+
+### Mobile menu (below `xl`)
+
+Unchanged in look. Services, Industries and Company expand in place (accordion, `grid-template-rows` 0fr→1fr, off with reduced motion); Services' label still links to `/services` with a 44px chevron button. Lists show `links` then `extra` (the Footer order), then the action link. Verified at 390 and 320.
+
+### History (so it is not repeated)
+
+The owner rejected, in order: a white floating card with numbered links (01, 02…); 95% white frosted glass; concepts A (side panel), B (featured service card), C (editorial sheet); four further directions (command panel, bento grid, split navigation, minimal luxury); a full-width white sheet attached to the bar (bar and sheet blended together; CTA spacing inside the card; Industries too sparse). Owner requirements carried forward: no numbering, no invented content or icons, clear separation between bar and dropdown, the action as a distinct bottom element, content-driven column widths, no empty navy space in the card.
+
+### Open points for the owner
+
+- Whether Our Work belongs in Company's grid instead of the action bar.
+- Services and Industries cards are shorter than their lists (plain ivory below the card); Company's card ends 9px below its last divider.
+- Industries' action bar has only the button (empty left side).
+- Dim strength (20% navy) is a taste call.
+- Not tested: real mouse hover in the latest round, Safari, Firefox, touch devices.
+- Editor Tailwind "suggestCanonicalClasses" hints in `NavMenus.tsx` are style suggestions only; `tsc` and `eslint .` pass.
 
 ## Conventions for new pages (added 2026-11-08)
 
@@ -470,11 +801,11 @@ Before defining service, industry or navigation data, check `lib/content/` and r
 
 - `services.ts`: `services` (all 8 in the Footer's order; the first 6 have `card` content) and `serviceCards` (those 6, in the Services section's shape).
 - `industries.ts`: `industryCards` (the 5 carousel cards, same shape as `IndustryCard`) and `footerIndustries` (the 5 Footer categories), both unused; plus the Industries page content, used by its sections: `industriesAtAGlance` (4 cards), `industryStats` (4 rolling stats) and `industrySolutions` (4 stacked cards).
-- `navigation.ts`: `primaryNav`, `companyLinks`, `footerColumns`, `legalLinks` and `socialLinks`. Every `#` is a placeholder; do not invent URLs.
+- `navigation.ts` (**used by the Navbar since 2026-11-10**): types `NavLink` (`label`, `href`, optional `description`), `NavMenu` (`title`, `links`, optional `extra`, `action`), `NavItem`; menus `servicesMenu`, `industriesMenu`, `companyMenu`; `navBrandCard` (the Footer's intro sentence and "USA • UAE • Worldwide", word for word); `primaryNav` (the Navbar items); `companyLinks`, `footerColumns` (each menu's `links` + `extra`, Footer order), `legalLinks`, `socialLinks`. Every `#` is a placeholder; do not invent URLs. See "Navbar dropdown menus".
 - `service-details.ts`: content for the Service Details pages (see "Service Details pages").
 - `contact.ts`: `contactOverview`, `contactLocations`, `contactMessage` (form fields and dropdown options) and `contactOffices` for the Contact Us page.
 
-Components use `service-details.ts`, `contact.ts` and the Industries-page exports of `industries.ts`. `contact.ts` also reads `serviceCards` from `services.ts` for the Project Type options; nothing else in `services.ts` is used. `navigation.ts` and `industries.ts`'s `industryCards` and `footerIndustries` are **not used by any component yet**; `navigation.ts`'s `primaryNav` still lists Contact as `#` (the live link is in `SiteHeader.tsx`). `Services.tsx` (including its card links), `Industries.tsx`, `SiteHeader.tsx` and `SiteFooter.tsx` still hold their own copies, so a content change must be made in both places until the owner approves switching them over. Do not modify frozen sections or change their data sources without explicit approval.
+Components use `service-details.ts`, `contact.ts` and the Industries-page exports of `industries.ts`. `contact.ts` also reads `serviceCards` from `services.ts` for the Project Type options; nothing else in `services.ts` is used. `navigation.ts` drives the Navbar (desktop dropdowns and mobile menu); it reads `services` from `services.ts` and `footerIndustries` from `industries.ts`. `industryCards` is still unused. `Services.tsx` (including its card links), `Industries.tsx` and `SiteFooter.tsx` still hold their own copies (the Footer's links are all `#`), so a content change must be made in both places until the owner approves switching them over. Do not modify frozen sections or change their data sources without explicit approval.
 
 Unresolved differences, kept as they are on purpose:
 - Three different industry lists exist: the carousel (Attorney & Lawyers, Restaurant, Retailers, Doctor, Plumbers), the Footer (Healthcare & Medical, Legal & Professional Services, Real Estate & Construction, Finance, Insurance & Accounting, Retail, E-commerce & Logistics), and the Industries page's "Industries at a Glance" cards (Law Firms, Healthcare, Real Estate, Construction). Ask the owner before adding Industry category pages.
@@ -542,7 +873,7 @@ Production assets are in `public/images/`: hero files at the root, then `logos/`
 - **Footer:** "View All Industries" under Industries (the reference is a mistake), copyright exactly "© 2026 Way Wise Tech. All rights reserved.", Twitter bird not X, background 1920×536 placed 52px from the top.
 - **Links:** every "View All" button and footer link is a `#` placeholder. Do not invent URLs.
 - **Services card links (approved permanently, 2026-11-10):** each of the six Services cards links to its Service Details page: UI/UX → `/services/ui-ux-product-design`, Custom Software → `/services/custom-software-development`, Web → `/services/web-development`, Mobile → `/services/mobile-app-development`, AI → `/services/ai-data-automation`, Branding → `/services/branding-digital-growth`. The title is the link, and its `::after` covers the whole card, so the card's hover and `focus-within` lift work for mouse and keyboard. Do not remove or revert these links. The section's "View All" button is still `#`.
-- **Navbar Contact link (approved 2026-11-10):** the Contact item links to `/contact`. It is one entry in `navItems` in `SiteHeader.tsx`, which both the desktop bar and the mobile menu render with `next/link`. Browser-tested: at 1920 the desktop link opens `/contact` without a full reload; at 390 the mobile menu link opens `/contact`, and the menu closes on tap. No other Navbar link changed: Industries, Our Work and Company are still `#` placeholders, and no dropdown has content.
+- **Navbar Contact link (approved 2026-11-10):** the Contact item links to `/contact`. It is one entry in `primaryNav` in `lib/content/navigation.ts` (it was `navItems` in `SiteHeader.tsx` until the dropdown work), which both the desktop bar and the mobile menu render with `next/link`. Browser-tested: at 1920 the desktop link opens `/contact` without a full reload; at 390 the mobile menu link opens `/contact`, and the menu closes on tap. No other Navbar link changed: Industries, Our Work and Company are still `#` placeholders, and no dropdown has content.
 - **Red banner:** Homepage only. All inner pages use `showBanner={false}`.
 - **Our Portfolio second section:** on hold until the Figma team's feedback arrives.
 
@@ -579,26 +910,33 @@ Status: built and used on every page, **awaiting comprehensive QA and owner appr
 
 | Page | Pinned | Not pinned | `limitCoverTo` |
 |---|---|---|---|
-| `/` | Hero, Services, Industries, Final CTA | Client Logos and Our Work (each in a `relative` wrapper; Our Work keeps its own card stacking) | `"footer"` on Final CTA |
-| `/services` | All seven sections | none | none |
-| Service Details | All eight sections | none | none |
-| `/industries` | Hero, Industries at a Glance, trust section (`hold="70svh"`), Final CTA | Client Logos and Industry Solutions (each in a `relative` wrapper; Industry Solutions keeps its own card stacking) | none |
-| `/our-work` | Hero | Client Logos (last built section, `relative` wrapper) | none |
-| `/contact` | Hero, Client Logos, Client Overview, "Have a Project Idea?" | "Send Us a Message / Our Offices" (last built section, `relative` wrapper) | `[aria-labelledby="contact-locations-heading"]` on Client Overview; `#contact-form` on the map section |
+Since 2026-11-11 every "Hero + Client Logos" below is one combined pinned unit (see "Hero + Client Logo Strip standard").
 
-- **Homepage:** Hero → Client Logos → Services → Industries → Our Work → Final CTA → Footer. Services is 1px taller than Industries, so without its `relative` wrapper Our Work would be overlapped on tall screens.
-- **`/services`:** at the owner's request every consecutive pair overlaps, ending with the Footer. No `limitCoverTo` is used: the first `footer` in the DOM can be a hidden page's zero-height Footer, which would cancel the pin. Client Logos pins here but not on the Homepage. It is short, so its overlap is small on desktop (held about 100–130px, mostly behind the Navbar) and clearer on phones (about 300px).
+| Page | Pinned | Not pinned | `limitCoverTo` |
+|---|---|---|---|
+| `/` | Hero + Client Logos (one unit), Services, Industries, Final CTA | Our Work (`relative` wrapper; keeps its own card stacking) | `"footer"` on Final CTA |
+| `/services` | All sections, Hero + Client Logos as one unit | none | none |
+| Service Details | All sections, Hero + Client Logos as one unit | none | none |
+| `/industries` | Hero + Client Logos (one unit), Industries at a Glance, trust section (`hold="70svh"`), Final CTA | Industry Solutions (`relative` wrapper; keeps its own card stacking) | none |
+| `/our-work` | none | Hero + Client Logos (last built section, one `relative` wrapper) | none |
+| `/contact` | All sections in `<main>`: Hero + Client Logos (one unit), Client Overview, "Have a Project Idea?", "Send Us a Message / Our Offices", FAQ | none (Footer follows, outside `<main>`) | `[aria-labelledby="contact-locations-heading"]` on Client Overview; `#contact-form` on the map section |
+| `/about` | All seven sections in `<main>`: Hero + Client Logos (`AboutHero`, one unit), Our Story, Leadership messages, Our Global Presence, Our Process, Final CTA | none (Footer follows, outside `<main>`) | `[aria-labelledby="about-story-heading"]` on the Hero; `#about-leadership` on Our Story; `#about-presence` on the leadership section; none on Our Global Presence, Our Process or Final CTA |
+| `/faq` | Both sections in `<main>`: Hero + Client Logos (`FaqHero`, one unit), questions section (measured `hold`, see "FAQ page") | none (Footer follows, outside `<main>`) | `#faq-questions` on the Hero; none on the questions section |
+| `/insights` | Hero + Client Logos (`InsightsHero`, one unit) | Article grid (last built section, `relative` wrapper) | none |
+
+- **Homepage:** Hero + Client Logos → Services → Industries → Our Work → Final CTA → Footer. Services is 1px taller than Industries, so without its `relative` wrapper Our Work would be overlapped on tall screens.
+- **`/services`:** at the owner's request every consecutive pair overlaps, ending with the Footer. No `limitCoverTo` is used: the first `footer` in the DOM can be a hidden page's zero-height Footer, which would cancel the pin.
 - **Service Details:** same approach as `/services`, ending with the Footer.
-- **`/industries`:** Hero → Client Logos → Industries at a Glance → trust section → Industry Solutions → Final CTA → Footer.
-  - Hero pins and Client Logos rises over it, as on the Homepage.
+- **`/industries`:** Hero + Client Logos → Industries at a Glance → trust section → Industry Solutions → Final CTA → Footer.
+  - The combined Hero + Client Logos unit pins and Industries at a Glance rises over it.
   - The trust section holds for an extra 70svh so its stats can roll, then Industry Solutions rises over it.
   - Industry Solutions is not pinned. Its cards stay stacked while Final CTA rises over them, like Our Work on the Homepage: its card list's spacer `--cover` is 600px from `lg` and 1000px below.
   - Final CTA pins with no `limitCoverTo`, as on `/services`.
-- **`/our-work`:** Hero → Client Logos, then the page ends. The next section is on hold.
-- **`/contact`:** Hero → Client Logos → Client Overview → "Have a Project Idea?" → "Send Us a Message / Our Offices", then the page ends.
+- **`/our-work`:** Hero + Client Logos, then the page ends. The next section is on hold.
+- **`/contact`:** Hero + Client Logos → Client Overview → "Have a Project Idea?" → "Send Us a Message / Our Offices" → FAQ → Footer. Verified 2026-11-10 at 2560, 1920, 1440, 1280, 1024, 768, 390 and 320 for map→form, form→FAQ and FAQ→Footer: held, on top, 1:1, reversible, no end gap, no overflow; reduced motion static. The FAQ pin has no `limitCoverTo`, as on `/services`.
   - **Client Overview's cap:** its pin stays capped at the map section's height (802px against 842px at 1440×900). The cap was needed while the map ended the page; now it only shortens that hold slightly.
   - **Map's cap:** the map's pin is capped at the form section's height (`#contact-form`). Without it, wide screens would get empty scrolling at the end (map 1440px against the form section's 1080px at 2560×1440).
-  - **When a section follows the form section:** wrap the form section in `PinnedSection` and recheck both caps.
+  - The form section is now wrapped in `PinnedSection` (no cap) with the FAQ after it; both caps above were rechecked.
 
 ## Behaviour
 
@@ -609,7 +947,7 @@ Status: built and used on every page, **awaiting comprehensive QA and owner appr
 - **Our Process:** matches `our progress.png` at 1920 within about 1px per text line, 0.66/255 across the frame. Columns are 260.8px with 64px gaps at 1920. The five icons are inline SVGs traced from the reference; difference on their pixels is 2.2% to 7.7%, the rocket being highest. Layouts: five across from 1280, three plus two from 1024, two columns from 640, one below. Hover uses Tailwind `group/step` on each `<li>`, so anywhere in a step lifts its circle 4px with a soft shadow and scales its icon to 1.08 over 300ms. Hover is off on touch and with reduced motion. The reveal uses the shared `Reveal` around the list: steps fade and rise 16px, 110ms apart, once. The hidden state only exists once JavaScript sets it, so steps show without JavaScript. On one-column phones lower steps finish revealing before they are scrolled to.
 - **FAQ:** matches `faq.png` at 1920 within about 1–2px on text, apart from the description's second line, which ends about 5px short; 1.2/255 across the frame. The card grid extends 14.5px past the content margin on each side from 1600, as in the reference. The eight questions are the reference's wording. Whole-row buttons with `aria-expanded`; several answers can stay open. Height animates through `grid-template-rows` from `0fr` to `1fr`, with no measuring. Durations are `motion-safe:` on purpose: a bare `duration-300` animates every property under reduced motion, because the default transition property is `all`. A `noscript` style shows all answers without JavaScript. The reference's description looks like Inter; Outfit is kept with 0.036em spacing to reproduce its line break. Two columns from 1024, one below.
 - **Industries on `/services`:** `IndustryCarousel` takes its cards as props and the data is private to `Industries.tsx`, so the whole `Industries` section is reused, including the three Phase pricing cards. Autoplay, hover pause and arrows were checked on both pages.
-- **Navbar banner:** `SiteHeader` takes `showBanner` (default true). When false it renders an empty `<p>` as the marker the `IntersectionObserver` watches, so the navbar still shrinks on scroll. The Homepage uses the default; every other page (`/services`, the Details template, `/industries`, `/our-work`, `/contact`) passes `false`. The Services nav item links to `/services`; its chevron stays and there is still no dropdown. Contact links to `/contact` (approved 2026-11-10). Industries, Our Work and Company are `#` in both the desktop bar and the mobile menu, which share one item list, although `/industries` and `/our-work` exist. Linking them means editing the Navbar, which is protected.
+- **Navbar banner:** `SiteHeader` takes `showBanner` (default true). When false it renders an empty `<p>` as the marker the `IntersectionObserver` watches, so the navbar still shrinks on scroll. The Homepage uses the default; every other page (`/services`, the Details template, `/industries`, `/our-work`, `/contact`) passes `false`. The Services nav item links to `/services` and its chevron opens the Services dropdown. Contact links to `/contact` (approved 2026-11-10). The top-level Industries, Our Work and Company items are still `#`; Industries and Company open their dropdowns, Our Work keeps a chevron with no dropdown. See "Navbar dropdown menus".
 - **Service List Hero:** from `lg` the artwork fills the section at its own 3840/1614 ratio and the text sits on top. The buttons scale from `lg` to 1920, because at fixed size they overlap the plant and phone at 1024. Below `lg` the text comes first on `#eedac2`, with the artwork underneath cropped to the devices and its top edge faded over 48px. At 1920 the layout matches the reference within 1 to 2px per line, and the buttons exactly. Typography was chosen by pixel and ink comparison with the reference, with letter spacing solved so each weight's width matches (comparing weights at mismatched widths gave a wrong answer): headline 660 at -0.0096em, label 16px 700 at +0.066em, description 400 at line-height 1.367, red button 500, outline button 600, checklist 400. The two buttons differ on purpose: with widths matched, the red button's white text matches best at 500 and the outline button's dark text at about 600, as the owner spotted by eye. The outline button overrides the shared border colour with `#a59788` from the reference, in this Hero only, so it also restates `hover:border-ink`. The weight classes on these buttons are `!important`, so test overrides of their weight must use inline `!important`; injected stylesheets have no effect. Outfit is a variable font here, so in-between weights work. The headline stays on exactly two lines at every width: below `lg` its size is `(100vw - 40px) / 10.3`, capped at 64px. The checklist's larger first gap comes from the reference and applies only from `xl`. The description keeps the reference's wording, ending "for your business."
 - **Section motion (built 2026-11-06, awaiting owner review):** Service List Hero, Our Process, FAQ and the shared Footer (so also the Homepage). Behaviour was rebuilt from three Webflow references, with no code, assets or dependencies taken from them. Code is in `components/motion/`. Only translate and opacity animate. `MaskLine` is a headline line rising behind a `clip-path` mask, which clips with no layout effect (on load with CSS alone in the Hero, otherwise with `Reveal`). `Reveal` is an `IntersectionObserver` that plays once and keeps its state in `data-reveal`; `each` makes every `.ww-rise` inside trigger separately, for content taller than the screen. Focus inside it reveals everything, so nobody tabs onto a hidden link. `revealOrder` sits in its own file because Server Components cannot call a function exported from a client file. Its 5% bottom margin matters: at 10% the Footer's legal row never triggered at 1024x768, because its hidden 12px offset kept it below the line. The Footer card animates itself, not through a parent, because a parent's opacity would interrupt its backdrop blur. `StaggerText` is the CSS-only letter roll on the two Hero buttons, FAQ "Contact Us" and Footer "Get in Touch", using a `1.25em` text shadow as the incoming copy. Its `KERNING` table restores the kerning that separate letter boxes lose (up to 5px of width otherwise); add pairs if labels change. Later pages (Service Details, Industries, Our Portfolio, Contact) use `MaskLine` and `Reveal` the same way; `RollingNumber` is described under "Industries page".
 - **Our Process sliding panel:** a soft white panel behind the hovered step, from 1280 with a real pointer and motion allowed. Delegated pointer events on the list keep it still across the gaps between steps, and it appears in place on entry instead of sliding across. Its `--ww-gap` in `motion.css` must match the list's `xl:gap-x`. The panel is absolute and sits in a new wrapper that took over the list's top margin.
@@ -661,15 +999,15 @@ Recorded for reference only. Do not fix any of these without the owner's instruc
 ### Raised by the 2026-11-09 inspection
 
 - **No version control:** there is no `.git` folder, so nothing has a backup or history. Setting up Git needs the owner's permission.
-- **Reachability (updated 2026-11-10):** the six Details pages are reached through the Services cards (approved). The Footer's service links are still `#`, and the Navbar has no dropdown. `/contact` is linked from the Navbar's Contact item (approved 2026-11-10). `/industries` and `/our-work` are not linked from anywhere yet (Navbar items `#`). Linking them means editing the protected Navbar or the Footer, which awaits review.
+- **Reachability (updated 2026-11-10):** the six Details pages are reached through the Services cards (approved). The Footer's service links are still `#`. Since 2026-11-10 the Navbar dropdowns (awaiting review) link the six Details pages, `/services` (View All Services), `/industries` (View All Industries), `/our-work` (Company → Our Work) and `/contact` (Company → Contact Us). The top-level Industries, Our Work and Company items are still `#`.
 - **Temporary Service Details images:** all five non-UI/UX Details pages show the UI/UX images through 15 entries in `lib/assets.ts` (listed under "Service Details pages"). None of the five `public/images/service details/<slug>/` folders exists yet. All five pages' copy was written without dedicated Figma designs; it is accepted for now under the Content & SEO policy.
 - **Contact map heading under the Navbar** on near-16:9 screens: see "Contact Us page". Accepted by the owner as a known limitation on 2026-11-10. Do not fix without explicit authorisation.
-- **`/our-work` and `/contact` end without Final CTA or Footer**, because they are still being built. Our Portfolio's next section is on hold.
+- **`/our-work` ends without Final CTA or Footer**, because it is still being built; its next section is on hold. `/contact` now ends with FAQ and Footer.
 - **Contact copy to confirm with the owner** (accepted for now under the Content & SEO policy): the Contact Hero uses Portfolio-style wording (eyebrow "Case Study", "Visit Live Website", "Discuss a Similar Project"), and the Client Overview card descriptions repeat the Why Choose Us text. Neither was rechecked against its reference during the audit.
 - **SEO basics are missing:** pages have only `title` and `description`. There is no `metadataBase`, Open Graph or Twitter metadata, canonical URL, `sitemap`, `robots` or structured data. The only icon is `app/favicon.ico`. Add any of these only when the owner asks.
 - **Brand name has three spellings:** "Way-Wise Tech" (page titles, logo alt text), "Way Wise Tech" (Footer copyright, approved exactly) and "WayWise" (Service Details copy). Left as is under the Content & SEO policy until the owner decides.
 - **Duplicated data:** service, industry and navigation data exist both in `lib/content/` and inside `Services.tsx`, `Industries.tsx`, `SiteHeader.tsx` and `SiteFooter.tsx` (see "Central content").
-- **Unused code and files (2026-11-10):** `lib/content/services.ts` apart from `serviceCards` (read by the Contact form); `lib/content/navigation.ts` (its `primaryNav` Contact entry is still `#`, unlike the live Navbar); `industryCards` and `footerIndustries` in `lib/content/industries.ts`; `public/images/footer/logo.svg`. `SectionHeading`, the rest of `industries.ts` and `public/images/industry page/` are now used by `/industries`.
+- **Unused code and files (2026-11-10):** `lib/content/services.ts` apart from `serviceCards` (read by the Contact form); `industryCards` in `lib/content/industries.ts` (`navigation.ts`, `services` and `footerIndustries` are now used by the Navbar); `public/images/footer/logo.svg`. `SectionHeading`, the rest of `industries.ts` and `public/images/industry page/` are now used by `/industries`.
 - **Reference in the project root:** `section.png` (the Contact form reference) sits next to `package.json`. It is outside `public/`, so it is not served. Leave it until the owner says where references should live.
 - **Contact form has no backend:** like the Final CTA form, "Send Message" sends nothing. A destination is needed before launch.
 - **Phase price formatting:** the three cards in `Industries.tsx` mix `$950-$2950`, `$2975 – $6700` and `$6800-$19500`. Content, so left as is.
@@ -680,7 +1018,11 @@ Recorded for reference only. Do not fix any of these without the owner's instruc
 
 - **Final CTA form sends nothing.** The submit button is `type="button"` and there is no backend or destination. Needs a decision before launch.
 - **Content origin:** Our Work client names, roles, project names, description and details are copied from the reference (marked in a code comment). Final CTA team names and promises came from the design. All of it is approved for now under the Content & SEO policy.
-- **Placeholder links:** all `#` except the logo, Home breadcrumb, the Navbar's Services (`/services`) and Contact (`/contact`) links, and the six Services card links. This includes the Navbar's Industries, Our Work and Company items, the Industries, Our Portfolio and Contact Hero buttons, "Start a Project", the profile PDF card, every Hero button, every "View All" button, FAQ "Contact Us", and every Footer, social and legal link. Nav dropdowns have no content.
+- **Placeholder links:** all `#` except the logo, Home breadcrumb, the Navbar's Services (`/services`) and Contact (`/contact`) links, and the six Services card links. This includes the Navbar's Industries, Our Work and Company items, the Industries, Our Portfolio and Contact Hero buttons, "Start a Project", the profile PDF card, every Hero button, every "View All" button in sections, FAQ "Contact Us", and every Footer, social and legal link except the Footer's About Us (`/about`). In the Navbar dropdowns, 12 links are `#` because their pages do not exist (see "Navbar dropdown menus"); About Us now goes to `/about`.
+- **About Us links (owner, 2026-11-11):** every existing About Us link goes to `/about`; no new links were added.
+  - **Destination:** set once as `aboutUsLink` in `lib/content/navigation.ts`. It is used by `companyLinks`, so the Navbar Company dropdown (desktop) and the mobile menu's Company list follow it.
+  - **Footer:** `SiteFooter.tsx` still keeps its own label lists (switching it to `navigation.ts` still needs the owner's approval). It now looks up hrefs in a small `linkHrefs` map built from `aboutUsLink`, so only About Us has a destination there; every other Footer link stays `#`, including its "Our Work".
+  - **Verified in Chrome:** on `/`, `/services`, UI/UX Details, `/industries`, `/our-work`, `/contact` and `/about`, at 1920 and 390, every About Us anchor has `href="/about"`; `/our-work` has no Footer. Clicking the desktop dropdown link (from `/services`), the Footer link (from `/contact`) and the mobile-menu link (from `/industries`) opens `/about` with client-side navigation, without a full reload.
 - **Services image crop:** the old exports cut off icons at the top of cards 1, 3, 4 and 6. The owner's new files show the full compositions at the 1920 check; the owner has not yet confirmed this closes the issue.
 - **Industries small-screen contrast (unresolved):** Doctor's title contrast is 1.45 at 320px, 2.15 at 390px, 2.46 at 1024px; Plumbers' is 2.78 at 320px. A stronger fade below 1280px was proposed but not applied.
 - **Footer text over the artwork (unresolved, owner's decision):** the owner rejected a multi-layer text halo as hazy. Text now has one shadow, `0 1px 2px` at 75%, on the intro paragraph, "Start a Conversation" and the link columns. Contrast against the brightest 5% of pixels within 2px of the letters, still → forced worst frame: "Our Team" 2.60 → 1.43 at 1920, 1.89 → 1.19 at 1440, 2.98 → 1.42 at 1280; "Retail, E-commerce & Logistics" 3.22 → 1.45 at 1920. Sampled over a full 312s cycle, those two lines are under 4.5 all the time at 1280 and up. So are "How We Work" at 1440, and "Start a Conversation" 56% of the time at 1920. Possible fix, not applied: a soft local dark gradient behind the affected columns.

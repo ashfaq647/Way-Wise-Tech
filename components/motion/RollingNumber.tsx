@@ -28,30 +28,44 @@ export function RollingNumber({ value, className }: RollingNumberProps) {
     const element = root.current;
     if (!element) return;
 
-    // Next re-runs effects when a visited page is shown again; the attribute keeps it rolled once.
-    if (element.getAttribute(ATTRIBUTE)) return;
-    // Entirely above the screen at load, such as a reload further down: it would otherwise show 0
-    // until scrolled back up. Anything on or below the screen rolls when the observer reports it.
-    const passedAlready = element.getBoundingClientRect().bottom <= 0;
-    if (passedAlready || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      element.setAttribute(ATTRIBUTE, "done");
-      return;
-    }
+    let observer: IntersectionObserver | undefined;
+    // On a client-side navigation Next resets the scroll in a parent layout effect, after this one,
+    // so the position is read on the next frame: after that reset, still before the first paint.
+    const frame = requestAnimationFrame(() => {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        element.setAttribute(ATTRIBUTE, "done");
+        return;
+      }
+      const box = element.getBoundingClientRect();
+      // Visited pages stay mounted (cacheComponents), and Next re-runs this effect when one is shown
+      // again. A number that already rolled keeps its value while on or above the screen, but rolls
+      // again from below it, as on a fresh load (the waiting look has no transition, so no jump).
+      if (element.getAttribute(ATTRIBUTE)) {
+        if (box.top < window.innerHeight * 0.95) return;
+      } else if (box.bottom <= 0) {
+        // Entirely above the screen at load, such as a reload further down: it would otherwise show 0
+        // until scrolled back up. Anything on or below the screen rolls when the observer reports it.
+        element.setAttribute(ATTRIBUTE, "done");
+        return;
+      }
 
-    // Set before the first paint after hydration, so the final value never flashes first.
-    element.setAttribute(ATTRIBUTE, "pending");
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting) return;
-        observer.disconnect();
-        element.setAttribute(ATTRIBUTE, "running");
-      },
-      { rootMargin: "0px 0px -5% 0px" },
-    );
-    observer.observe(element);
+      // Set before the first paint, so the final value never flashes first.
+      element.setAttribute(ATTRIBUTE, "pending");
+      const io = new IntersectionObserver(
+        ([entry]) => {
+          if (!entry.isIntersecting) return;
+          io.disconnect();
+          element.setAttribute(ATTRIBUTE, "running");
+        },
+        { rootMargin: "0px 0px -5% 0px" },
+      );
+      observer = io;
+      io.observe(element);
+    });
 
     return () => {
-      observer.disconnect();
+      cancelAnimationFrame(frame);
+      observer?.disconnect();
       // Not reached yet (React's development double run, or a page hidden first): reset, so the
       // next run can still roll. A roll already started keeps going to its final digit.
       if (element.getAttribute(ATTRIBUTE) === "pending") element.removeAttribute(ATTRIBUTE);

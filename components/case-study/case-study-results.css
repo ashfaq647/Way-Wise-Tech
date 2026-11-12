@@ -1,0 +1,32 @@
+/*
+  Case Study trust section ("A Trusted Partner Across Industries") only: the results' entrance.
+
+  The numeric results use the shared RollingNumber unchanged (2.8s roll after a 600ms delay, digits
+  only). This file adds a 120ms stagger per card (--csr-i, the card's position), so the four results
+  settle in card order, and a fade-up for a result with no digits ("High"), on the same timing. The
+  word's hidden look only exists once Reveal has set the card's data-reveal, so it shows without
+  JavaScript, and everything here is motion-safe: with reduced motion the final values show at once.
+*/
+@media (prefers-reduced-motion: no-preference) {
+  /* RollingNumber's own rules set a 600ms delay; these are more specific and add the card's step. */
+  .csr-card [data-roll="running"] .ww-roll__strip {
+    transition-delay: calc(600ms + var(--csr-i, 0) * 120ms);
+  }
+
+  .csr-card [data-roll="running"] .ww-roll__visual {
+    transition-delay: calc(var(--csr-i, 0) * 120ms);
+  }
+
+  /* "High": a small fade-up instead of a roll, starting with the numbers' roll and ending softly. */
+  .csr-card[data-reveal="pending"] .csr-fade {
+    opacity: 0;
+    translate: 0 10px;
+  }
+
+  .csr-card[data-reveal="running"] .csr-fade {
+    transition:
+      opacity 900ms ease-out,
+      translate 1200ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: calc(600ms + var(--csr-i, 0) * 120ms);
+  }
+}

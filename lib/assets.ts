@@ -88,6 +88,21 @@ export const assets = {
   industrySolutionMobile: "/images/industry%20page/mobile%20app.png",
   industrySolutionSoftware: "/images/industry%20page/custom%20software%20development.png",
   industrySolutionDesign: "/images/industry%20page/ui%20ux%20.png",
+  // Our Portfolio testimonial portrait (Amy Marie), 600x674 (2x its 300x337 frame at 1920), with
+  // rounded corners (52px) in the file.
+  portfolioTestimonialAmy: "/images/our%20portfolio/Frame%202147238128.png",
+  // Blog Details (the Insights article page). Each file is 2x its frame at 1920.
+  blogDetailsHero: "/images/blog%20details/Hero%20Section%20.png", // 2380x1000; title, meta and share icons baked in; rounded corners in the file
+  blogDetailsWide: "/images/blog%20details/mid%20hero%20section.png", // 1808x760; man at a desk in a red circuit landscape; rounded corners in the file
+  blogDetailsLeft: "/images/blog%20details/image%2011.png", // 1160x900; woman with a laptop on rocks; rounded corners in the file
+  blogDetailsRight: "/images/blog%20details/image%2012.png", // 1160x900; man at a lit desk reflected in water; square corners
+  blogDetailsAvatar1: "/images/blog%20details/image%201.png", // 128x128 round; Marvin McKinney (as drawn)
+  blogDetailsAvatar2: "/images/blog%20details/image%202).png", // 128x128 round; Jemma Hall (as drawn)
+  blogDetailsAvatar3: "/images/blog%20details/image%203.png", // 128x128 round; Eleanor Pena (as drawn)
+  blogDetailsAvatar4: "/images/blog%20details/image%204.png", // 128x128 round; Ralph Edwards (as drawn)
+  blogDetailsRelated1: "/images/blog%20details/blog%20image.png", // 976x560; man on the ground with a dog
+  blogDetailsRelated2: "/images/blog%20details/blog%20image%20(1).png", // 976x560; gavel and scales by a city window
+  blogDetailsRelated3: "/images/blog%20details/blog%20image%20(2).png", // 976x560; handshake over a desk
   // Our Portfolio page Hero: desk, laptop and phone artwork, 3840x1616 (2x its 1920x808 section).
   portfolioHero: "/images/our%20portfolio/Hero%20bg.png",
   // Contact Us page Hero: handshake artwork with its own left fade, 3840x1614.
@@ -127,6 +142,28 @@ export const assets = {
   // table, 3840x1614 (2x its 1920x807 section). Matches the reference's background exactly, so no
   // overlay is drawn on top.
   insightsHero: "/images/Blog%20List/Hero%20Image.png",
+  // Case Study page Hero: a laptop showing a personal injury law firm website on a marble desk,
+  // beside a plant and brass scales, 3840x1616 (2x its 1920x808 section). The file name has a
+  // space before ".png", as supplied. The reference draws a light gradient over its left side,
+  // which CaseStudyHero adds in CSS; the right side matches the file exactly.
+  caseStudyHero: "/images/case%20study/Hero%20Image%20.png",
+  // Case Study "Client Overview" image: a laptop, phone and tablet on a sunlit stone plinth with
+  // wireframe cards above, 1502x545 (2x its 751x272.5 frame at 1920). Rounded corners are in the file.
+  caseStudyOverview: "/images/case%20study/computer.png",
+  // Case Study "Technologies We Used" logos: authentic brand SVGs, unmodified, downloaded
+  // 2026-11-12 (sources recorded in AGENTS.md, "Case Study page"). Served unoptimized by next/image.
+  techFigma: "/images/case%20study/tech/figma.svg", // Figma mark (Devicon), 128x128 viewBox
+  techHtml5: "/images/case%20study/tech/html5.svg", // HTML5 shield (Devicon), 128x128
+  techCss3: "/images/case%20study/tech/css3.svg", // CSS3 shield (Devicon), 128x128
+  techJavascript: "/images/case%20study/tech/javascript.svg", // JS logo (logo.js), 630x630
+  techWordpress: "/images/case%20study/tech/wordpress.svg", // WordPress W mark, blue #21759b
+  techPhp: "/images/case%20study/tech/php.svg", // PHP logo (php.net), 711x384
+  techMysql: "/images/case%20study/tech/mysql.svg", // MySQL dolphin (Devicon), 128x128
+  techAws: "/images/case%20study/tech/aws.svg", // AWS wordmark and smile (Devicon), 128x128
+  techGoogleAnalytics: "/images/case%20study/tech/google-analytics.svg", // GA icon (Google), 192x192
+  techRankMath: "/images/case%20study/tech/rank-math.svg", // Rank Math logo with wordmark, 630x102
+  techReact: "/images/case%20study/tech/react.svg", // React atom #61DAFB (Devicon), 128x128
+  techNextjs: "/images/case%20study/tech/nextjs.svg", // Next.js circular N icon (Devicon), 128x128
   // Insights article card images, each 978x560 (2x its 489x280 card image). Mapped to the
   // reference cards (Frame 2147239113.png, left to right, top to bottom) by pixel comparison.
   insightsArticle1: "/images/Blog%20List/blog%20image.png", // figure at a desk in a glowing data room

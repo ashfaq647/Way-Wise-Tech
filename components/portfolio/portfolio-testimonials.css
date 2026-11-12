@@ -1,0 +1,178 @@
+/*
+  Our Portfolio testimonial section only (prefixed pt-): the card stack and its scroll-linked build.
+
+  Resting state = the design: four white cards, 57px apart at 1920 (--pt-step), the three behind
+  blank, each casting a soft shadow upwards onto the strip of the card behind it.
+
+  Motion (CSS scroll-driven, no JavaScript, no scroll listeners, so reverse scrolling retraces it
+  exactly). The page pins the section with PinnedSection's hold (--pt-hold, 210svh from lg, 150svh
+  below), and everything runs on the pin wrapper's view timeline (--pt). The wrapper is never
+  sticky, so it moves 1:1 with the scroll while the section inside is held, as the FAQ timeline does.
+  On that timeline the hold starts at "cover" + --pin-height (the hold makes the section at least a
+  screen tall, so it pins when its top reaches the screen top) and lasts --pt-hold. Each animated
+  element sets its phase of the hold with --a and --b (fractions):
+    - an incoming card rises from below, fading in, and is uncovered from its bottom edge (a clip
+      reveal), so it seems to slide up out of a slot;
+    - the card underneath dips back (a slight scale and a soft navy dim) while it passes over, then
+      settles, so the stack reads in depth during the build and is exactly as drawn at rest;
+    - the testimonial's portrait settles from a small zoom and offset inside its rounded frame, and
+      its name, quote mark, quote and rating fade up in turn.
+  Only transform, opacity and clip-path animate. With reduced motion, or without scroll-driven
+  animation support, there is no hold and the finished stack shows as drawn.
+*/
+/*
+  The section ends the Our Portfolio page, so nothing rises over it: its pin's cover is 0 (only
+  PinnedSection's hold remains), and the page ends on the finished frame with no empty scrolling.
+  PinnedSection only sets --pin-limit itself when given limitCoverTo, which this section is not.
+*/
+.pin-wrapper:has(> .pin-body > #portfolio-testimonials) {
+  --pin-limit: 0px;
+}
+
+.pt-stack {
+  --pt-step: 22px;
+}
+
+@media (min-width: 768px) {
+  .pt-stack {
+    --pt-step: calc(var(--u) * 40);
+  }
+}
+
+@media (min-width: 1024px) {
+  .pt-stack {
+    --pt-step: calc(var(--u) * 57);
+  }
+}
+
+/* The design's soft shadow, cast mostly upwards onto the card behind. */
+.pt-card {
+  box-shadow:
+    0 -6px 22px rgb(35 31 32 / 0.08),
+    0 2px 8px rgb(35 31 32 / 0.06);
+}
+
+/* The dim used while a card is passed over; invisible at rest. */
+.pt-press::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: rgb(13 29 68);
+  opacity: 0;
+  pointer-events: none;
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .pin-wrapper:has(> .pin-body > #portfolio-testimonials) {
+      view-timeline: --pt;
+      --pt-hold: 150svh;
+      --pt-rise: 30%;
+      --pt-clip: 22%;
+    }
+
+    @media (min-width: 1024px) {
+      .pin-wrapper:has(> .pin-body > #portfolio-testimonials) {
+        --pt-hold: 210svh;
+        --pt-rise: 46%;
+        --pt-clip: 34%;
+      }
+    }
+
+    .pt-anim {
+      animation-timeline: --pt;
+      animation-fill-mode: both;
+      animation-range:
+        cover calc(var(--pin-height) + var(--pt-hold) * var(--a))
+        cover calc(var(--pin-height) + var(--pt-hold) * var(--b));
+    }
+
+    .pt-enter {
+      animation-name: pt-enter;
+      animation-timing-function: cubic-bezier(0.25, 0.8, 0.3, 1);
+    }
+
+    .pt-press {
+      animation: pt-press linear both;
+      animation-timeline: --pt;
+      animation-range:
+        cover calc(var(--pin-height) + var(--pt-hold) * var(--na))
+        cover calc(var(--pin-height) + var(--pt-hold) * var(--nb));
+      transform-origin: 50% 0;
+    }
+
+    .pt-press::after {
+      animation: pt-dim linear both;
+      animation-timeline: --pt;
+      animation-range: inherit;
+    }
+
+    .pt-portrait-img {
+      animation-name: pt-portrait;
+      animation-timing-function: cubic-bezier(0.25, 0.8, 0.3, 1);
+    }
+
+    .pt-fade {
+      animation-name: pt-fade;
+      animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+  }
+}
+
+/* Negative clip insets keep the card's shadow visible; only the bottom edge is uncovered. */
+@keyframes pt-enter {
+  from {
+    transform: translateY(var(--pt-rise));
+    opacity: 0;
+    clip-path: inset(-48px -48px var(--pt-clip) -48px);
+  }
+  18% {
+    opacity: 1;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+    clip-path: inset(-48px -48px -48px -48px);
+  }
+}
+
+@keyframes pt-press {
+  0%,
+  100% {
+    transform: none;
+  }
+  50% {
+    transform: scale(0.982) translateY(-0.6%);
+  }
+}
+
+@keyframes pt-dim {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.07;
+  }
+}
+
+@keyframes pt-portrait {
+  from {
+    transform: translateY(6%) scale(1.1);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes pt-fade {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

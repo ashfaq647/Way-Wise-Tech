@@ -23,47 +23,59 @@ export function Reveal({ children, className, each = false }: RevealProps) {
     const container = root.current;
     if (!container) return;
 
-    const targets = each
-      ? Array.from(container.querySelectorAll<HTMLElement>(".ww-rise"))
-      : [container];
-
-    // Next re-runs effects when a visited page is shown again, and the attribute keeps its state.
-    const revealLine = window.innerHeight * 0.95;
-    const waiting = targets.filter((target) => {
-      const state = target.getAttribute(ATTRIBUTE);
-      if (state === "running" || state === "none") return false;
-      // Already reached, for example a reload partway down the page: nothing to reveal.
-      if (!state && target.getBoundingClientRect().top < revealLine) {
-        target.setAttribute(ATTRIBUTE, "none");
-        return false;
-      }
-      target.setAttribute(ATTRIBUTE, "pending");
-      return true;
-    });
-    if (waiting.length === 0) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (!entry.isIntersecting) continue;
-          entry.target.setAttribute(ATTRIBUTE, "running");
-          observer.unobserve(entry.target);
-        }
-      },
-      // Low enough that the last row of a page can always reach it, even while offset by its hidden look.
-      { rootMargin: "0px 0px -5% 0px" },
-    );
-    waiting.forEach((target) => observer.observe(target));
+    let observer: IntersectionObserver | undefined;
+    let waiting: HTMLElement[] = [];
 
     // Nobody should tab onto a link that is still hidden.
     const showAll = () => {
-      observer.disconnect();
+      observer?.disconnect();
       waiting.forEach((target) => target.setAttribute(ATTRIBUTE, "running"));
     };
-    container.addEventListener("focusin", showAll);
+
+    // On a client-side navigation Next resets the scroll in a parent layout effect, which runs after
+    // this one, so positions read here would still use the previous page's scroll. The next frame
+    // comes after that reset but before the first paint, so nothing shows in the wrong state.
+    const frame = requestAnimationFrame(() => {
+      const targets = each
+        ? Array.from(container.querySelectorAll<HTMLElement>(".ww-rise"))
+        : [container];
+
+      // Visited pages stay mounted (cacheComponents), and Next re-runs this effect when one is shown
+      // again, with the attributes it had. So every showing starts like a fresh load: anything not
+      // reached yet waits to play as it is scrolled to, even if it played on an earlier visit, while
+      // anything reached stays as it is. The hidden look has no transition, so resetting is instant.
+      const revealLine = window.innerHeight * 0.95;
+      waiting = targets.filter((target) => {
+        if (target.getBoundingClientRect().top >= revealLine) {
+          target.setAttribute(ATTRIBUTE, "pending");
+          return true;
+        }
+        const state = target.getAttribute(ATTRIBUTE);
+        // Already reached, for example a reload partway down the page: nothing to reveal.
+        if (!state) target.setAttribute(ATTRIBUTE, "none");
+        return state === "pending";
+      });
+      if (waiting.length === 0) return;
+
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            entry.target.setAttribute(ATTRIBUTE, "running");
+            io.unobserve(entry.target);
+          }
+        },
+        // Low enough that the last row of a page can always reach it, even while offset by its hidden look.
+        { rootMargin: "0px 0px -5% 0px" },
+      );
+      observer = io;
+      waiting.forEach((target) => io.observe(target));
+      container.addEventListener("focusin", showAll);
+    });
 
     return () => {
-      observer.disconnect();
+      cancelAnimationFrame(frame);
+      observer?.disconnect();
       container.removeEventListener("focusin", showAll);
     };
   }, [each]);

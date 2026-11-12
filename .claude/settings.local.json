@@ -2,6 +2,11 @@
   "permissions": {
     "additionalDirectories": [
       "D:\\Ashfaq\\Next JS\\waywise Tech\\Tech"
+    ],
+    "defaultMode": "auto",
+    "allow": [
+      "Bash(npx --no-install tsc --noEmit --incremental false)",
+      "Bash(npx --no-install eslint .)"
     ]
   }
 }

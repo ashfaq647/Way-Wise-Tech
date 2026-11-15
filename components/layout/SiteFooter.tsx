@@ -5,7 +5,15 @@ import { revealOrder } from "@/components/motion/revealOrder";
 import { StaggerText } from "@/components/motion/StaggerText";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { assets } from "@/lib/assets";
-import { aboutUsLink, companyLinks } from "@/lib/content/navigation";
+import { footerIndustries } from "@/lib/content/industries";
+import {
+  aboutUsLink,
+  companyLinks,
+  legalLinks,
+  navBrandCard,
+  socialLinks,
+} from "@/lib/content/navigation";
+import { services } from "@/lib/content/services";
 import { FooterBackground } from "./FooterBackground";
 
 /*
@@ -19,54 +27,31 @@ const linkHrefs: Record<string, string> = {
   ...(insightsLink && { [insightsLink.label]: insightsLink.href }),
 };
 
+/*
+  Column labels come from the shared content lists, in their order. Only the labels are reused: each
+  link's destination still comes from `linkHrefs` above, so the Footer's links stay exactly as they
+  are (the Navbar data has more real routes, which the Footer does not use yet).
+*/
 const columns = [
   {
     title: "Services",
-    links: [
-      "UI/UX & Product Design",
-      "Custom Software Development",
-      "Web Development",
-      "Mobile App Development",
-      "AI, Data & Automation",
-      "Branding & Digital Growth",
-      "Cloud, API & DevOps",
-      "Support & Maintenance",
-    ],
+    links: services.map((service) => service.title),
     action: "View All Services",
   },
   {
     title: "Industries",
-    links: [
-      "Healthcare & Medical",
-      "Legal & Professional Services",
-      "Real Estate & Construction",
-      "Finance, Insurance & Accounting",
-      "Retail, E-commerce & Logistics",
-    ],
+    links: footerIndustries,
     action: "View All Industries",
   },
   {
     title: "Company",
-    links: [
-      "About Us",
-      "How We Work",
-      "Our Team",
-      "Global Delivery",
-      "Careers",
-      "Insights",
-      "Our Work",
-    ],
+    links: companyLinks.map((link) => link.label),
     action: "Contact Us",
   },
 ];
 
-const socials = [
-  { label: "LinkedIn", icon: assets.footerLinkedin },
-  { label: "Twitter", icon: assets.footerTwitter },
-  { label: "Instagram", icon: assets.footerInstagram },
-];
-
-const legal = ["Cookie Policy", "Terms of Service", "Privacy Policy"];
+// Labels and icons are shared; the social and legal links below stay "#" placeholders.
+const legal = legalLinks.map((link) => link.label);
 
 const focusRing =
   "rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white";
@@ -101,12 +86,11 @@ export function SiteFooter() {
               style={revealOrder(0.5)}
               className={`ww-rise mt-[23px] text-[16px] leading-[22px] text-pretty ${textShadow}`}
             >
-              A global technology company designing and building digital products for ambitious
-              businesses in the USA, UAE, and worldwide.
+              {navBrandCard.intro}
             </p>
 
             <ul style={revealOrder(1)} className="ww-rise mt-[29px] flex gap-2.5">
-              {socials.map((social) => (
+              {socialLinks.map((social) => (
                 <li key={social.label}>
                   <Link
                     href="#"
@@ -186,7 +170,7 @@ export function SiteFooter() {
               ))}
             </ul>
           </nav>
-          <p>USA • UAE • Worldwide</p>
+          <p>{navBrandCard.regions}</p>
         </div>
       </Reveal>
     </footer>

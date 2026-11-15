@@ -4,6 +4,7 @@ import { useRef, type PointerEvent, type ReactNode } from "react";
 import { MaskLine } from "@/components/motion/MaskLine";
 import { Reveal } from "@/components/motion/Reveal";
 import { revealOrder } from "@/components/motion/revealOrder";
+import { ourProcess } from "@/lib/content/process";
 
 /** Each icon is drawn in the coordinates of its 104px circle, so it scales and centres with it. */
 function StepIcon({ children }: { children: ReactNode }) {
@@ -19,10 +20,9 @@ function StepIcon({ children }: { children: ReactNode }) {
   );
 }
 
-const steps = [
+/** Each step's circle colour and icon, in the same order as `ourProcess.steps`. */
+const stepVisuals = [
   {
-    title: "Discover",
-    description: "We learn about your business, goals, users, and project requirements.",
     circle: "bg-[#ecd4ba]",
     icon: (
       <g transform="translate(32 29)">
@@ -40,8 +40,6 @@ const steps = [
     ),
   },
   {
-    title: "Plan",
-    description: "We create a clear project plan, timeline, and development strategy.",
     circle: "bg-[#f7c6c5]",
     icon: (
       <g transform="translate(37 35)">
@@ -58,8 +56,6 @@ const steps = [
     ),
   },
   {
-    title: "Design & Develop",
-    description: "We design modern, simple, and user-friendly digital experiences.",
     circle: "bg-[#b7cdfc]",
     icon: (
       <g transform="translate(34 37)">
@@ -73,8 +69,6 @@ const steps = [
     ),
   },
   {
-    title: "Develop",
-    description: "Our developers build, test, and improve your digital solution",
     circle: "bg-[#80d1ae]",
     icon: (
       <g transform="translate(34 41)" stroke="currentColor" strokeWidth="2.75">
@@ -84,8 +78,6 @@ const steps = [
     ),
   },
   {
-    title: "Launch & Support",
-    description: "We launch your product and provide support to keep it running smoothly.",
     circle: "bg-[#c5b6f2]",
     icon: (
       <g transform="translate(35 37)">
@@ -104,6 +96,8 @@ const steps = [
     ),
   },
 ];
+
+const steps = ourProcess.steps.map((step, index) => ({ ...step, ...stepVisuals[index] }));
 
 export function OurProcess() {
   const panel = useRef<HTMLDivElement>(null);
@@ -140,15 +134,15 @@ export function OurProcess() {
                 className="h-[3px] w-[22px] shrink-0 -translate-y-px bg-brand"
                 aria-hidden="true"
               />
-              Our Process
+              {ourProcess.eyebrow}
             </p>
             <h2
               id="our-process-heading"
               className="mt-1 text-[clamp(26px,7.4vw,48px)] leading-[1.154] font-semibold tracking-[-0.015em] text-[#0d1d44] lg:text-[clamp(34px,2.71vw,52px)]"
             >
-              <MaskLine order={1}>A Simple Process</MaskLine>{" "}
+              <MaskLine order={1}>{ourProcess.heading.first}</MaskLine>{" "}
               <MaskLine order={2} className="text-brand">
-                Real Results
+                {ourProcess.heading.accent}
               </MaskLine>
             </h2>
           </div>
@@ -157,8 +151,7 @@ export function OurProcess() {
             style={revealOrder(3)}
             className="ww-rise text-[18px] leading-[1.45] text-[#0d1d44] max-[1599px]:text-pretty lg:-mb-px lg:text-[clamp(17px,1.146vw,22px)]"
           >
-            We follow a clear and collaborative process to turn your ideas into successful digital
-            products.
+            {ourProcess.description}
           </p>
         </Reveal>
 

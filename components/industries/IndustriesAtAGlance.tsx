@@ -5,7 +5,9 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { MaskLine } from "@/components/motion/MaskLine";
 import { Reveal } from "@/components/motion/Reveal";
 import { revealOrder } from "@/components/motion/revealOrder";
-import { industriesAtAGlance } from "@/lib/content/industries";
+import { industriesAtAGlance, industriesAtAGlanceSection } from "@/lib/content/industries";
+
+const { eyebrow, heading, description } = industriesAtAGlanceSection;
 
 /**
  * "Industries at a Glance" on the Industries page, from Frame 2147239119.png. At 1920 the text sits
@@ -23,13 +25,13 @@ export function IndustriesAtAGlance() {
         >
           <div className="min-w-0 lg:pr-[clamp(24px,2.083vw,40px)]">
             <SectionEyebrow weight="bold" tracking="0.069em" className="ww-rise">
-              Industries at a Glance
+              {eyebrow}
             </SectionEyebrow>
 
             <SectionHeading id="industries-glance-heading" className="mt-2 lg:mt-1">
-              <MaskLine order={1}>Digital Solutions for</MaskLine>{" "}
+              <MaskLine order={1}>{heading.first}</MaskLine>{" "}
               <MaskLine order={2} className="text-brand">
-                All Types of Businesses
+                {heading.accent}
               </MaskLine>
             </SectionHeading>
 
@@ -37,8 +39,7 @@ export function IndustriesAtAGlance() {
               style={revealOrder(3)}
               className="ww-rise mt-6 max-w-[25.5em] lg:mt-[clamp(16px,1.12vw,21.5px)] text-[18px] leading-[1.45] text-ink-muted lg:text-[clamp(17px,1.146vw,22px)]"
             >
-              From local businesses to global brands, we design websites, apps, and digital products
-              for a wide range of industries.
+              {description}
             </p>
           </div>
 

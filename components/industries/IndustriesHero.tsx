@@ -3,8 +3,10 @@ import { ButtonLink } from "@/components/ui/ButtonLink";
 import { SectionEyebrow } from "@/components/ui/SectionEyebrow";
 import { MaskLine } from "@/components/motion/MaskLine";
 import { assets } from "@/lib/assets";
+import { industriesHero } from "@/lib/content/industries";
 
-const features = ["Web Development", "Mobile Apps", "UI/UX Design", "AI & Automation"];
+const { eyebrow, heading, description, primaryAction, secondaryAction, features, imageAlts } =
+  industriesHero;
 
 // Entrance animations are CSS only, so content never depends on JavaScript to appear.
 const textEnter = "animate-hero-text motion-reduce:animate-hero-fade";
@@ -14,17 +16,17 @@ const imageEnter = "animate-hero-image motion-reduce:animate-hero-fade";
 const sidePhotos = [
   {
     src: assets.industryHeroLaw,
-    alt: "Gavel and scales of justice on a desk while two lawyers shake hands",
+    alt: imageAlts.law,
     delay: "[animation-delay:270ms]",
   },
   {
     src: assets.industryHeroDental,
-    alt: "Dentist in a mask examining a smiling patient in a dental chair",
+    alt: imageAlts.dental,
     delay: "[animation-delay:390ms]",
   },
   {
     src: assets.industryHeroRestaurant,
-    alt: "Waiter serving diners in a bright restaurant with tall windows",
+    alt: imageAlts.restaurant,
     delay: "[animation-delay:510ms]",
   },
 ];
@@ -39,7 +41,7 @@ export function IndustriesHero() {
     <section className="relative overflow-hidden bg-[#e8d5c0] lg:flex lg:min-h-[42.083vw] lg:items-center">
       <AssetImage
         src={assets.industryHeroBackground}
-        alt="Soft beige background with golden light streaks"
+        alt={imageAlts.background}
         sizes="(max-width: 1023px) 300vw, 100vw"
         priority
         className="object-cover"
@@ -53,24 +55,22 @@ export function IndustriesHero() {
             barClassName="-translate-y-px"
             className={`${textEnter} lg:text-[clamp(14px,0.9375vw,18px)]`}
           >
-            Industries
+            {eyebrow}
           </SectionEyebrow>
 
           <h1 className="mt-[23px] text-[clamp(28px,8.8vw,64px)] leading-[1.04] font-[630] tracking-[-0.008em] text-ink lg:mt-[clamp(14px,1.2vw,23px)] lg:text-[clamp(38px,3.75vw,72px)]">
             <MaskLine onLoad order={1}>
-              We Design for{" "}
+              {heading.first}{" "}
             </MaskLine>
             <MaskLine onLoad order={2} className="text-brand">
-              Every Industry
+              {heading.accent}
             </MaskLine>
           </h1>
 
           <p
             className={`${textEnter} mt-6 max-w-[31em] text-[18px] leading-[1.385] tracking-[0.015em] text-ink [animation-delay:260ms] lg:mt-[clamp(14px,1.25vw,24px)] lg:text-[clamp(16px,1.354vw,26px)]`}
           >
-            We create modern and user-friendly designs for different types of businesses. No
-            matter your industry, we design digital experiences that fit your goals and help you
-            grow.
+            {description}
           </p>
 
           <div
@@ -78,13 +78,13 @@ export function IndustriesHero() {
           >
             {/* No destinations in the design yet. */}
             <ButtonLink
-              href="#"
+              href={primaryAction.href}
               className="h-[59px] px-[26.5px] text-[20px] lg:h-[clamp(44px,3.073vw,59px)] lg:px-[clamp(17px,1.38vw,26.5px)] lg:text-[clamp(16px,1.042vw,20px)]"
             >
-              Discuss Your Project
+              {primaryAction.label}
             </ButtonLink>
             <ButtonLink
-              href="#"
+              href={secondaryAction.href}
               variant="secondary"
               // Heavier than semibold in the reference: 650 matched its text width within 1px and its
               // ink within 3% at 1920 (700 was 7% heavier). ButtonLink has no option for this, and an
@@ -92,7 +92,7 @@ export function IndustriesHero() {
               style={{ fontWeight: 650 }}
               className="h-[59px] px-[27.5px] text-[20px] lg:h-[clamp(44px,3.073vw,59px)] lg:px-[clamp(17px,1.432vw,27.5px)] lg:text-[clamp(16px,1.042vw,20px)]"
             >
-              Explore Our Work
+              {secondaryAction.label}
             </ButtonLink>
           </div>
 
@@ -124,7 +124,7 @@ export function IndustriesHero() {
           <div className={`${imageEnter} relative row-span-3 [animation-delay:150ms]`}>
             <AssetImage
               src={assets.industryHeroLaundry}
-              alt="Technician repairing a washing machine in a laundry room while a smiling homeowner watches"
+              alt={imageAlts.laundry}
               sizes="(min-width: 1024px) 16vw, 50vw"
               priority
               className="object-contain"

@@ -1,9 +1,10 @@
 import { assets } from "@/lib/assets";
 
 /*
-  Central industry lists for new pages. Copied exactly from the current sections; those sections still
-  use their own copies (components/home/Industries.tsx, components/layout/SiteFooter.tsx) until the owner
-  approves switching them over. Keep the copies in sync until then.
+  Central industry lists. The Industries section (components/home/Industries.tsx) reads its carousel
+  cards, header and pricing phases from here. The Footer (components/layout/SiteFooter.tsx) reads its
+  Industries column labels from `footerIndustries`, in this order; its links stay "#" (set in the
+  Footer, not here).
 
   UNRESOLVED: the carousel and the Footer list different industries. They are kept as two separate
   lists, unchanged, until the owner or designer confirms which set the Industry pages use.
@@ -63,6 +64,49 @@ export const industryCards: Industry[] = [
   },
 ];
 
+/**
+ * The Industries section header (components/home/Industries.tsx), shown on the Homepage and
+ * /services. "View All Industries" is a "#" placeholder until its destination is confirmed.
+ */
+export const industriesSection = {
+  eyebrow: "Industry We Serve",
+  /** The first line is black; the second line is the red `accent`. */
+  heading: { first: "Digital Solutions for", accent: "Every Industry" },
+  intro:
+    "We recognize that each business is unique. Our team creates digital solutions tailored to your industry's needs.",
+  action: { label: "View All Industries", href: "#" },
+};
+
+/**
+ * The three pricing phases under the Industries carousel, exactly as in the design. The prices are
+ * kept as written, including their mixed hyphen and en dash formats. Their colours stay in the
+ * component.
+ */
+export const industryPhases = [
+  {
+    phase: "PHASE 1",
+    name: "Practice Launch",
+    price: "$950-$2950",
+    description: "Build your legal brand and establish a trusted and reliable online presence.",
+    row: "Brand Identity",
+  },
+  {
+    phase: "PHASE 2",
+    name: "Client Management Platform",
+    price: "$2975 – $6700",
+    description: "Improve client communication and create a modern legal experience.",
+    row: "Client Experience",
+  },
+  {
+    phase: "PHASE 3",
+    name: "Smart Legal Practice Management",
+    price: "$6800-$19500",
+    description:
+      "Everything in Phase 1 & 2 plus transform your firm with a complete legal management system.",
+    row: "Practice Management",
+  },
+];
+
 /** The Footer's "Industries" column, in its order. A different set of categories from the carousel. */
 export const footerIndustries = [
   "Healthcare & Medical",
@@ -71,6 +115,18 @@ export const footerIndustries = [
   "Finance, Insurance & Accounting",
   "Retail, E-commerce & Logistics",
 ];
+
+/**
+ * The Industries page "Industries at a Glance" header (components/industries/IndustriesAtAGlance.tsx),
+ * as written in its reference. Moved out of the component unchanged; layout and animation stay there.
+ */
+export const industriesAtAGlanceSection = {
+  eyebrow: "Industries at a Glance",
+  /** The first line is ink; the second is the red `accent`. */
+  heading: { first: "Digital Solutions for", accent: "All Types of Businesses" },
+  description:
+    "From local businesses to global brands, we design websites, apps, and digital products for a wide range of industries.",
+};
 
 /** The Industries page "Industries at a Glance" cards, in the design's order (left to right, top to bottom). */
 export const industriesAtAGlance = [
@@ -102,6 +158,21 @@ export const industriesAtAGlance = [
   },
 ];
 
+/**
+ * The "A Trusted Partner Across Industries" header and image alt text
+ * (components/industries/IndustriesTrust.tsx, on /industries and /our-work), as written in its
+ * reference. Moved out of the component unchanged; the image file, layout, stats bar and animation
+ * stay there. The Case Study trust section has the same header wording but its own content
+ * (`caseStudyResults` in case-study.ts); the two are kept separate.
+ */
+export const industriesTrustSection = {
+  eyebrow: "Why Businesses Choose Us",
+  /** The first line is navy; the second is the red `accent`. */
+  heading: { first: "A Trusted Partner", accent: "Across Industries" },
+  description: "We understand different business needs and deliver designs that create real value.",
+  imageAlt: "Phone, laptop and tablet on stone blocks, each showing a property website design",
+};
+
 /** Icons drawn for the Industries page trust stats. */
 export type IndustryStatIcon = "users" | "building" | "star" | "growth";
 
@@ -115,6 +186,19 @@ export const industryStats: { value: string; label: string; icon: IndustryStatIc
   { value: "98%", label: "Client Satisfaction", icon: "star" },
   { value: "2x", label: "Avg. Online Growth", icon: "growth" },
 ];
+
+/**
+ * The Industries page "Industry Solutions" header (components/industries/IndustriesSolutions.tsx), as
+ * written in its reference. Moved out of the component unchanged; layout, card stacking and animation
+ * stay there.
+ */
+export const industrySolutionsSection = {
+  eyebrow: "Industry Solutions",
+  /** The first line is navy; the second line is `second` in navy, then the red `accent`. */
+  heading: { first: "Complete Digital Solutions", second: "for", accent: "Your Industry" },
+  description:
+    "From website design to custom software, we provide everything you need to grow your business online.",
+};
 
 /**
  * The Industries page "Industry Solutions" cards, exactly as in the design (Frame 2147238556.png).
@@ -158,3 +242,28 @@ export const industrySolutions = [
     tone: "#7eb2ed",
   },
 ];
+
+/**
+ * The Industries page Hero (components/industries/IndustriesHero.tsx), as written in its reference.
+ * Moved out of the component unchanged; the image files, layout, animation and per-photo delays
+ * stay there. Both buttons are "#" placeholders: the design has no destinations yet.
+ */
+export const industriesHero = {
+  eyebrow: "Industries",
+  /** The first line is ink; the second is the red `accent`. */
+  heading: { first: "We Design for", accent: "Every Industry" },
+  description:
+    "We create modern and user-friendly designs for different types of businesses. No matter your industry, we design digital experiences that fit your goals and help you grow.",
+  primaryAction: { label: "Discuss Your Project", href: "#" },
+  secondaryAction: { label: "Explore Our Work", href: "#" },
+  features: ["Web Development", "Mobile Apps", "UI/UX Design", "AI & Automation"],
+  /** Alt text for each Hero image, by the image it describes. */
+  imageAlts: {
+    background: "Soft beige background with golden light streaks",
+    laundry:
+      "Technician repairing a washing machine in a laundry room while a smiling homeowner watches",
+    law: "Gavel and scales of justice on a desk while two lawyers shake hands",
+    dental: "Dentist in a mask examining a smiling patient in a dental chair",
+    restaurant: "Waiter serving diners in a bright restaurant with tall windows",
+  },
+};

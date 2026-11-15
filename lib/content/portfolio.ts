@@ -1,6 +1,23 @@
 import { assets } from "@/lib/assets";
 
 /**
+ * The Our Portfolio page Hero (components/portfolio/PortfolioHero.tsx), as written in its reference.
+ * Moved out of the component unchanged; the image file, layout, gradient and animation stay there.
+ * Both buttons are "#" placeholders until their destinations are confirmed.
+ */
+export const portfolioHero = {
+  eyebrow: "Our Portfolio",
+  /** The first line is ink; the second is the red `accent`. */
+  heading: { first: "Real Projects.", accent: "Real Results." },
+  description:
+    "We create intuitive, user-focused designs that turn ideas into beautiful digital products and make every interaction simple and engaging.",
+  primaryAction: { label: "Start a Project", href: "#" },
+  secondaryAction: { label: "Let’s Talk", href: "#" },
+  imageAlt:
+    "Laptop and phone on a sunlit desk showing property management, medical clinic, law firm and restaurant website designs",
+};
+
+/**
  * The Our Portfolio page's testimonial section ("What Our Clients Say About Us"), from
  * Frame 2147239021.png. The design stacks four cards; only the front card has content, and the three
  * behind it are blank by the owner's decision (2026-11-12). All wording is the reference's, kept as

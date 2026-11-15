@@ -8,7 +8,13 @@ import { MaskLine } from "@/components/motion/MaskLine";
 import { Reveal } from "@/components/motion/Reveal";
 import { revealOrder } from "@/components/motion/revealOrder";
 import { assets } from "@/lib/assets";
-import { industryStats, type IndustryStatIcon } from "@/lib/content/industries";
+import {
+  industriesTrustSection,
+  industryStats,
+  type IndustryStatIcon,
+} from "@/lib/content/industries";
+
+const { eyebrow, heading, description, imageAlt } = industriesTrustSection;
 
 /** Line icons drawn for the stats, 24-unit grid, in the brand red like the reference. */
 const icons: Record<IndustryStatIcon, ReactNode> = {
@@ -56,12 +62,12 @@ export function IndustriesTrust() {
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
             <div className="min-w-0">
               <SectionEyebrow weight="bold" tracking="0.069em" className="ww-rise">
-                Why Businesses Choose Us
+                {eyebrow}
               </SectionEyebrow>
               <SectionHeading id="industries-trust-heading" tone="navy" className="mt-2 lg:mt-1.5">
-                <MaskLine order={1}>A Trusted Partner</MaskLine>{" "}
+                <MaskLine order={1}>{heading.first}</MaskLine>{" "}
                 <MaskLine order={2} className="text-brand">
-                  Across Industries
+                  {heading.accent}
                 </MaskLine>
               </SectionHeading>
             </div>
@@ -69,7 +75,7 @@ export function IndustriesTrust() {
               style={revealOrder(3)}
               className="ww-rise max-w-[26.9em] text-[18px] leading-[1.45] text-ink-muted lg:shrink-0 lg:text-[clamp(17px,1.146vw,22px)]"
             >
-              We understand different business needs and deliver designs that create real value.
+              {description}
             </p>
           </div>
 
@@ -79,7 +85,7 @@ export function IndustriesTrust() {
           >
             <AssetImage
               src={assets.industryTrustedPartner}
-              alt="Phone, laptop and tablet on stone blocks, each showing a property website design"
+              alt={imageAlt}
               sizes="(min-width: 1600px) 1560px, 100vw"
               className="object-contain"
             />

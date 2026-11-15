@@ -1,36 +1,35 @@
 import { AssetImage } from "@/components/ui/AssetImage";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { assets } from "@/lib/assets";
+import { homeHero } from "@/lib/content/home";
 
-const features = ["Web Development", "Mobile Apps", "UI/UX Design", "AI & Automation"];
+const { eyebrow, heading, description, primaryAction, secondaryAction, features } = homeHero;
 
 // Entrance animations are CSS only, so content never depends on JavaScript to appear.
 const textEnter = "animate-hero-text motion-reduce:animate-hero-fade";
 const imageEnter = "animate-hero-image motion-reduce:animate-hero-fade";
 
-const images = [
+// Presentation for each grid image, in the content's order: grid placement, entrance delay,
+// loading priority and responsive sizes. The images themselves come from lib/content/home.ts.
+const imageLayout = [
   {
-    src: assets.heroAi,
-    alt: "AI head made of circuitry in a city of data",
     className: "row-span-2 [animation-delay:150ms]",
     priority: true,
     sizes: "(min-width: 1024px) 23vw, 58vw",
   },
   {
-    src: assets.heroStrategy,
-    alt: "Businessman pointing at a rising bar chart",
     className: "[animation-delay:270ms]",
     priority: false,
     sizes: "(min-width: 1024px) 16vw, 40vw",
   },
   {
-    src: assets.heroDashboard,
-    alt: "Hand pointing at a dashboard on a desktop monitor",
     className: "[animation-delay:390ms]",
     priority: false,
     sizes: "(min-width: 1024px) 16vw, 40vw",
   },
 ];
+
+const images = homeHero.images.map((image, index) => ({ ...image, ...imageLayout[index] }));
 
 export function Hero() {
   return (
@@ -50,30 +49,31 @@ export function Hero() {
               className={`${textEnter} inline-flex items-center gap-1.5 rounded-full border border-black bg-white/10 px-3 py-[5px] text-[11px] leading-[19px] font-medium tracking-[0.078em] text-black uppercase sm:pr-[13px] sm:pl-3.5 sm:text-[14px]`}
             >
               <span className="size-1.5 shrink-0 rounded-full bg-brand" aria-hidden="true" />
-              USA Strategy • Global Technology Delivery
+              {eyebrow}
             </p>
 
             <h1
               className={`${textEnter} mt-6 text-[clamp(28px,8.8vw,64px)] leading-[1.04] font-semibold tracking-[-0.005em] text-ink [animation-delay:80ms] lg:text-[clamp(38px,3.75vw,72px)]`}
             >
-              Technology Built
+              {heading.first}
               <br />
-              Around <span className="text-brand">Your Business</span>
+              {/* One text node ("Around "), as before: a separate " " node shifts the red words' sub-pixel rendering. */}
+              {`${heading.second} `}
+              <span className="text-brand">{heading.accent}</span>
             </h1>
 
             <p
               className={`${textEnter} mt-[25px] max-w-[26.5em] text-[18px] leading-[1.385] text-ink [animation-delay:160ms] lg:text-[clamp(18px,1.354vw,26px)]`}
             >
-              We design and develop high-performing websites, custom software, mobile apps, and
-              AI-powered solutions that help businesses grow.
+              {description}
             </p>
 
             <div className={`${textEnter} mt-[23px] flex flex-wrap items-center gap-3 [animation-delay:240ms]`}>
-              <ButtonLink href="#" className="h-[59px] px-6 pt-0.5 xl:min-w-[221px] text-[20px]">
-                Explore Our Work
+              <ButtonLink href={primaryAction.href} className="h-[59px] px-6 pt-0.5 xl:min-w-[221px] text-[20px]">
+                {primaryAction.label}
               </ButtonLink>
-              <ButtonLink href="#" variant="secondary" className="h-[61px] px-6 pt-0.5 xl:min-w-[245px] text-[20px]">
-                Discuss Your Project
+              <ButtonLink href={secondaryAction.href} variant="secondary" className="h-[61px] px-6 pt-0.5 xl:min-w-[245px] text-[20px]">
+                {secondaryAction.label}
               </ButtonLink>
             </div>
 

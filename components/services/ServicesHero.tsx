@@ -3,8 +3,9 @@ import { ButtonLink } from "@/components/ui/ButtonLink";
 import { MaskLine } from "@/components/motion/MaskLine";
 import { StaggerText } from "@/components/motion/StaggerText";
 import { assets } from "@/lib/assets";
+import { servicesHero } from "@/lib/content/services";
 
-const features = ["Custom Solutions", "Experienced Team", "Modern Technology"];
+const { eyebrow, heading, description, primaryAction, secondaryAction, features } = servicesHero;
 
 // Entrance animations are CSS only, so content never depends on JavaScript to appear.
 const textEnter = "animate-hero-text motion-reduce:animate-hero-fade";
@@ -27,33 +28,32 @@ export function ServicesHero() {
         <p
           className={`${textEnter} text-[16px] leading-5 font-bold tracking-[0.066em] text-brand uppercase lg:text-[clamp(14px,0.833vw,16px)]`}
         >
-          Our Services
+          {eyebrow}
         </p>
 
         <h1
           className="mt-[23px] text-[min(calc((100vw-40px)/10.3),64px)] leading-[1.04] font-[660] tracking-[-0.0096em] text-ink lg:text-[clamp(38px,3.75vw,72px)]"
         >
           <MaskLine onLoad order={1}>
-            Smart Digital Solutions
+            {heading.first}
           </MaskLine>{" "}
           <MaskLine onLoad order={2} className="text-brand">
-            for Your Business
+            {heading.accent}
           </MaskLine>
         </h1>
 
         <p
           className={`${textEnter} mt-[25px] max-w-[26.5em] text-[18px] leading-[1.367] text-ink [animation-delay:260ms] lg:text-[clamp(18px,1.354vw,26px)]`}
         >
-          We help businesses design, build, and grow with modern technology. Explore our services
-          and find the right solution for your business.
+          {description}
         </p>
 
         <div
           className={`${textEnter} mt-6 flex flex-wrap items-center gap-3 [animation-delay:340ms]`}
         >
           {/* No destinations in the design yet. */}
-          <ButtonLink href="#" className="h-[60px] px-6 pt-px text-[20px] font-medium! lg:h-[clamp(48px,3.125vw,60px)] lg:px-[clamp(16px,1.25vw,24px)] lg:text-[clamp(16px,1.042vw,20px)] gap-2.5 lg:gap-[clamp(7px,0.521vw,10px)] lg:min-w-[min(12.97vw,249px)]">
-            <StaggerText text="Start Your Project" />
+          <ButtonLink href={primaryAction.href} className="h-[60px] px-6 pt-px text-[20px] font-medium! lg:h-[clamp(48px,3.125vw,60px)] lg:px-[clamp(16px,1.25vw,24px)] lg:text-[clamp(16px,1.042vw,20px)] gap-2.5 lg:gap-[clamp(7px,0.521vw,10px)] lg:min-w-[min(12.97vw,249px)]">
+            <StaggerText text={primaryAction.label} />
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true" className="mr-0.5">
               <path
                 d="M2 9h14M10.5 3.5 16 9l-5.5 5.5"
@@ -64,8 +64,8 @@ export function ServicesHero() {
               />
             </svg>
           </ButtonLink>
-          <ButtonLink href="#" variant="secondary" className="h-[60px] px-6 pt-0.5 text-[20px] font-semibold! tracking-[-0.001em]! lg:h-[clamp(48px,3.125vw,60px)] lg:px-[clamp(16px,1.25vw,24px)] lg:text-[clamp(16px,1.042vw,20px)] border-[#a59788]! hover:border-ink! lg:min-w-[min(12.92vw,248px)]">
-            <StaggerText text="Explore Our Services" />
+          <ButtonLink href={secondaryAction.href} variant="secondary" className="h-[60px] px-6 pt-0.5 text-[20px] font-semibold! tracking-[-0.001em]! lg:h-[clamp(48px,3.125vw,60px)] lg:px-[clamp(16px,1.25vw,24px)] lg:text-[clamp(16px,1.042vw,20px)] border-[#a59788]! hover:border-ink! lg:min-w-[min(12.92vw,248px)]">
+            <StaggerText text={secondaryAction.label} />
           </ButtonLink>
         </div>
 

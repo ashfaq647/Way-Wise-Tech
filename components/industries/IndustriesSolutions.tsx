@@ -7,8 +7,10 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { MaskLine } from "@/components/motion/MaskLine";
 import { Reveal } from "@/components/motion/Reveal";
 import { revealOrder } from "@/components/motion/revealOrder";
-import { industrySolutions } from "@/lib/content/industries";
+import { industrySolutions, industrySolutionsSection } from "@/lib/content/industries";
 import "./industries-solutions.css";
+
+const { eyebrow, heading, description } = industrySolutionsSection;
 
 /**
  * The Homepage Our Work stacking, repeated here because that section is protected and keeps it
@@ -40,12 +42,14 @@ export function IndustriesSolutions() {
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
             <div className="min-w-0">
               <SectionEyebrow size="lg" weight="semibold" tracking="0.094em" className="ww-rise">
-                Industry Solutions
+                {eyebrow}
               </SectionEyebrow>
               <SectionHeading id="industries-solutions-heading" tone="navy" className="mt-2 lg:mt-1.5">
-                <MaskLine order={1}>Complete Digital Solutions</MaskLine>{" "}
+                <MaskLine order={1}>{heading.first}</MaskLine>{" "}
                 <MaskLine order={2}>
-                  for <span className="text-brand">Your Industry</span>
+                  {/* One string, so "for " stays a single text node before the red span. */}
+                  {`${heading.second} `}
+                  <span className="text-brand">{heading.accent}</span>
                 </MaskLine>
               </SectionHeading>
             </div>
@@ -53,8 +57,7 @@ export function IndustriesSolutions() {
               style={revealOrder(3)}
               className="ww-rise max-w-[26.9em] text-[18px] leading-[1.45] text-navy lg:shrink-0 lg:text-[clamp(17px,1.146vw,22px)]"
             >
-              From website design to custom software, we provide everything you need to grow your
-              business online.
+              {description}
             </p>
           </div>
         </Reveal>

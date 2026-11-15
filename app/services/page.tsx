@@ -9,6 +9,7 @@ import { SiteHeader } from "@/components/layout/SiteHeader";
 import { Faq } from "@/components/services/Faq";
 import { OurProcess } from "@/components/services/OurProcess";
 import { ServicesHero } from "@/components/services/ServicesHero";
+import { allServiceCards, servicesSection } from "@/lib/content/services";
 
 export const metadata: Metadata = {
   title: "Services | Way-Wise Tech",
@@ -27,7 +28,8 @@ export default function ServicesPage() {
           <ClientLogos />
         </PinnedSection>
         <PinnedSection>
-          <Services />
+          {/* All eight services; the header button leads to /contact instead of back to this page. */}
+          <Services services={allServiceCards} action={servicesSection.pageAction} />
         </PinnedSection>
         <PinnedSection>
           <OurProcess />

@@ -3,12 +3,13 @@ import { ButtonLink } from "@/components/ui/ButtonLink";
 import { SectionEyebrow } from "@/components/ui/SectionEyebrow";
 import { MaskLine } from "@/components/motion/MaskLine";
 import { assets } from "@/lib/assets";
+import { portfolioHero } from "@/lib/content/portfolio";
 
 // Entrance animations are CSS only, so content never depends on JavaScript to appear.
 const textEnter = "animate-hero-text motion-reduce:animate-hero-fade";
 
-const heroImageAlt =
-  "Laptop and phone on a sunlit desk showing property management, medical clinic, law firm and restaurant website designs";
+const { eyebrow, heading, description, primaryAction, secondaryAction, imageAlt: heroImageAlt } =
+  portfolioHero;
 
 /**
  * The Our Portfolio page Hero, from "our protfolio.png". The artwork (3840x1616) holds the desk,
@@ -42,23 +43,22 @@ export function PortfolioHero() {
           barClassName="-translate-y-px"
           className={`${textEnter} lg:text-[clamp(14px,0.9375vw,18px)]`}
         >
-          Our Portfolio
+          {eyebrow}
         </SectionEyebrow>
 
         <h1 className="mt-[23px] text-[clamp(28px,8.8vw,64px)] leading-[1.04] font-[630] tracking-[-0.008em] text-ink lg:mt-[clamp(14px,1.2vw,23px)] lg:text-[clamp(38px,3.75vw,72px)]">
           <MaskLine onLoad order={1}>
-            Real Projects.{" "}
+            {heading.first}{" "}
           </MaskLine>
           <MaskLine onLoad order={2} className="text-brand">
-            Real Results.
+            {heading.accent}
           </MaskLine>
         </h1>
 
         <p
           className={`${textEnter} mt-6 max-w-[24.8em] text-[18px] leading-[1.385] tracking-[0.015em] text-ink [animation-delay:260ms] lg:mt-[clamp(14px,1.25vw,24px)] lg:text-[clamp(16px,1.354vw,26px)]`}
         >
-          We create intuitive, user-focused designs that turn ideas into beautiful digital products
-          and make every interaction simple and engaging.
+          {description}
         </p>
 
         <div
@@ -66,10 +66,10 @@ export function PortfolioHero() {
         >
           {/* No destinations in the design yet. */}
           <ButtonLink
-            href="#"
+            href={primaryAction.href}
             className="h-[59px] gap-2.5 px-7 text-[20px] lg:h-[clamp(44px,3.073vw,59px)] lg:gap-[clamp(7px,0.521vw,10px)] lg:px-[clamp(18px,1.458vw,28px)] lg:text-[clamp(16px,1.042vw,20px)]"
           >
-            Start a Project
+            {primaryAction.label}
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
               <path
                 d="M2 9h14M10.5 3.5 16 9l-5.5 5.5"
@@ -81,14 +81,14 @@ export function PortfolioHero() {
             </svg>
           </ButtonLink>
           <ButtonLink
-            href="#"
+            href={secondaryAction.href}
             variant="secondary"
             // As in the Industries Hero: the reference's outline label is heavier than semibold, and
             // an inline weight wins over ButtonLink's class without !important. Outfit is variable.
             style={{ fontWeight: 650 }}
             className="h-[59px] px-7 text-[20px] lg:h-[clamp(44px,3.073vw,59px)] lg:px-[clamp(18px,1.458vw,28px)] lg:text-[clamp(16px,1.042vw,20px)]"
           >
-            Let&rsquo;s Talk
+            {secondaryAction.label}
           </ButtonLink>
         </div>
       </div>

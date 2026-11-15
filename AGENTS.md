@@ -45,6 +45,105 @@ Last updated 2026-11-10. Read this before changing anything. Details were verifi
   - **Lenis:** the `lenis` dependency and its wheel interception.
   - **`pinned-section.css`:** CSS additions for the depth layers.
 
+## Phase A: CMS & SEO readiness (owner-approved, 2026-11-14)
+
+Preparation only. No CMS, database, backend, API route, Server Action, package or dynamic route was added, and no existing page, component, content file, title, description or URL was changed.
+
+- **Files added:**
+  - `lib/site.ts`: verified site facts. `name` is "Way-Wise Tech", the spelling every page title uses today (this records usage, not a brand decision). `url` is `null` until the owner confirms the production domain. `language` is "en".
+  - `lib/seo.ts`: `buildMetadata({ title, description?, path?, image?, type?, noIndex? })`, returning a Next `Metadata` object. The title is used as given (no template). Canonical, `og:url` and absolute image URLs are added only once `site.url` is set. **No page uses it yet.**
+  - `app/not-found.tsx`: the branded 404 for every unmatched URL. Inner-page header (no red banner), one `bg-sand` section pinned while the Footer rises (as on `/faq`), the shared `Container`, `SectionEyebrow`, `SectionHeading as="h1"` and `ButtonLink`, and the CSS Hero text entrance. Copy approved by the owner: "404 Error" / "Sorry, This Page" / red "Doesn't Exist", the description, "Back to Home" → `/`, "Contact Us" → `/contact`. Title "Page Not Found | Way-Wise Tech"; Next adds `noindex` and the 404 status. The copy lives in the file, not in `lib/content`.
+- **Deliberately not done (pending):**
+  - **`metadataBase`, canonical URLs, `robots.ts`, `sitemap.ts`:** need the confirmed production domain.
+  - **`title.template` in `app/layout.tsx`:** every page already writes its own " | Way-Wise Tech" suffix, and a template applies to child pages, so adding one would double every title unless all page metadata changes. Needs the owner's decision.
+  - **Brand spelling:** "Way-Wise Tech" (titles), "Way Wise Tech" (Footer copyright) and "WayWise" (Service Details copy).
+  - **Insights links:** 8 of the 9 article cards link to routes that do not exist (only `the-insiders-guide-to-credit-reports` is built). They now land on the branded 404. Left unchanged until the owner decides on the content.
+  - **Article date:** the Insights card dates the first article 2026-07-15, the article page shows "21 Sep, 2020". No ISO publication date was added; both dates are unchanged.
+  - **Content shapes:** not migrated. String-only images (`services.ts`, `industries.ts`) and colours stored in data (`tone`, `fade`) still feed frozen or protected components.
+- **Convention for new content (unchanged from "Frontend phase guidelines"):** images as `{ src, width, height, alt }` (the `SeoImage` type in `lib/seo.ts` has the same shape), icons as stable names, no CSS classes or colours in data.
+- **Verified 2026-11-14:**
+  - **Checks:** `npm run lint`, `tsc --noEmit --incremental false` and `npm run build` pass before and after.
+  - **Existing routes:** with `next start` in Chrome at 1440×900, all 16 existing routes returned 200, with `<title>`, meta description and rendered `body.innerText` identical to the baseline taken before the change.
+  - **404 page:** unmatched URLs return 404 with the new page and `noindex`. Checked at 1920, 1280, 768 and 390: no horizontal overflow, and the section holds while the Footer rises 1:1 with no end gap. Reduced motion falls back to normal flow.
+
+## Current Project Progress & Next Steps (owner, 2026-11-14)
+
+**Completed**
+- **Phase A, SEO foundation:** `AGENTS.md`, `app/not-found.tsx`, `lib/site.ts`, `lib/seo.ts` (see "Phase A").
+- **Phase B, Homepage content extraction:** Hero, Services, Industries, Our Work and Final CTA now read their content from the existing `lib/content/` files. Layout, classes, colours, icons, animation and behaviour stay in the components.
+
+  | Section | Content | Component |
+  |---|---|---|
+  | Hero | `homeHero` in `lib/content/home.ts` (new file, Homepage-only content) | `components/home/Hero.tsx` |
+  | Services | `serviceCards` (now with `href`) and `servicesSection` in `lib/content/services.ts` | `components/home/Services.tsx` |
+  | Industries | `industryCards`, `industriesSection`, `industryPhases` in `lib/content/industries.ts` | `components/home/Industries.tsx` |
+  | Our Work | `homeOurWork` in `lib/content/home.ts` | `components/home/OurWork.tsx` |
+  | Final CTA | `finalCta` in `lib/content/contact.ts` | `components/home/FinalCta.tsx` |
+- **Verified:** visual baseline (pixel-identical screenshots), responsive layout, copy, links, interactions, animations, card stacking and pinning all unchanged. Lint, TypeScript and the production build pass; 18 static routes are generated.
+- **Superseded notes:** older statements elsewhere in this file that `Services.tsx` and `Industries.tsx` keep their own copies of the data, that `industryCards` is unused, or that the pricing cards store their classes in the data are out of date. ~~The Footer still keeps its own copy of its labels.~~ Superseded by Phase C (R2): the Footer now reads its labels from `lib/content/` (see "Phase C").
+- **Phase C, shared content audit and extraction:** R1, R2, R4, R5, R6, R7.1 and R7.2 complete (2026-11-14). See "Phase C".
+- **Not yet on GitHub:** this work (Phases A, B and C) has not been transferred to the GitHub repository.
+- **Still planned:** the Lenis + Layered Depth work at the top of this file is recorded but not started.
+
+**Next task: a READ-ONLY Shared Content Audit** (done 2026-11-14: the audit ran as described and led to the Phase C tasks; kept here as the record of the request)
+- Inspect the Footer, Navbar/navigation, shared components, remaining hardcoded content, repeated content and how `lib/content/` is organised.
+- Report exact duplicates separately from similar-but-different content.
+- For each finding: source files, dependencies, usage, risks and a recommendation.
+- Modify nothing during the audit, and wait for the owner's explicit approval before any implementation.
+
+**Mandatory workflow:** read-only inspection → findings and recommendation → exact file scope → explicit approval → scoped implementation → baseline comparison → lint, TypeScript and build verification → report.
+
+**Important constraints**
+- This working folder is separate from the GitHub repository and has no `.git` directory. Do not clone, initialise Git, connect to GitHub, commit or push: the owner handles repository updates separately.
+- Do not build a CMS yet or introduce premature abstractions. Decisions that depend on CTO or SEO-specialist requirements wait for them.
+- Preserve the existing Figma design, UI, copy, animations, responsiveness and functionality. No unrelated refactoring or file changes.
+
+## Phase C: Shared content audit and extraction (owner-approved, 2026-11-14)
+
+Text moved out of components into `lib/content/`, one owner-approved task at a time, following the mandatory workflow above. Content only: no layout, class, colour, icon, animation, link destination or behaviour changed, and no CMS, package or new folder was added.
+
+| Task | What changed | Files |
+|---|---|---|
+| R1 | The duplicate `serviceRoutes` map is removed; each service link uses its card's `href` (`services[].card.href`, `"#"` for the two services without a card) | `lib/content/navigation.ts` |
+| R2 | The Footer reads its labels from content: Services column from `services`, Industries from `footerIndustries`, Company from `companyLinks`, plus `socialLinks`, `legalLinks` and `navBrandCard` (intro and regions). **Link destinations unchanged:** column links still come from the Footer's own `linkHrefs` (only About Us and Insights have a page), and the social, legal and action links stay `"#"` in the component. Column titles, action labels, copyright, "Start a Conversation" and "Get in Touch" stay in the component | `components/layout/SiteFooter.tsx` |
+| R4 | Our Process eyebrow, heading, description and the five steps moved to `ourProcess`. Circle colours and SVG icons stay in the component (`stepVisuals`), matched to the steps **by position** | `lib/content/process.ts` (new), `components/services/OurProcess.tsx` |
+| R5 | The four older Heroes: `contactHero` (`contact.ts`), `portfolioHero` (`portfolio.ts`, beside the untouched on-hold `portfolioTestimonials`), `servicesHero` (`services.ts`), `industriesHero` (`industries.ts`). Text, button labels and `href`s (all still `"#"`), checklists and alt text moved; image files, sizes and framing stay in the components (owner's instruction). `servicesHero` has no alt text: its artwork is decorative (`alt=""`). Industries Hero alt texts are keyed by image name (`imageAlts`) | the four content files and `ContactHero`, `PortfolioHero`, `ServicesHero`, `IndustriesHero` |
+| R6 | Industries page section headers: `industriesAtAGlanceSection`, `industriesTrustSection` (header and image alt; also renders on `/our-work`), `industrySolutionsSection` | `lib/content/industries.ts`, `IndustriesAtAGlance.tsx`, `IndustriesTrust.tsx`, `IndustriesSolutions.tsx` |
+| R7.1 | The shared FAQ section's header, "Contact Us" action (still `"#"`) and 8 questions moved to `servicesFaq`, one flat list in display order; the component splits it into two equal columns. The answer-draft note moved with it | `lib/content/faq.ts`, `components/services/Faq.tsx` (frozen; edited with the owner's explicit approval) |
+| R7.2 | Read-only browser test of the shared FAQ accordion on `/services` and `/services/ui-ux-product-design` | none |
+
+**Verified:**
+- **Rendered HTML:** for every extraction task, the affected section's prerendered HTML was byte-identical before and after, on every route that renders it (production builds, compared in a scratch folder outside the project):
+  - Footer on all 16 pages that have one;
+  - Our Process on its 10 routes;
+  - each Hero on its route;
+  - the Industries trust section on `/industries` and `/our-work`;
+  - the shared FAQ on its 8 routes, including the UI/UX master page, plus the `/faq` Hero and questions section.
+- **Content files:** each edited content file gained lines and lost none, so existing exports are unchanged.
+- **FAQ in the browser (R7.2):** Playwright, 1440×900, real clicks and keys. All 8 questions in the right two-column order; click opens and closes; several answers can be open at once (as the code intends); the plus turns into a minus; `aria-expanded`, `aria-controls` and the region's visibility update; Enter, Space and Tab work. No console errors and no hydration errors. The only warning was Next's dev-mode LCP image suggestion for the `/services` Hero artwork, unrelated to the FAQ.
+- **Checks:** ESLint, `tsc --noEmit --incremental false` and `next build` pass.
+- **Not checked:** browsers other than Chromium, touch devices, reduced motion, and the FAQ on the other six routes in a browser (their HTML was compared).
+
+**Kept separate on purpose** (same or similar wording, different sections; do not merge):
+- `servicesFaq` and the `/faq` page's `faqQuestions`: different questions, no answer shared.
+- `industriesTrustSection` and `caseStudyResults`: identical header wording.
+- The older Heroes and their look-alike copy elsewhere, such as the Contact Hero's Case Study wording and the Portfolio Hero's UI/UX description.
+
+**Patterns to keep:**
+- **Visuals matched by position:** where content and visuals are matched by position (`stepVisuals` in `OurProcess.tsx`, and earlier `imageLayout`, `phaseStyles`, `teamTiles`, `cardBackgrounds`), adding, removing or reordering items needs the matching visual list changed too.
+- **Text nodes:** render a prefix and its trailing space as one string (`` {`${heading.second} `} ``), not `{heading.second}{" "}`. The two-node form makes React insert `<!-- -->` and changes the HTML (used in `IndustriesSolutions.tsx`).
+- **Generated `next-env.d.ts`:** `next dev` rewrites it to `./.next/dev/types/…` and `next build` back to `./.next/types/…`. Do not edit it by hand.
+
+**Still pending:**
+- **R3, Footer link destinations (owner decision):** whether the Footer's links should match the Navbar's real routes (the six Details pages, `/our-work`, View All Services and Industries, Contact Us). Until then the Footer keeps its current destinations, and `footerColumns` in `navigation.ts` stays unused.
+- **SEO specialist:**
+  - production domain, brand spelling and title template;
+  - final meta descriptions, Open Graph and Twitter images, structured data, sitemap, robots and redirects;
+  - the 8 Insights cards that lead to missing articles.
+  - **Observed in the final review:** the root layout (used by `/`) and four pages (`/services`, `/industries`, `/our-work`, `/contact`) write their meta description as a copy of their Hero text. `/case-study`, `/our-work` and the UI/UX page share one description, and `/` shares one with the 404 page.
+- **CTO:** the CMS, which content it manages, URL and slug rules, relationships, media, publishing, form destinations and languages.
+- **CMS:** deferred until those requirements are confirmed. No CMS work has started.
+
 ## Roadmap and architecture (owner, 2026-11-10)
 
 ### Roadmap
@@ -96,9 +195,9 @@ The six static Service Details route files stay unchanged for now. Any future fo
   - In `components/services/`: `Faq` and `OurProcess`, which are used by other pages too.
   
   They are not to be moved: moving them would touch frozen files for clarity only.
-- **Content inside components:** the older, mostly frozen components still hold their own text (see "Central content").
+- **Content inside components:** the older, mostly frozen components still hold their own text (see "Central content"). *Update 2026-11-14: largely superseded by Phases B and C; the section texts now come from `lib/content/`. What remains in components is mostly interface labels, Navbar and Footer leftovers (banner, profile card, column titles, copyright), the 404 page copy and page metadata.*
 - **Duplicated data:**
-  - Navigation existed three times: `navigation.ts`, `SiteHeader.tsx` and `SiteFooter.tsx`. Update 2026-11-10: `navigation.ts` is now the Navbar's single source; the Footer still keeps its own copy.
+  - Navigation existed three times: `navigation.ts`, `SiteHeader.tsx` and `SiteFooter.tsx`. Update 2026-11-10: `navigation.ts` is now the Navbar's single source; ~~the Footer still keeps its own copy~~. *Update 2026-11-14 (Phase C, R2): the Footer reads its labels from `lib/content/` too; its link destinations are unchanged (R3 pending).*
   - Service and industry lists are duplicated (see "Central content").
 - **Styling in data:** Contact Overview stores hex colours, and the Homepage pricing cards in `Industries.tsx` store Tailwind classes.
 - **Mixed assets:** `lib/assets.ts` mixes design artwork with content images, and image sizes are spread across files.
@@ -108,7 +207,7 @@ The six static Service Details route files stay unchanged for now. Any future fo
 
 **Recommendations, frontend phase** (each needs the owner's approval where it touches frozen, protected or under-review files):
 - **New sections:** follow the content-separation guidelines above.
-- **Navigation source:** done for the Navbar on 2026-11-10 (`navigation.ts` drives it). The Footer still has its own copy; switch it only on the owner's instruction.
+- **Navigation source:** done for the Navbar on 2026-11-10 (`navigation.ts` drives it). ~~The Footer still has its own copy; switch it only on the owner's instruction.~~ *Done for the Footer's labels on 2026-11-14 (Phase C, R2, owner-approved). Its link destinations are a separate pending decision (R3).*
 - **Owner decisions needed:** the main industry list and the brand-name spelling.
 - **Frozen text:** optionally move frozen sections' text into `lib/content/`, one section at a time, with before/after pixel checks.
 
@@ -126,7 +225,7 @@ No CMS-readiness score is recorded: any percentage would be a subjective estimat
 
 ## Working rules (from the project owner)
 
-- **No Git operations without permission.** There is currently **no `.git` repository** in the project folder, so there is no commit history and no starter commit. Do not run `git init`, create commits or run any other Git command unless the owner explicitly asks. All work so far exists only as files on disk.
+- **No Git operations without permission.** The project is on GitHub (`ashfaq647/Way-Wise-Tech`, branch `main`). The working folder `D:\office\waywise tech (12-11-26)` has **no `.git` folder**: it is an extracted copy, verified on 2026-11-14 as byte-identical to `main` at `8b63b79` (all 233 tracked files). The owner updates GitHub manually. Do not run `git init`, clone over the folder, change remotes, commit or push unless the owner explicitly asks.
 - **Workflow, one section at a time:** inspect references and assets → explain your understanding → implement that section only → visual QA → freeze. Wait for approval between sections. After a task, report and wait for the owner's instructions.
 - **Read-only means read-only.** When a task is an inspection or report, do not edit, create, delete or rename files, and do not run formatting or build commands unless asked.
 - **Do not stop or restart the development server.** Avoid `next build` while it runs, because both write to `.next/`. For checks, `npx --no-install tsc --noEmit --incremental false` and `npx --no-install eslint .` write no files.
@@ -1139,6 +1238,18 @@ Before defining service, industry or navigation data, check `lib/content/` and r
 
 Components use `service-details.ts`, `contact.ts` and the Industries-page exports of `industries.ts`. `contact.ts` also reads `serviceCards` from `services.ts` for the Project Type options; nothing else in `services.ts` is used. `navigation.ts` drives the Navbar (desktop dropdowns and mobile menu); it reads `services` from `services.ts` and `footerIndustries` from `industries.ts`. `industryCards` is still unused. `Services.tsx` (including its card links), `Industries.tsx` and `SiteFooter.tsx` still hold their own copies (the Footer's links are all `#`), so a content change must be made in both places until the owner approves switching them over. Do not modify frozen sections or change their data sources without explicit approval.
 
+*Update 2026-11-14 (supersedes the paragraph above and the "unused" notes in the list):*
+- **Single sources:** `Services.tsx` and `Industries.tsx` read from `services.ts` and `industries.ts` (Phase B), and `SiteFooter.tsx` reads its labels from `services`, `footerIndustries`, `companyLinks`, `socialLinks`, `legalLinks` and `navBrandCard` (Phase C, R2). A label change is now made once, in `lib/content/`. The Footer's link destinations stay in `SiteFooter.tsx` (R3 pending).
+- **Exports added since:**
+  - `home.ts`: `homeHero`, `homeOurWork`.
+  - `process.ts`: `ourProcess`.
+  - `faq.ts`: `servicesFaq`, beside the `/faq` page's `faqHero` and `faqQuestions`.
+  - `contact.ts`: `contactHero`, `finalCta`.
+  - `portfolio.ts`: `portfolioHero`.
+  - `services.ts`: `servicesSection`, `servicesHero`.
+  - `industries.ts`: `industriesSection`, `industryPhases`, `industriesHero`, `industriesAtAGlanceSection`, `industriesTrustSection`, `industrySolutionsSection`.
+- **Still unused:** `footerColumns` in `navigation.ts` (kept until R3 is decided).
+
 Unresolved differences, kept as they are on purpose:
 - Three different industry lists exist: the carousel (Attorney & Lawyers, Restaurant, Retailers, Doctor, Plumbers), the Footer (Healthcare & Medical, Legal & Professional Services, Real Estate & Construction, Finance, Insurance & Accounting, Retail, E-commerce & Logistics), and the Industries page's "Industries at a Glance" cards (Law Firms, Healthcare, Real Estate, Construction). Ask the owner before adding Industry category pages.
 - "Cloud, API & DevOps" and "Support & Maintenance" are only in the Footer, with no description or image.
@@ -1333,16 +1444,16 @@ Recorded for reference only. Do not fix any of these without the owner's instruc
 
 ### Raised by the 2026-11-09 inspection
 
-- **No version control:** there is no `.git` folder, so nothing has a backup or history. Setting up Git needs the owner's permission.
+- **No version control in the working folder:** the repository is on GitHub (see "Working rules"), but this folder has no `.git`, so local changes have no history until the owner copies them into the repository.
 - **Reachability (updated 2026-11-10):** the six Details pages are reached through the Services cards (approved). The Footer's service links are still `#`. Since 2026-11-10 the Navbar dropdowns (awaiting review) link the six Details pages, `/services` (View All Services), `/industries` (View All Industries), `/our-work` (Company → Our Work) and `/contact` (Company → Contact Us). The top-level Industries, Our Work and Company items are still `#`.
 - **Temporary Service Details images:** all five non-UI/UX Details pages show the UI/UX images through 15 entries in `lib/assets.ts` (listed under "Service Details pages"). None of the five `public/images/service details/<slug>/` folders exists yet. All five pages' copy was written without dedicated Figma designs; it is accepted for now under the Content & SEO policy.
 - **Contact map heading under the Navbar** on near-16:9 screens: see "Contact Us page". Accepted by the owner as a known limitation on 2026-11-10. Do not fix without explicit authorisation.
 - **`/our-work` ends without Final CTA or Footer**, because it is still being built; its next section is on hold. `/contact` now ends with FAQ and Footer.
 - **Contact copy to confirm with the owner** (accepted for now under the Content & SEO policy): the Contact Hero uses Portfolio-style wording (eyebrow "Case Study", "Visit Live Website", "Discuss a Similar Project"), and the Client Overview card descriptions repeat the Why Choose Us text. Neither was rechecked against its reference during the audit.
-- **SEO basics are missing:** pages have only `title` and `description`. There is no `metadataBase`, Open Graph or Twitter metadata, canonical URL, `sitemap`, `robots` or structured data. The only icon is `app/favicon.ico`. Add any of these only when the owner asks.
+- **SEO basics are missing:** pages have only `title` and `description`. There is no `metadataBase`, Open Graph or Twitter metadata, canonical URL, `sitemap`, `robots` or structured data. The only icon is `app/favicon.ico`. Add any of these only when the owner asks. Since Phase A (2026-11-14), `lib/site.ts`, `lib/seo.ts` and a branded `app/not-found.tsx` exist; the rest waits for the production domain and the SEO specialist (see "Phase A").
 - **Brand name has three spellings:** "Way-Wise Tech" (page titles, logo alt text), "Way Wise Tech" (Footer copyright, approved exactly) and "WayWise" (Service Details copy). Left as is under the Content & SEO policy until the owner decides.
-- **Duplicated data:** service, industry and navigation data exist both in `lib/content/` and inside `Services.tsx`, `Industries.tsx`, `SiteHeader.tsx` and `SiteFooter.tsx` (see "Central content").
-- **Unused code and files (2026-11-10):** `lib/content/services.ts` apart from `serviceCards` (read by the Contact form); `industryCards` in `lib/content/industries.ts` (`navigation.ts`, `services` and `footerIndustries` are now used by the Navbar); `public/images/footer/logo.svg`. `SectionHeading`, the rest of `industries.ts` and `public/images/industry page/` are now used by `/industries`.
+- **Duplicated data:** service, industry and navigation data exist both in `lib/content/` and inside `Services.tsx`, `Industries.tsx`, `SiteHeader.tsx` and `SiteFooter.tsx` (see "Central content"). *Superseded 2026-11-14: resolved by Phase B (Services, Industries), the 2026-11-10 Navbar work and Phase C R2 (Footer labels). Only the Footer's link destinations remain separate, pending R3.*
+- **Unused code and files (2026-11-10):** *(partly superseded: `industryCards` and the `services` list are used now, see "Central content")* `lib/content/services.ts` apart from `serviceCards` (read by the Contact form); `industryCards` in `lib/content/industries.ts` (`navigation.ts`, `services` and `footerIndustries` are now used by the Navbar); `public/images/footer/logo.svg`. `SectionHeading`, the rest of `industries.ts` and `public/images/industry page/` are now used by `/industries`.
 - **Reference in the project root:** `section.png` (the Contact form reference) sits next to `package.json`. It is outside `public/`, so it is not served. Leave it until the owner says where references should live.
 - **Contact form has no backend:** like the Final CTA form, "Send Message" sends nothing. A destination is needed before launch.
 - **Phase price formatting:** the three cards in `Industries.tsx` mix `$950-$2950`, `$2975 – $6700` and `$6800-$19500`. Content, so left as is.
@@ -1356,7 +1467,7 @@ Recorded for reference only. Do not fix any of these without the owner's instruc
 - **Placeholder links:** all `#` except the logo, Home breadcrumb, the Navbar's Services (`/services`) and Contact (`/contact`) links, and the six Services card links. This includes the Navbar's Industries, Our Work and Company items, the Industries, Our Portfolio and Contact Hero buttons, "Start a Project", the profile PDF card, every Hero button, every "View All" button in sections, FAQ "Contact Us", and every Footer, social and legal link except the Footer's About Us (`/about`). In the Navbar dropdowns, 12 links are `#` because their pages do not exist (see "Navbar dropdown menus"); About Us now goes to `/about`.
 - **About Us links (owner, 2026-11-11):** every existing About Us link goes to `/about`; no new links were added.
   - **Destination:** set once as `aboutUsLink` in `lib/content/navigation.ts`. It is used by `companyLinks`, so the Navbar Company dropdown (desktop) and the mobile menu's Company list follow it.
-  - **Footer:** `SiteFooter.tsx` still keeps its own label lists (switching it to `navigation.ts` still needs the owner's approval). It now looks up hrefs in a small `linkHrefs` map built from `aboutUsLink`, so only About Us has a destination there; every other Footer link stays `#`, including its "Our Work".
+  - **Footer:** ~~`SiteFooter.tsx` still keeps its own label lists (switching it to `navigation.ts` still needs the owner's approval).~~ *Superseded 2026-11-14 (Phase C, R2): its labels now come from `lib/content/`; the href lookup below is unchanged.* It now looks up hrefs in a small `linkHrefs` map built from `aboutUsLink`, so only About Us has a destination there; every other Footer link stays `#`, including its "Our Work".
   - **Verified in Chrome:** on `/`, `/services`, UI/UX Details, `/industries`, `/our-work`, `/contact` and `/about`, at 1920 and 390, every About Us anchor has `href="/about"`; `/our-work` has no Footer. Clicking the desktop dropdown link (from `/services`), the Footer link (from `/contact`) and the mobile-menu link (from `/industries`) opens `/about` with client-side navigation, without a full reload.
 - **Services image crop:** the old exports cut off icons at the top of cards 1, 3, 4 and 6. The owner's new files show the full compositions at the 1920 check; the owner has not yet confirmed this closes the issue.
 - **Industries small-screen contrast (unresolved):** Doctor's title contrast is 1.45 at 320px, 2.15 at 390px, 2.46 at 1024px; Plumbers' is 2.78 at 320px. A stronger fade below 1280px was proposed but not applied.

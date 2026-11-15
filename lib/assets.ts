@@ -7,12 +7,16 @@ export const assets = {
   heroAi: "/images/hero-ai.png",
   heroStrategy: "/images/hero-strategy.png",
   heroDashboard: "/images/hero-dashboard.png",
-  serviceUiUx: "/images/services/Image-4.png",
-  serviceCustomSoftware: "/images/services/Image-3.png",
-  serviceWeb: "/images/services/Image-2.png",
-  serviceMobile: "/images/services/Image-5.png",
-  serviceAi: "/images/services/Image-1.png",
-  serviceBranding: "/images/services/Image.png",
+  // Services cards. The six original files are 987x400 PNGs with rounded top corners in the file.
+  serviceUiUx: "/images/services/ui-ux%20%26%20product.png",
+  serviceCustomSoftware: "/images/services/custom-software-dev.png",
+  serviceWeb: "/images/services/web-dev.png",
+  serviceMobile: "/images/services/mobile-app-dev.png",
+  serviceAi: "/images/services/ai-automation.png",
+  serviceBranding: "/images/services/branding.png",
+  // 1619x656 JPEGs with a .png name and square corners (the card's own radius rounds the top).
+  serviceCloud: "/images/services/cloud%20api.png", // cloud linked to API, data and CI icons
+  serviceSupport: "/images/services/maintenance.png", // gears linked to tools, monitoring, security, 24/7
   industryAttorney: "/images/industries/attorney.png",
   industryRestaurant: "/images/industries/restaurant.png",
   industryRetailers: "/images/industries/retailers.png",
@@ -34,7 +38,8 @@ export const assets = {
   ctaCfo: "/images/cto/Fiona.png",
   serviceListHero: "/images/service%20List/Service%20list%20hero.png",
   serviceDetailsHero: "/images/service%20details/service%20details%20hero.png",
-  serviceDetailsWhyChoose: "/images/service%20details/why%20business%20choose.png",
+  serviceDetailsWhyChoose:
+    "/images/service%20details/why%20business%20choose.png",
   projectRealEstate: "/images/service%20details/real%20state.png",
   projectSaasDashboard: "/images/service%20details/saas%20dashboard.png",
   projectMobileApp: "/images/service%20details/mobile%20app.png",
@@ -44,13 +49,15 @@ export const assets = {
   // this service's own files. Replace each path with
   // /images/service%20details/custom-software-development/{hero,why-choose,why-choose-us}.png
   customSoftwareHero: "/images/service%20details/service%20details%20hero.png",
-  customSoftwareWhyChoose: "/images/service%20details/why%20business%20choose.png",
+  customSoftwareWhyChoose:
+    "/images/service%20details/why%20business%20choose.png",
   customSoftwareWhyChooseUs: "/images/service%20details/real%20difference.png",
   // Web Development. TEMPORARY: these reuse the UI/UX images until the owner supplies this
   // service's own files. Replace each path with
   // /images/service%20details/web-development/{hero,why-choose,why-choose-us}.png
   webDevelopmentHero: "/images/service%20details/service%20details%20hero.png",
-  webDevelopmentWhyChoose: "/images/service%20details/why%20business%20choose.png",
+  webDevelopmentWhyChoose:
+    "/images/service%20details/why%20business%20choose.png",
   webDevelopmentWhyChooseUs: "/images/service%20details/real%20difference.png",
   // Mobile App Development. TEMPORARY: these reuse the UI/UX images until the owner supplies this
   // service's own files. Replace each path with
@@ -61,15 +68,37 @@ export const assets = {
   // AI, Data & Automation. TEMPORARY: these reuse the UI/UX images until the owner supplies this
   // service's own files. Replace each path with
   // /images/service%20details/ai-data-automation/{hero,why-choose,why-choose-us}.png
-  aiDataAutomationHero: "/images/service%20details/service%20details%20hero.png",
-  aiDataAutomationWhyChoose: "/images/service%20details/why%20business%20choose.png",
-  aiDataAutomationWhyChooseUs: "/images/service%20details/real%20difference.png",
+  aiDataAutomationHero:
+    "/images/service%20details/service%20details%20hero.png",
+  aiDataAutomationWhyChoose:
+    "/images/service%20details/why%20business%20choose.png",
+  aiDataAutomationWhyChooseUs:
+    "/images/service%20details/real%20difference.png",
   // Branding & Digital Growth. TEMPORARY: these reuse the UI/UX images until the owner supplies
   // this service's own files. Replace each path with
   // /images/service%20details/branding-digital-growth/{hero,why-choose,why-choose-us}.png
-  brandingDigitalGrowthHero: "/images/service%20details/service%20details%20hero.png",
-  brandingDigitalGrowthWhyChoose: "/images/service%20details/why%20business%20choose.png",
-  brandingDigitalGrowthWhyChooseUs: "/images/service%20details/real%20difference.png",
+  brandingDigitalGrowthHero:
+    "/images/service%20details/service%20details%20hero.png",
+  brandingDigitalGrowthWhyChoose:
+    "/images/service%20details/why%20business%20choose.png",
+  brandingDigitalGrowthWhyChooseUs:
+    "/images/service%20details/real%20difference.png",
+  // Cloud, API & DevOps. TEMPORARY: these reuse the UI/UX images until the owner supplies this
+  // service's own files. Replace each path with
+  // /images/service%20details/cloud-api-devops/{hero,why-choose,why-choose-us}.png
+  cloudApiDevopsHero: "/images/service%20details/service%20details%20hero.png",
+  cloudApiDevopsWhyChoose:
+    "/images/service%20details/why%20business%20choose.png",
+  cloudApiDevopsWhyChooseUs: "/images/service%20details/real%20difference.png",
+  // Support & Maintenance. TEMPORARY: these reuse the UI/UX images until the owner supplies this
+  // service's own files. Replace each path with
+  // /images/service%20details/support-maintenance/{hero,why-choose,why-choose-us}.png
+  supportMaintenanceHero:
+    "/images/service%20details/service%20details%20hero.png",
+  supportMaintenanceWhyChoose:
+    "/images/service%20details/why%20business%20choose.png",
+  supportMaintenanceWhyChooseUs:
+    "/images/service%20details/real%20difference.png",
   // Industries page Hero. The four photos keep their export names; each file shows the scene noted.
   industryHeroBackground: "/images/industry%20page/Industry%20Hero%20Image.png",
   industryHeroLaundry: "/images/industry%20page/Rectangle%2099.png", // appliance repair, 600x1134
@@ -86,7 +115,8 @@ export const assets = {
   // Industries page "Industry Solutions" cards. Each about 1320x560, 2x its 660x280 frame.
   industrySolutionWeb: "/images/industry%20page/web%20design%20.png",
   industrySolutionMobile: "/images/industry%20page/mobile%20app.png",
-  industrySolutionSoftware: "/images/industry%20page/custom%20software%20development.png",
+  industrySolutionSoftware:
+    "/images/industry%20page/custom%20software%20development.png",
   industrySolutionDesign: "/images/industry%20page/ui%20ux%20.png",
   // Our Portfolio testimonial portrait (Amy Marie), 600x674 (2x its 300x337 frame at 1920), with
   // rounded corners (52px) in the file.
@@ -184,11 +214,36 @@ export const assets = {
 
 /** Client logos in design order, at their design size. */
 export const clientLogos = [
-  { name: "Seat Waves", src: "/images/logos/seat-waves.svg", width: 122, height: 34 },
-  { name: "FileWyse", src: "/images/logos/filewyse.svg", width: 126, height: 34 },
-  { name: "FlyArzan", src: "/images/logos/flyarzan.svg", width: 152, height: 36 },
+  {
+    name: "Seat Waves",
+    src: "/images/logos/seat-waves.svg",
+    width: 122,
+    height: 34,
+  },
+  {
+    name: "FileWyse",
+    src: "/images/logos/filewyse.svg",
+    width: 126,
+    height: 34,
+  },
+  {
+    name: "FlyArzan",
+    src: "/images/logos/flyarzan.svg",
+    width: 152,
+    height: 36,
+  },
   { name: "r&n", src: "/images/logos/r-and-n.svg", width: 77, height: 34 },
   { name: "PenWise", src: "/images/logos/penwise.svg", width: 155, height: 30 },
-  { name: "Michael D. Finley", src: "/images/logos/michael-finley.svg", width: 170, height: 34 },
-  { name: "Arizona Accidents Angels", src: "/images/logos/arizona.svg", width: 104, height: 34 },
+  {
+    name: "Michael D. Finley",
+    src: "/images/logos/michael-finley.svg",
+    width: 170,
+    height: 34,
+  },
+  {
+    name: "Arizona Accidents Angels",
+    src: "/images/logos/arizona.svg",
+    width: 104,
+    height: 34,
+  },
 ];

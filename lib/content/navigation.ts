@@ -8,8 +8,12 @@ import { services } from "./services";
   where that page already exists on the site; every other "#" is a placeholder until real URLs are
   provided. Do not invent URLs.
 
-  The Footer (components/layout/SiteFooter.tsx) still keeps its own copy of these labels, all "#",
-  until the owner approves switching it over. Keep the labels in sync until then.
+  The Footer (components/layout/SiteFooter.tsx) reads its company labels from `companyLinks`, and its
+  social links, legal links, intro and regions from `socialLinks`, `legalLinks` and `navBrandCard`.
+  It reuses the labels only: its link destinations stay in the Footer itself (of its column links,
+  only About Us and Insights have a page; the rest, and the social and legal links, are "#").
+  Whether the Footer should use these real routes is a pending owner decision (R3), so
+  `footerColumns` is not used by it.
 */
 
 export type NavLink = {
@@ -37,23 +41,17 @@ export type NavItem = NavLink & {
   chevron?: boolean;
 };
 
-/** The Service Details pages, linked as the Services cards link them. */
-const serviceRoutes: Record<string, string> = {
-  "UI/UX & Product Design": "/services/ui-ux-product-design",
-  "Custom Software Development": "/services/custom-software-development",
-  "Web Development": "/services/web-development",
-  "Mobile App Development": "/services/mobile-app-development",
-  "AI, Data & Automation": "/services/ai-data-automation",
-  "Branding & Digital Growth": "/services/branding-digital-growth",
-};
-
-const serviceLinks: NavLink[] = services.map(({ title, card }) => ({
+/**
+ * Each service links to its Details page, the same `href` its Services card uses. Only the six
+ * featured services carry a description, so only they become main links.
+ */
+const serviceLinks: NavLink[] = services.map(({ title, featured, card }) => ({
   label: title,
-  href: serviceRoutes[title] ?? "#",
-  description: card?.description,
+  href: card?.href ?? "#",
+  description: featured ? card?.description : undefined,
 }));
 
-/** The six services with a Services-section card are the main links; the other two are extras. */
+/** The six featured services are the main links; the other two are extras. */
 export const servicesMenu: NavMenu = {
   title: "Services",
   links: serviceLinks.filter((link) => link.description),
@@ -97,9 +95,13 @@ export const navBrandCard = {
   regions: "USA • UAE • Worldwide",
 };
 
-/** Navbar items, in order. */
+/**
+ * Navbar items, in order. An item with a menu and href "#" is one toggle button (no navigation):
+ * Services works like Industries and Company, and /services is reached from its dropdown's
+ * "View All Services" button.
+ */
 export const primaryNav: NavItem[] = [
-  { label: "Services", href: "/services", menu: servicesMenu },
+  { label: "Services", href: "#", menu: servicesMenu },
   { label: "Industries", href: "#", menu: industriesMenu },
   { label: "Our Work", href: "#", chevron: true },
   { label: "Company", href: "#", menu: companyMenu },

@@ -2,68 +2,19 @@ import type { CSSProperties } from "react";
 import { CardStack } from "@/components/home/CardStack";
 import { AssetImage } from "@/components/ui/AssetImage";
 import { ButtonLink } from "@/components/ui/ButtonLink";
-import { assets } from "@/lib/assets";
+import { homeOurWork } from "@/lib/content/home";
 
-// UNVERIFIED CONTENT: every project and client detail below is copied exactly from the
-// Figma reference and has not been confirmed. Do not treat these as real clients or
-// real project records. Confirm or replace them before launch.
-const projects = [
-  {
-    number: "01",
-    title: "Laravel Backend System",
-    image: assets.workLaravelBackend,
-    alt: "Laptop on a blue chair showing a medical website",
-    client: "Marvin McKinney",
-    role: "Nursing Assistant",
-    photo: assets.workClient1,
-    background: "bg-[#d0c7ae]",
-  },
-  {
-    number: "02",
-    title: "Landing Page Dev Work",
-    image: assets.workLandingPage,
-    alt: "Laptop in a spotlight showing a dark green landing page",
-    client: "Brooklyn Simmons",
-    role: "Web Designer",
-    photo: assets.workClient2,
-    background: "bg-[#d5d9cc]",
-  },
-  {
-    number: "03",
-    title: "Online Store Launch",
-    image: assets.workOnlineStore,
-    alt: "Laptop on a stone surface showing a furniture store",
-    client: "Bessie Cooper",
-    role: "Marketing Coordinator",
-    photo: assets.workClient3,
-    background: "bg-[#ead3bb]",
-  },
-  {
-    number: "04",
-    title: "React Dashboard Panel",
-    image: assets.workReactDashboard,
-    alt: "Tablet showing a medical dashboard on a pastel background",
-    client: "Ronald Richards",
-    role: "Medical Assistant",
-    photo: assets.workClient4,
-    background: "bg-[#e1daed]",
-  },
-  {
-    number: "05",
-    title: "Mobile App UI Design",
-    image: assets.workMobileApp,
-    alt: "Hand holding a phone showing a medical appointment app",
-    client: "Esther Howard",
-    role: "President of Sales",
-    photo: assets.workClient5,
-    background: "bg-[#c3dbf6]",
-  },
-];
+// The section's content comes from lib/content/home.ts. UNVERIFIED CONTENT: the project and client
+// details there are copied from the Figma reference and have not been confirmed (see its note).
+const { eyebrow, heading, description, action, industryLabel, summary, details } = homeOurWork;
 
-const details = [
-  { label: "Project Scope", value: "Website Development" },
-  { label: "Project Duration", value: "3 Month" },
-];
+// Each card's background colour, in the content's order.
+const cardBackgrounds = ["bg-[#d0c7ae]", "bg-[#d5d9cc]", "bg-[#ead3bb]", "bg-[#e1daed]", "bg-[#c3dbf6]"];
+
+const projects = homeOurWork.projects.map((project, index) => ({
+  ...project,
+  background: cardBackgrounds[index],
+}));
 
 /**
  * Plain CSS stacking: each card pins 16px lower than the last, and later cards paint on top.
@@ -89,29 +40,30 @@ export function OurWork() {
                 className="h-[3px] w-[22px] shrink-0 -translate-y-px bg-brand"
                 aria-hidden="true"
               />
-              Our Work
+              {eyebrow}
             </p>
             <h2
               id="our-work-heading"
               className="mt-1 text-[clamp(26px,7.4vw,48px)] leading-[1.365] font-semibold tracking-[-0.015em] text-[#0d1d44] lg:text-[clamp(34px,2.71vw,52px)]"
             >
-              Real Projects. <span className="text-brand">Real</span>
+              {/* One text node ("Real Projects. "), as before: a separate " " node shifts the red words' sub-pixel rendering. */}
+              {`${heading.first} `}
+              <span className="text-brand">{heading.accent}</span>
               <br />
-              <span className="text-brand">Digital Solutions.</span>
+              <span className="text-brand">{heading.second}</span>
             </h2>
           </div>
 
           <div className="lg:pt-[34px]">
             <p className="text-[18px] leading-[1.45] text-[#0d1d44] max-[1599px]:text-pretty lg:text-[clamp(17px,1.146vw,22px)]">
-              Explore some of the websites, apps, and software solutions we&apos;ve designed and
-              developed for different businesses.
+              {description}
             </p>
             <ButtonLink
-              href="#"
+              href={action.href}
               variant="outline"
               className="mt-[15px] h-[52px] border-[#0d1d44]! px-6 text-[18px] text-[#0d1d44]! hover:bg-[#0d1d44]! hover:text-white! lg:text-[20px]"
             >
-              View All Projects
+              {action.label}
             </ButtonLink>
           </div>
         </div>
@@ -130,14 +82,15 @@ export function OurWork() {
               >
                 <div className="min-w-0">
                   <p className="text-[15px] leading-[22px] text-brand uppercase lg:text-[clamp(14px,0.9375vw,18px)]">
-                    {project.number}&nbsp;&nbsp;/&nbsp;&nbsp;Industry
+                    {/* Two text nodes, "01" and "  /  Industry" (non-breaking spaces), exactly as before. */}
+                    {project.number}
+                    {`  /  ${industryLabel}`}
                   </p>
                   <h3 className="mt-1.5 text-[24px] leading-[1.25] font-semibold text-[#0d1d44] lg:text-[clamp(22px,1.667vw,32px)]">
                     {project.title}
                   </h3>
                   <p className="mt-1.5 max-w-[21.5em] text-[17px] leading-[1.364] text-[#3d4e5c] max-[1599px]:text-pretty lg:text-[clamp(16px,1.146vw,22px)]">
-                    Our team of 10 highly skilled engineers excels in delivering innovative
-                    solutions.
+                    {summary}
                   </p>
 
                   <dl className="mt-6 grid grid-cols-[minmax(0,393fr)_minmax(0,344fr)] lg:mt-[clamp(24px,2.6vw,50px)]">
@@ -156,7 +109,7 @@ export function OurWork() {
                   <div className="mt-6 flex min-h-20 items-center gap-2.5 rounded-lg bg-white px-4 py-3 lg:mt-[clamp(24px,2.5vw,48px)] lg:px-6">
                     <span className="relative size-[42px] shrink-0">
                       <AssetImage
-                        src={project.photo}
+                        src={project.client.photo.src}
                         alt=""
                         sizes="42px"
                         className="object-cover"
@@ -164,10 +117,10 @@ export function OurWork() {
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="block text-[18px] leading-6 font-medium text-[#1b3447]">
-                        {project.client}
+                        {project.client.name}
                       </span>
                       <span className="mt-0.5 block text-[16px] leading-6 text-[#3d4e5c]">
-                        {project.role}
+                        {project.client.role}
                       </span>
                     </span>
                     <svg
@@ -191,8 +144,8 @@ export function OurWork() {
 
                 <div className="relative order-first aspect-[683/450] overflow-hidden rounded-xl md:order-none">
                   <AssetImage
-                    src={project.image}
-                    alt={project.alt}
+                    src={project.image.src}
+                    alt={project.image.alt}
                     sizes="(min-width: 1024px) 36vw, (min-width: 768px) 46vw, 100vw"
                     className="object-cover"
                   />

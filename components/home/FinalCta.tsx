@@ -1,22 +1,18 @@
 import { AssetImage } from "@/components/ui/AssetImage";
 import { assets } from "@/lib/assets";
+import { finalCta } from "@/lib/content/contact";
 
-const promises = ["We will respond to you within 24 hrs", "We’ll sign an NDA if requested."];
+// The section's content comes from lib/content/contact.ts; the background image stays here.
+const { heading, description, promises, form } = finalCta;
+const { fields } = form;
 
-const team = [
-  { name: "Firoz Bari", role: "Chairman", photo: assets.ctaChairman, tile: "bg-[#ffb8b0]" },
-  { name: "Seung Lee", role: "CEO", photo: assets.ctaCeo, tile: "bg-[#c6cfff]" },
-  { name: "Fiona Bari", role: "CFO", photo: assets.ctaCfo, tile: "bg-[#ffeff2]" },
-];
+// Each team photo's tile colour, in the content's order.
+const teamTiles = ["bg-[#ffb8b0]", "bg-[#c6cfff]", "bg-[#ffeff2]"];
+
+const team = finalCta.team.map((person, index) => ({ ...person, tile: teamTiles[index] }));
 
 const fieldStyles =
   "block w-full rounded-xl border border-[#b4bccd] bg-white px-4 text-[16px] text-[#0d1d44] transition-colors duration-200 placeholder:text-[#757575] focus:border-[#0d1d44] focus:outline-none";
-
-const fields = [
-  { name: "name", label: "Full Name", type: "text", autoComplete: "name" },
-  { name: "phone", label: "Phone Number", type: "tel", autoComplete: "tel" },
-  { name: "email", label: "Email Address", type: "email", autoComplete: "email" },
-];
 
 export function FinalCta() {
   return (
@@ -34,13 +30,12 @@ export function FinalCta() {
             id="final-cta-heading"
             className="text-[clamp(32px,8.6vw,56px)] leading-[1.094] font-semibold text-[#0d1d44] lg:text-[clamp(40px,3.333vw,64px)]"
           >
-            Have a Project Idea?
+            {heading.first}
             <br />
-            <span className="text-brand">Let’s get started</span>
+            <span className="text-brand">{heading.second}</span>
           </h2>
           <p className="mt-[19px] max-w-[29.5em] text-[18px] leading-[1.45] text-[#0d1d44] max-[1599px]:text-pretty lg:text-[clamp(17px,1.25vw,24px)] lg:leading-[1.333]">
-            We&apos;ll schedule a call to discuss your idea. After discovery sessions, we&apos;ll
-            send a proposal, and upon approval, we&apos;ll get started.
+            {description}
           </p>
 
           <ul className="mt-[19px] space-y-2.5">
@@ -78,7 +73,7 @@ export function FinalCta() {
                   className={`relative aspect-[330/358] overflow-hidden rounded-lg ${person.tile}`}
                 >
                   <AssetImage
-                    src={person.photo}
+                    src={person.photo.src}
                     alt={person.name}
                     sizes="(min-width: 640px) 165px, 28vw"
                     className="object-cover"
@@ -98,12 +93,12 @@ export function FinalCta() {
         {/* Visual only: there is no form backend yet, so nothing typed here is sent anywhere. */}
         <form className="rounded-[20px] bg-white p-5 sm:p-10 sm:pt-[31px]">
           <h3 className="text-center text-[24px] leading-[1.15] font-semibold text-[#0d1d44] sm:text-[32px] sm:leading-9 lg:text-[clamp(24px,1.667vw,32px)] lg:leading-[1.125]">
-            Lets Talk About Your Next
+            {form.heading[0]}
             <br />
-            Project with Expert
+            {form.heading[1]}
           </h3>
           <p className="mt-[25px] text-center text-[15px] leading-6 text-[#0d1d44] sm:text-[17px]">
-            Provide your project details, and we&apos;ll contact you shortly.
+            {form.description}
           </p>
 
           <div className="mt-[23px] space-y-5">
@@ -120,8 +115,8 @@ export function FinalCta() {
             ))}
             <textarea
               name="details"
-              aria-label="Project Details"
-              placeholder="Project Details"
+              aria-label={form.detailsLabel}
+              placeholder={form.detailsLabel}
               rows={3}
               className={`${fieldStyles} h-[98px] resize-none py-3`}
             />
@@ -129,7 +124,7 @@ export function FinalCta() {
               type="button"
               className="flex h-14 w-full items-center justify-center rounded-[14px] bg-brand px-4 text-center text-[14px] leading-5 font-semibold text-white uppercase transition-colors duration-200 hover:bg-brand-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink sm:text-[16px]"
             >
-              Start Our Free Consultation
+              {form.submitLabel}
             </button>
           </div>
         </form>

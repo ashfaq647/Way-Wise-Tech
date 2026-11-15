@@ -628,3 +628,167 @@ export const brandingDigitalGrowth: ServiceDetails = {
     ],
   },
 };
+
+/*
+  Cloud, API & DevOps. Copy written for this page (no Figma design yet), in line with the Cloud, API
+  & DevOps card in the Services section. Images are the UI/UX ones for now, through this service's
+  own entries in lib/assets.ts, so alt text describes what those images show. Headline and heading
+  lines are no wider than the UI/UX ones, so the master layout holds at every width.
+*/
+export const cloudApiDevops: ServiceDetails = {
+  slug: "cloud-api-devops",
+  title: "Cloud, API & DevOps",
+  metaDescription:
+    "We set up secure cloud infrastructure, build reliable APIs, and automate deployments so your systems stay fast, stable, and easy to scale.",
+  hero: {
+    breadcrumb: "Cloud, API & DevOps",
+    headline: [{ text: "Cloud Systems" }, { text: "Built to", highlight: "Scale" }],
+    description:
+      "We set up secure cloud infrastructure, build reliable APIs, and automate deployments so your systems stay fast, stable, and easy to scale.",
+    image: {
+      src: assets.cloudApiDevopsHero,
+      width: 3840,
+      height: 1616,
+    },
+  },
+  whyChoose: {
+    eyebrow: "Why Choose WayWise",
+    heading: { first: "Why Businesses Choose", second: "WayWise for Cloud" },
+    description:
+      "We help businesses run their software on a solid foundation. Our team plans your cloud setup, connects your tools through APIs, and automates the work of releasing updates.",
+    points: [
+      "Cloud Setup & Migration",
+      "API Design & Development",
+      "Third-Party API Integrations",
+      "Automated CI/CD Deployments",
+      "Monitoring, Backups & Security",
+      "Scalable Hosting Architecture",
+    ],
+    image: {
+      src: assets.cloudApiDevopsWhyChoose,
+      width: 1414,
+      height: 1760,
+      alt: "Laptop and phone showing a design workspace, with typography, colour palette, image and flow cards floating above",
+    },
+  },
+  whyChooseUs: {
+    eyebrow: "Why Choose Us",
+    heading: { first: "Systems Built for", second: "Speed & Stability" },
+    description:
+      "We combine sound cloud architecture with careful automation to keep your applications secure, connected, and ready to grow.",
+    image: {
+      src: assets.cloudApiDevopsWhyChooseUs,
+      width: 1500,
+      height: 625,
+      alt: "Laptop, phone and tablet showing a design project, with typography, colour and flow cards above",
+    },
+    reasons: [
+      {
+        title: ["Planned", "Architecture"],
+        description: "Infrastructure designed around your traffic and goals.",
+        icon: "lightbulb",
+        tone: "#ecd4ba",
+      },
+      {
+        title: ["Experienced", "DevOps Team"],
+        description: "Skilled engineers who work with cloud, APIs, and automation.",
+        icon: "team",
+        tone: "#c0d0fe",
+      },
+      {
+        title: ["Secure &", "Reliable Systems"],
+        description: "Built to protect your data and run dependably.",
+        icon: "laptop",
+        tone: "#fedcdd",
+      },
+      {
+        title: ["Smooth", "Releases"],
+        description: "Automated deployments that make updates simple.",
+        icon: "chat-check",
+        tone: "#cef3e4",
+      },
+    ],
+  },
+};
+
+/*
+  Support & Maintenance. Copy written for this page (no Figma design yet), in line with the Support &
+  Maintenance card in the Services section. Images are the UI/UX ones for now, through this
+  service's own entries in lib/assets.ts, so alt text describes what those images show. Headline and
+  heading lines are no wider than the UI/UX ones, so the master layout holds at every width.
+*/
+export const supportMaintenance: ServiceDetails = {
+  slug: "support-maintenance",
+  title: "Support & Maintenance",
+  metaDescription:
+    "We keep your websites, apps, and software secure, up to date, and running smoothly with ongoing support you can count on.",
+  hero: {
+    breadcrumb: "Support & Maintenance",
+    headline: [{ text: "Software That" }, { text: "Keeps", highlight: "Running" }],
+    description:
+      "We keep your websites, apps, and software secure, up to date, and running smoothly with ongoing support you can count on.",
+    image: {
+      src: assets.supportMaintenanceHero,
+      width: 3840,
+      height: 1616,
+    },
+  },
+  whyChoose: {
+    eyebrow: "Why Choose WayWise",
+    heading: { first: "Why Businesses Choose", second: "WayWise for Support" },
+    description:
+      "We help businesses look after the digital products they rely on. Our team fixes issues, applies updates, and keeps an eye on performance so you can focus on your work.",
+    points: [
+      "Bug Fixes & Troubleshooting",
+      "Security Updates & Patches",
+      "Performance Monitoring",
+      "Regular Backups & Recovery",
+      "Content & Feature Updates",
+      "Clear Updates & Reporting",
+    ],
+    image: {
+      src: assets.supportMaintenanceWhyChoose,
+      width: 1414,
+      height: 1760,
+      alt: "Laptop and phone showing a design workspace, with typography, colour palette, image and flow cards floating above",
+    },
+  },
+  whyChooseUs: {
+    eyebrow: "Why Choose Us",
+    heading: { first: "Support That", second: "Keeps You Moving" },
+    description:
+      "We combine responsive support with careful upkeep to keep your website and software stable, secure, and up to date.",
+    image: {
+      src: assets.supportMaintenanceWhyChooseUs,
+      width: 1500,
+      height: 625,
+      alt: "Laptop, phone and tablet showing a design project, with typography, colour and flow cards above",
+    },
+    reasons: [
+      {
+        title: ["Proactive", "Maintenance"],
+        description: "Regular checks that catch issues early.",
+        icon: "lightbulb",
+        tone: "#ecd4ba",
+      },
+      {
+        title: ["Experienced", "Support Team"],
+        description: "Skilled developers who know how your system works.",
+        icon: "team",
+        tone: "#c0d0fe",
+      },
+      {
+        title: ["Secure &", "Up to Date"],
+        description: "Updates and patches that keep your software protected.",
+        icon: "laptop",
+        tone: "#fedcdd",
+      },
+      {
+        title: ["Clear", "Communication"],
+        description: "Simple updates on every request and change.",
+        icon: "chat-check",
+        tone: "#cef3e4",
+      },
+    ],
+  },
+};

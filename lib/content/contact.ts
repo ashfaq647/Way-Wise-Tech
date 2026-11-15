@@ -1,6 +1,24 @@
 import { assets } from "@/lib/assets";
 import { serviceCards } from "@/lib/content/services";
 
+/**
+ * The Contact Us page Hero (components/contact/ContactHero.tsx), as written in its reference. Moved
+ * out of the component unchanged; the image file, layout, gradient and animation stay there. Both
+ * buttons are "#" placeholders. The eyebrow and button labels are Portfolio-style wording, kept
+ * until the owner confirms the copy.
+ */
+export const contactHero = {
+  eyebrow: "Case Study",
+  /** The first line is ink; the second is the red `accent`. */
+  heading: { first: "Let’s Discuss Your", accent: "Next Project" },
+  description:
+    "Have a project idea or need expert advice? Our team is here to help. Get in touch and let's build something amazing together.",
+  primaryAction: { label: "Visit Live Website", href: "#" },
+  secondaryAction: { label: "Discuss a Similar Project", href: "#" },
+  imageAlt:
+    "Two business people in suits shaking hands over a desk with documents, a pen and a laptop, a city skyline behind",
+};
+
 export type ContactOverviewIcon = "lightbulb" | "team" | "laptop" | "chat-check";
 
 /**
@@ -154,4 +172,37 @@ export const contactOffices = {
       image: { src: assets.contactOfficeDhaka, width: 300, height: 300, alt: "Aerial view of Dhaka" },
     },
   ],
+};
+
+/**
+ * The Final CTA section (components/home/FinalCta.tsx), shared by the Homepage, /services, every
+ * Service Details page, /industries, /about and /our-work. Its heading and description repeat
+ * `contactLocations` above word for word; the two are kept separate (that section is approved and
+ * frozen). The form is visual only: nothing is submitted until a backend exists.
+ */
+export const finalCta = {
+  /** The first line is navy; the whole `second` line is red. */
+  heading: { first: "Have a Project Idea?", second: "Let’s get started" },
+  description:
+    "We'll schedule a call to discuss your idea. After discovery sessions, we'll send a proposal, and upon approval, we'll get started.",
+  promises: ["We will respond to you within 24 hrs", "We’ll sign an NDA if requested."],
+  /** Photos are 330x358. Each photo's alt text is the person's name (set in the component). */
+  team: [
+    { name: "Firoz Bari", role: "Chairman", photo: { src: assets.ctaChairman, width: 330, height: 358 } },
+    { name: "Seung Lee", role: "CEO", photo: { src: assets.ctaCeo, width: 330, height: 358 } },
+    { name: "Fiona Bari", role: "CFO", photo: { src: assets.ctaCfo, width: 330, height: 358 } },
+  ],
+  form: {
+    /** Two lines, broken where the design breaks them. */
+    heading: ["Lets Talk About Your Next", "Project with Expert"],
+    description: "Provide your project details, and we'll contact you shortly.",
+    /** As in contactMessage: each label is also the input's placeholder and aria-label. */
+    fields: [
+      { name: "name", label: "Full Name", type: "text", autoComplete: "name" },
+      { name: "phone", label: "Phone Number", type: "tel", autoComplete: "tel" },
+      { name: "email", label: "Email Address", type: "email", autoComplete: "email" },
+    ],
+    detailsLabel: "Project Details",
+    submitLabel: "Start Our Free Consultation",
+  },
 };

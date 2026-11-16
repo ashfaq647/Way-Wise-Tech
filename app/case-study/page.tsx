@@ -5,7 +5,8 @@ import { CaseStudyOverview } from "@/components/case-study/CaseStudyOverview";
 import { CaseStudyResults } from "@/components/case-study/CaseStudyResults";
 import { CaseStudyTech } from "@/components/case-study/CaseStudyTech";
 import { PinnedSection } from "@/components/home/PinnedSection";
-import { SiteFooter } from "@/components/layout/SiteFooter";
+import { PortfolioTestimonials } from "@/components/portfolio/PortfolioTestimonials";
+import { Footer } from "@/components/layout/Footer";
 import { RecentProjects } from "@/components/service-details/RecentProjects";
 import { OurProcess } from "@/components/services/OurProcess";
 import { SiteHeader } from "@/components/layout/SiteHeader";
@@ -26,8 +27,8 @@ export const metadata: Metadata = {
 export default function CaseStudyPage() {
   return (
     <>
-      {/* The red banner is Homepage only. */}
-      <SiteHeader showBanner={false} />
+      {/* Global rule (owner, 2026-11-16): the same shared Navbar and Footer as the Homepage. */}
+      <SiteHeader showBanner={false} variant="floating" />
       <main>
         {/*
           The whole Hero + logos section holds while Client Overview rises over it. Capped at Client
@@ -66,8 +67,7 @@ export default function CaseStudyPage() {
         {/*
           The trust section (approved; the component is unchanged) holds while Our Process rises over
           it. From here on the page ends as the Service Details pages do: the shared Our Process and
-          Recent Projects, reused exactly, each pinned with no cap, then the Footer. The Footer is at
-          least one screen tall when motion is allowed, so the last pin never outlasts it.
+          Recent Projects, reused exactly, then the shared Footer.
         */}
         <PinnedSection>
           <CaseStudyResults />
@@ -75,11 +75,21 @@ export default function CaseStudyPage() {
         <PinnedSection>
           <OurProcess />
         </PinnedSection>
-        <PinnedSection>
+        {/* 30svh holds here and below: each section rests in its 942 frame before the next rises. */}
+        <PinnedSection hold="30svh">
           <RecentProjects {...recentProjects} />
         </PinnedSection>
+        {/*
+          The testimonial carousel from /our-work, reused exactly (owner, 2026-11-16), as the last
+          section before the shared Footer. Capped at this page's Footer, so the pin never adds
+          empty scrolling past it.
+        */}
+        <PinnedSection limitCoverTo="main:has(#case-study-overview) + footer" hold="30svh">
+          <PortfolioTestimonials />
+        </PinnedSection>
       </main>
-      <SiteFooter />
+      {/* The shared combined Footer (Final CTA + footer) replaces SiteFooter. */}
+      <Footer />
     </>
   );
 }

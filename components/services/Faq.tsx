@@ -62,7 +62,22 @@ function FaqItem({ question, answer, order }: Question & { order: number }) {
   );
 }
 
-export function Faq() {
+/*
+  Frame per variant (2026-11-16): only the vertical padding differs. "default" is the original
+  1080px frame at 1920 (unchanged on every page). "compact" is the 1920x942 frame (/services): 69px
+  less above and below, so the same content stays centred. Nothing else changes.
+*/
+const frames = {
+  default: "lg:pt-[clamp(64px,12.396vw,238px)] lg:pb-[clamp(64px,12.474vw,239.5px)]",
+  compact: "lg:pt-[clamp(64px,8.802vw,169px)] lg:pb-[clamp(64px,8.880vw,170.5px)]",
+};
+
+type FaqProps = {
+  /** "compact": the 1920x942 frame. Default: the original 1080px frame. */
+  frame?: keyof typeof frames;
+};
+
+export function Faq({ frame = "default" }: FaqProps) {
   return (
     <section aria-labelledby="faq-heading" className="bg-[#eae2dd]">
       <noscript>
@@ -70,7 +85,7 @@ export function Faq() {
           {"[data-faq-answer]{visibility:visible!important;grid-template-rows:1fr!important}"}
         </style>
       </noscript>
-      <div className="mx-auto w-full max-w-[1600px] px-5 py-12 md:px-8 md:py-16 lg:pt-[clamp(64px,12.396vw,238px)] lg:pb-[clamp(64px,12.474vw,239.5px)] xl:px-5">
+      <div className={`mx-auto w-full max-w-[1600px] px-5 py-12 md:px-8 md:py-16 xl:px-5 ${frames[frame]}`}>
         <Reveal className="grid gap-5 lg:grid-cols-[minmax(0,1002fr)_minmax(0,558fr)] lg:gap-0">
           <div>
             <p className="ww-rise flex items-center gap-2 text-[16px] leading-5 font-bold tracking-[0.078em] text-brand uppercase lg:text-[clamp(16px,1.042vw,20px)]">

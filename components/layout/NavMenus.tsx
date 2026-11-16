@@ -73,6 +73,8 @@ type DesktopNavProps = {
   onOpenMenuChange: (label: string | null) => void;
   /** The bar's compact (scrolled) state: its visible lower edge then sits 5px higher. */
   compact: boolean;
+  /** The gap between items. The Homepage's floating bar spaces them wider (2026-11-16 redesign). */
+  gapClassName?: string;
 };
 
 /**
@@ -85,7 +87,13 @@ type DesktopNavProps = {
  * logo's left edge to the "Start a Project" button's right edge. Those positions are measured from
  * the bar's content box and written to CSS variables on the nav, with no re-render.
  */
-export function DesktopNav({ items, openMenu, onOpenMenuChange, compact }: DesktopNavProps) {
+export function DesktopNav({
+  items,
+  openMenu,
+  onOpenMenuChange,
+  compact,
+  gapClassName = "min-[1440px]:gap-4",
+}: DesktopNavProps) {
   const nav = useRef<HTMLElement>(null);
   const closeTimer = useRef<number | undefined>(undefined);
   // Moving straight from one open menu to another swaps the sheet in place instead of unfolding it.
@@ -114,8 +122,17 @@ export function DesktopNav({ items, openMenu, onOpenMenuChange, compact }: Deskt
       el.style.setProperty("--sheet-left", `${left - origin.left}px`);
       el.style.setProperty("--sheet-width", `${right - left}px`);
       const edge = bar.getBoundingClientRect().bottom - (compact ? 5 : 0);
+      // The sheet is placed relative to the nav, which moves with the bar, so it needs no correction.
       el.style.setProperty("--sheet-top", `${edge - origin.top}px`);
-      el.style.setProperty("--dim-top", `${edge}px`);
+      // The page dim is fixed to the screen. The header can be slid out of view (SiteHeader's
+      // hide-on-scroll, a `translate` on an ancestor), so measure it as if shown: a measurement
+      // while hidden or mid-slide cannot misplace the dim.
+      let slide = 0;
+      for (let node: Element | null = bar; node; node = node.parentElement) {
+        const translate = getComputedStyle(node).translate;
+        if (translate && translate !== "none") slide += parseFloat(translate.split(" ")[1] ?? "0") || 0;
+      }
+      el.style.setProperty("--dim-top", `${edge - slide}px`);
       el.dataset.measured = "";
     };
     place();
@@ -182,7 +199,7 @@ export function DesktopNav({ items, openMenu, onOpenMenuChange, compact }: Deskt
           anyOpen ? "opacity-100" : "opacity-0"
         }`}
       />
-      <ul className="flex items-center min-[1440px]:gap-4">
+      <ul className={`flex items-center ${gapClassName}`}>
         {items.map((item) =>
           item.menu ? (
             <DesktopMenuItem

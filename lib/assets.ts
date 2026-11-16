@@ -7,6 +7,10 @@ export const assets = {
   heroAi: "/images/hero-ai.png",
   heroStrategy: "/images/hero-strategy.png",
   heroDashboard: "/images/hero-dashboard.png",
+  // Homepage Mission & Vision (2026-11-16 redesign): 1500x863 RGBA, shown whole at 750x431.5 at 1920;
+  // its rounded corners are in the file (transparent). A man smiling at his desk in a wood-panelled
+  // office with bookshelves, a portrait, an armchair and a flag. The supplied file name says "Industry Card".
+  missionVision: "/images/mission-vision/Industry%20Card.png",
   // Services cards. The six original files are 987x400 PNGs with rounded top corners in the file.
   serviceUiUx: "/images/services/ui-ux%20%26%20product.png",
   serviceCustomSoftware: "/images/services/custom-software-dev.png",
@@ -119,8 +123,20 @@ export const assets = {
     "/images/industry%20page/custom%20software%20development.png",
   industrySolutionDesign: "/images/industry%20page/ui%20ux%20.png",
   // Our Portfolio testimonial portrait (Amy Marie), 600x674 (2x its 300x337 frame at 1920), with
-  // rounded corners (52px) in the file.
-  portfolioTestimonialAmy: "/images/our%20portfolio/Frame%202147238128.png",
+  // rounded corners (52px) in the file. Renamed by the owner from "Frame 2147238128.png" (same file).
+  portfolioTestimonialAmy: "/images/our%20portfolio/Amy.png",
+  // Further Our Portfolio testimonial portraits, supplied by the owner 2026-11-15. Brandon, jad,
+  // Morgan and Search are 667/668x1000 JPEGs with a .png name and square corners; Nichol is a
+  // 300x400 PNG with rounded corners in the file. Each is framed in the 600x674 portrait frame.
+  portfolioTestimonialBrandon: "/images/our%20portfolio/Brandon.png",
+  portfolioTestimonialJad: "/images/our%20portfolio/jad.png",
+  portfolioTestimonialMorgan: "/images/our%20portfolio/Morgan.png",
+  portfolioTestimonialSearch: "/images/our%20portfolio/Search.png",
+  portfolioTestimonialNichol: "/images/our%20portfolio/Nichol.png",
+  // Our Portfolio "Why Businesses Choose WayWise" project card image, 1026x840 (2x its 513x420
+  // frame at 1920): laptop and wall screens showing a property management dashboard. Its rounded
+  // top corners are in the file. For now every project card uses it.
+  portfolioProperty: "/images/our%20portfolio/property.png",
   // Blog Details (the Insights article page). Each file is 2x its frame at 1920.
   blogDetailsHero: "/images/blog%20details/Hero%20Section%20.png", // 2380x1000; title, meta and share icons baked in; rounded corners in the file
   blogDetailsWide: "/images/blog%20details/mid%20hero%20section.png", // 1808x760; man at a desk in a red circuit landscape; rounded corners in the file

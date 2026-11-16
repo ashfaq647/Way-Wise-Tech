@@ -6,6 +6,8 @@ import { IndustriesTrust } from "@/components/industries/IndustriesTrust";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { PortfolioHero } from "@/components/portfolio/PortfolioHero";
+import { PortfolioShowcase } from "@/components/portfolio/PortfolioShowcase";
+import { PortfolioTestimonials } from "@/components/portfolio/PortfolioTestimonials";
 import { RecentProjects } from "@/components/service-details/RecentProjects";
 import { OurProcess } from "@/components/services/OurProcess";
 import { recentProjects } from "@/lib/content/service-details";
@@ -18,11 +20,11 @@ export const metadata: Metadata = {
 
 /*
   The Our Portfolio page, at the Navbar's "Our Work" item. The Hero and Client Logo strip (from
-  "our protfolio.png") form one combined section. Then shared sections, reused exactly with their
-  existing data and animations: Recent Projects (the shared `recentProjects`), the Industries trust
-  section, Our Process and Final CTA, then the Footer. The section planned between the Hero and
-  Recent Projects is still being designed and is skipped for now. The testimonial stack
-  (PortfolioTestimonials) is on hold by the owner's decision and is not on the page.
+  "our protfolio.png") form one combined section. Then the project showcase (PortfolioShowcase, from
+  Frame 2147239009.png), then shared sections, reused exactly with their existing data and
+  animations: Recent Projects (the shared `recentProjects`), the Industries trust section, Our
+  Process, then the testimonial carousel (PortfolioTestimonials, redesigned 2026-11-15), then Final CTA
+  and the Footer.
 */
 export default function OurPortfolioPage() {
   return (
@@ -34,6 +36,10 @@ export default function OurPortfolioPage() {
         <PinnedSection>
           <PortfolioHero />
           <ClientLogos />
+        </PinnedSection>
+        {/* Held while Recent Projects rises over it, like every other section here. */}
+        <PinnedSection>
+          <PortfolioShowcase />
         </PinnedSection>
         <PinnedSection>
           <RecentProjects {...recentProjects} />
@@ -52,9 +58,13 @@ export default function OurPortfolioPage() {
         >
           <IndustriesTrust />
         </PinnedSection>
-        {/* Held while Final CTA rises over it. */}
+        {/* Held while the testimonials rise over it. */}
         <PinnedSection>
           <OurProcess />
+        </PinnedSection>
+        {/* The testimonial carousel, held while Final CTA rises over it (no extra hold). */}
+        <PinnedSection>
+          <PortfolioTestimonials />
         </PinnedSection>
         {/*
           As on /services and the Service Details pages: held while the Footer rises over it, with no

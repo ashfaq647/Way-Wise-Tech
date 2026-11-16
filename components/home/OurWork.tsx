@@ -74,7 +74,14 @@ export function OurWork() {
           the distance Final CTA travels to cover the stack (64px + card + section padding) but stay
           below Final CTA's height plus that padding, or cards would show beneath Final CTA.
         */}
-        <CardStack className="mt-8 flex flex-col gap-[30px] [--cover:1000px] after:block after:h-(--cover) mb-[calc(-30px-var(--cover))] lg:mt-[59px] lg:[--cover:760px]">
+        {/*
+          Hold (2026-11-16 frame rule): the spacer grows by --hold while its negative margin does not,
+          so the finished stack stays pinned and Final CTA arrives that much later, as with
+          PinnedSection's `hold`. --hold is 30svh plus the amount Final CTA would otherwise already
+          show when card 5 pins (its pin --p5 + its height, about 27.6vw from lg, + the 100px bottom
+          padding, short of the screen height). From lg with motion allowed only; elsewhere 0.
+        */}
+        <CardStack className="mt-8 flex flex-col gap-[30px] [--cover:1000px] after:block after:h-[calc(var(--cover)+var(--hold,0px))] mb-[calc(-30px-var(--cover))] lg:mt-[59px] lg:[--cover:760px] [--p5:160px] xl:[--p5:178px] [@media(min-width:1280px)_and_(min-height:820px)]:[--p5:212px] lg:motion-safe:[--hold:calc(30svh+max(0px,100svh-var(--p5)-27.604vw-100px))]">
           {projects.map((project, index) => (
             <li key={project.number} className={stacking} style={{ "--i": index } as CSSProperties}>
               <article

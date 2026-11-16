@@ -1,0 +1,144 @@
+/*
+  Our Portfolio fan carousel (ShowcaseFan). Every card sits in the same grid cell and is placed by
+  its offset from the front card (data-offset, -2 to 2; anything further is parked at the back,
+  hidden). The positions follow the reference fan (cmsfancarousel.framer.website), measured as
+  fractions of its 300px card so they scale with ours (--sf-w):
+
+    front     translateZ(+0.133w)                                                  no dim
+    ±1        x ±s1·w, y 4.6% of the card, z −0.233w, rotateZ ±5°,  rotateY ±14°, scale 0.84, dim 0.10
+    ±2        x ±s2·w, y 15.4%,            z −0.567w, rotateZ ±10.5°, rotateY ±24°, scale 0.70, dim 0.24
+
+  The reference spreads its cards wider (0.74w and 1.26w); --sf-s1/--sf-s2 are tighter here so the
+  fan fits beside the section's text column. Changing card glides over 900ms on the reference's
+  curve. Only transform, opacity and the dim layer's opacity animate. Depth comes from z-index
+  (the stage is not preserve-3d), so the front card always paints on top.
+
+  Reduced motion: the same fan, flat (no rotation or depth) and instant. Flat cards are wider on
+  screen than turned ones, so the outer pair sits 8% nearer the centre to keep clear of the text.
+*/
+
+.sf-stage {
+  --sf-ease: cubic-bezier(0.72, 0, 0.18, 1);
+  display: grid;
+  perspective: calc(var(--sf-w) * 5.667);
+  perspective-origin: 50% 45%;
+  /* The front card is the tallest and lowest, so it only needs room for its depth (it sits nearer). */
+  padding-block: calc(var(--sf-w) * 0.05);
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.sf-stage img {
+  -webkit-user-drag: none;
+}
+
+.sf-card {
+  grid-area: 1 / 1;
+  justify-self: center;
+  position: relative;
+  width: var(--sf-w);
+  border-radius: calc(var(--sf-w) * 0.0156) calc(var(--sf-w) * 0.0156) calc(var(--sf-w) * 0.0253)
+    calc(var(--sf-w) * 0.0253);
+  box-shadow:
+    0 calc(var(--sf-w) * 0.07) calc(var(--sf-w) * 0.14) calc(var(--sf-w) * -0.05) rgb(35 31 32 / 0.32),
+    0 2px 6px rgb(35 31 32 / 0.08);
+  transform-origin: 50% 50%;
+  transition:
+    transform 900ms var(--sf-ease),
+    opacity 540ms ease;
+  will-change: transform;
+}
+
+/* The reference's dim on the cards behind. */
+.sf-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: rgb(35 31 32);
+  opacity: var(--sf-dim, 0);
+  transition: opacity 900ms var(--sf-ease);
+  pointer-events: none;
+}
+
+.sf-card:not([data-offset="0"]) {
+  cursor: pointer;
+}
+
+.sf-card[data-offset="0"] {
+  z-index: 5;
+  transform: translate3d(0, 0, calc(var(--sf-w) * 0.133));
+}
+
+.sf-card[data-offset="1"],
+.sf-card[data-offset="-1"] {
+  z-index: 4;
+  --sf-dim: 0.1;
+}
+
+.sf-card[data-offset="1"] {
+  transform: translate3d(calc(var(--sf-w) * var(--sf-s1)), 4.6%, calc(var(--sf-w) * -0.233)) rotateZ(5deg)
+    rotateY(14deg) scale(0.84);
+}
+
+.sf-card[data-offset="-1"] {
+  transform: translate3d(calc(var(--sf-w) * var(--sf-s1) * -1), 4.6%, calc(var(--sf-w) * -0.233))
+    rotateZ(-5deg) rotateY(-14deg) scale(0.84);
+}
+
+.sf-card[data-offset="2"],
+.sf-card[data-offset="-2"] {
+  z-index: 3;
+  --sf-dim: 0.24;
+  opacity: var(--sf-far, 1);
+}
+
+.sf-card[data-offset="2"] {
+  transform: translate3d(calc(var(--sf-w) * var(--sf-s2)), 15.4%, calc(var(--sf-w) * -0.567))
+    rotateZ(10.5deg) rotateY(24deg) scale(0.7);
+}
+
+.sf-card[data-offset="-2"] {
+  transform: translate3d(calc(var(--sf-w) * var(--sf-s2) * -1), 15.4%, calc(var(--sf-w) * -0.567))
+    rotateZ(-10.5deg) rotateY(-24deg) scale(0.7);
+}
+
+/* Parked behind the front card, so a card leaving one end and joining the other never sweeps across. */
+.sf-card[data-offset="back"] {
+  z-index: 1;
+  --sf-dim: 0.24;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate3d(0, 10%, calc(var(--sf-w) * -1)) scale(0.55);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sf-card,
+  .sf-card::after {
+    transition: none;
+  }
+
+  .sf-card[data-offset="0"] {
+    transform: none;
+  }
+
+  .sf-card[data-offset="1"] {
+    transform: translateX(calc(var(--sf-w) * var(--sf-s1))) scale(0.84);
+  }
+
+  .sf-card[data-offset="-1"] {
+    transform: translateX(calc(var(--sf-w) * var(--sf-s1) * -1)) scale(0.84);
+  }
+
+  .sf-card[data-offset="2"] {
+    transform: translateX(calc(var(--sf-w) * var(--sf-s2) * 0.92)) scale(0.7);
+  }
+
+  .sf-card[data-offset="-2"] {
+    transform: translateX(calc(var(--sf-w) * var(--sf-s2) * -0.92)) scale(0.7);
+  }
+
+  .sf-card[data-offset="back"] {
+    transform: scale(0.7);
+  }
+}

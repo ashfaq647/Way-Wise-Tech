@@ -47,7 +47,8 @@ export function AboutHero() {
           <AssetImage src={image.src} alt={image.alt} sizes="100vw" priority className="object-contain" />
         </div>
 
-        <div className="relative mx-auto w-full max-w-[1600px] px-5 py-12 md:px-8 md:py-16 lg:py-0 xl:px-5">
+        {/* Below lg the text starts under the shared floating Navbar card (76px), as on the Homepage Hero. */}
+        <div className="relative mx-auto w-full max-w-[1600px] px-5 pt-[116px] pb-12 md:px-8 md:pt-[124px] md:pb-16 lg:py-0 xl:px-5">
           <SectionEyebrow
             weight="bold"
             tracking="0.095em"

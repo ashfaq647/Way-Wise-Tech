@@ -231,10 +231,254 @@ No CMS-readiness score is recorded: any percentage would be a subjective estimat
 - **Do not stop or restart the development server.** Avoid `next build` while it runs, because both write to `.next/`. For checks, `npx --no-install tsc --noEmit --incremental false` and `npx --no-install eslint .` write no files.
 - If an asset is missing or unclear, stop and ask. Do not use placeholders, crop assets from a reference, generate, recreate or substitute replacements, or invent content or URLs. See "Figma references and exported assets".
 - Inspect real file contents, not filenames. Example: a supplied `logo.svg` was a copy of the dark logo, two "SVG" logos wrap JPEGs, and `industry page/construction.png` is a JPEG.
-- **Red announcement banner: Homepage only.** Every inner page renders `<SiteHeader showBanner={false} />`. New pages must do the same.
+- **Red announcement banner: Homepage only.** Every inner page renders `<SiteHeader showBanner={false} />`. New pages must do the same. *Since the 2026-11-16 Homepage redesign the Homepage has no banner either (see "Figma redesign 2026-11-16"); the banner code stays in `SiteHeader` but no page shows it.*
 - **Every new section follows the overlapping pinned scroll** (see "Pinned sections"), including the last-section rule, and must keep working with reduced motion.
 - Do not add packages or edit global styles unless necessary.
 - Keep changes to the files the task names. Do not refactor, restyle or "tidy up" anything else.
+
+## Figma redesign 2026-11-16 (owner)
+
+The Figma design was redesigned. Every section's reference frame is now **1920 × 942** (match the layout within it; no fixed 942px CSS height). Outfit stays the font. Existing assets are reused where they match; new exports come with redesigned and new sections. Obvious Figma mistakes may be corrected; ambiguous ones are reported and asked about. The site is rebuilt section by section, starting with the Homepage Navbar + Hero.
+
+### Homepage Navbar + Hero (built 2026-11-16, **awaiting the owner's review**)
+
+- **Reference:** `Homepage.png` (project root, 1920×942): the floating Navbar, the Hero (y 0–842) and the top of the logo strip (y 842–942). No new assets came with it; all imagery is the existing files.
+- **Files:** `app/page.tsx` (`<SiteHeader showBanner={false} variant="floating" />`), `components/layout/SiteHeader.tsx`, `components/layout/NavMenus.tsx` (one optional prop), `components/home/Hero.tsx`.
+- **Navbar, `variant="floating"` (Homepage only):** inner pages keep the original in-flow white bar (`variant="bar"`, the default, markup unchanged).
+  - **Card:** 1560×80 at 1920, 20px from the top (`max-w-[1600px]` frame with the usual gutters), 14px radius, 1px `#e7e0d5` border, `bg-white/60` with a small blur and a tight `0 1.5px 2.5px` shadow. Padding 32px, so the logo starts at x 212 and the button ends at x 1707. Below `xl`: 64px tall, 12px from the top.
+  - **Out of the page flow:** the sticky wrapper has a negative bottom margin equal to its height (100px from `xl`, 76px below), so the Hero starts at the top of the page under the card. It stays at the top while the page scrolls.
+  - **States:** scrolled → `bg-white/90`, stronger blur and a soft navy shadow; a dropdown or the mobile menu open → solid white. The card's look is a separate `aria-hidden` layer behind its content, because a `backdrop-filter` on an ancestor would trap the dropdown's `fixed` page dim inside the card.
+  - **Contents at 1920:** logo 199×42; Nav items as before (18px medium) with an 18px list gap from 1440 (`DesktopNav`'s new optional `gapClassName`; the default keeps inner pages unchanged), centred between the logo and the right group; profile card `size="small"` 192×48 (thumbnail 46×33, PDF icon 31px, "Our Profile" 14px medium, "View PDF" 11.5px); "Start a Project" 159×48 at 17.5px. Below 1440 the profile thumbnail hides and the list gap is 0, as before.
+  - **Dropdown sheets:** unchanged component; they hang 10px below the card across its content width (x 212–1707 at 1920), and the page dim starts at the card's bottom edge.
+  - **Mobile menu (below `xl`):** a rounded white panel 8px below the card, same width.
+- **Hero:** the same content, buttons, eyebrow, 72px headline and checklist as before. Changes:
+  - **Top padding** clears the floating bar: bar height + `clamp(40px, 4.167vw, 80px)` from `lg` (the image grid starts at y 180 at 1920); 116px (`md`: 124px) below `lg`. Bottom padding `clamp(56px, 5.208vw, 100px)`. Section height 842 at 1920.
+  - **Image grid:** 760×562 (was 760×608), 20px gaps, 16px corners: 440×562 left, 300×271 right.
+  - **Description:** 22px on 36px lines at 0.042em (`clamp(16px, 1.146vw, 22px)` from `lg`), two lines at 1920, breaking after "software,", as in the reference (its text face looks like Inter). Below `lg` unchanged (18px).
+  - **Background:** the existing `hero-background.png` with `object-cover` matches the reference's taller section (mean difference 3.9/255).
+- **QA 2026-11-16** (Playwright, Chrome, 1920 layout width):
+  - **Match:** logo, card, buttons, profile card, eyebrow, headline, description and checklist within 0–2px of the reference; Nav items within 4px. Mean difference 5.05/255 over the Navbar and 6.47 over the Hero text.
+  - **Widths 2560, 1920, 1440, 1280, 1024, 768, 390, 320:** no horizontal overflow, no overlap inside the bar, Hero content 40–146px clear of the bar.
+  - **Behaviour:** sticky at 20px while scrolling, scrolled and top states, dropdown placement, mobile menu open and Escape close, Hero + logos pin hand-off to Services unchanged, page ends at the Footer; `/services` and `/contact` keep the 100px in-flow bar. `tsc` and `eslint` pass; no console errors.
+- **Open points for the owner:**
+  - **Photo framing:** the reference shows the three Hero photos framed differently (the dashboard photo zoomed, without the lamp). No CSS crop of the existing files matches (mean difference about 44/255 over the grid), so they are shown with `object-cover`, centred. Exact framing needs the re-exported images.
+  - **Red banner:** removed on the Homepage, as in the reference.
+  - **Inner pages:** still use the original bar until their redesigned references arrive.
+
+### Homepage Client Logo Strip, 100px (owner-approved 2026-11-16, **awaiting the owner's visual approval**)
+
+- **Finding (read-only investigation of `Homepage.png`):** the Hero and the logo strip are **one combined 1920 × 942 frame**.
+  - **Hero:** y 0–841 (842px).
+  - **Strip:** y 842–941 (100px, solid white). The Hero artwork ends with a hard edge at row 841 (no shadow or divider).
+  - **Logos:** all seven are 34px boxes at y 875–908, each centred at y 891.5: 33px of white above and below. The strip is complete inside the frame, not cut off by it.
+  - **Next section:** Services starts at y 942.
+- **Logo files re-imported 2026-11-16:** all seven `public/images/logos/*.svg` were replaced with re-exports. Names, dimensions and viewBoxes are unchanged, and they render pixel-identical to the previous files at 4× (0–14 anti-aliasing pixels). FileWyse and FlyArzan still wrap JPEGs with white backgrounds. No scripts, handlers or external references. `lib/assets.ts` is unchanged.
+- **Implementation:**
+  - **`components/home/ClientLogos.tsx`** (frozen; changed with the owner's approval): new optional prop `height`. `"default"` is `lg:h-[132px]`, every inner page, unchanged. `"compact"` is `lg:h-[100px]`. Nothing else changed: same logos, sizes, `justify-between` spacing and below-`lg` wrapping layout.
+  - **`app/page.tsx`:** `<ClientLogos height="compact" />`. The other ten users pass nothing.
+- **Verified 2026-11-16** (Playwright, Chrome, 1920 layout width):
+  - **Boundaries:** Hero 0–842, strip 842–942, Services from 942.
+  - **Logos:** ink at y 875–908 for all seven (dy 0), x within 0–2px of the reference. Mean difference 3.43/255 over the strip and 4.79 over the Hero outside the photos.
+  - **Hand-off:** the combined unit (942px) holds at 0 while Services rises 1:1, at 1920×942, 1920×1080, 1440×900 and 390×844; reverse scrolling is identical, and the page ends exactly at the Footer.
+  - **Inner pages:** `/services`, UI/UX Details, `/industries`, `/our-work`, `/contact`, `/about`, `/faq`, `/insights` and `/case-study` keep the 132px strip at their previous positions (y 907–914).
+  - **Widths:** no horizontal overflow at 2560, 1280, 1024, 768 or 320; logos inside the strip at every width.
+  - **Checks:** `tsc` and `eslint` pass; no console errors.
+- **Later:** once every page is redesigned on 942 frames, `"compact"` can become the default and the prop can be removed. Services (1081px), Industries (1080), Final CTA (1080) and Our Work (3193) are still the old designs; each will be fitted to its own 942 frame when its reference arrives.
+
+### Homepage Our Services (re-implemented 2026-11-16, **awaiting the owner's approval**)
+
+- **History:** built, then reverted at the owner's request, then re-implemented the same day from the same reference and approved decisions.
+- **Reference:** `Section.png` (project root, 1920×942). The same section, header copy, six services, order and images as before, redesigned to fit one frame.
+- **Owner decisions (2026-11-16):**
+  - **Scope:** Homepage only; `/services` unchanged.
+  - **"View All Services":** kept as a button, 48px tall, linking to `/services`.
+  - **Descriptions:** the reference's shorter copy on the Homepage only; the shared copy and the Navbar dropdown are unchanged.
+  - **Cards:** match the reference (about 5px corners).
+  - **Frame rule:** the whole section must fit its 1920×942 frame. 942 is a design target, not a CSS height: no forced height, hidden overflow or clipping, and natural heights at other widths.
+- **Files:**
+  - **`components/home/Services.tsx`** (frozen; changed with the owner's approval): new optional prop `variant` (`"default"` | `"compact"`). The class strings live in a `styles` map; `"default"` holds the original strings verbatim, so `/services` renders byte-identical (the SHA-256 of its section HTML equals the pre-change baseline).
+  - **`lib/content/home.ts`:** new `homeServiceCards`, the shared `serviceCards` with the Homepage-only descriptions, matched by title. Two use a non-breaking space ("digital experiences", "easy access") so their lines break where the reference does; Outfit is narrower than the reference's face.
+  - **`app/page.tsx`:** `<Services variant="compact" services={homeServiceCards} />`, wrapped in `<PinnedSection hold="30svh">`.
+- **Pin hold (fix 2026-11-16, after the owner saw Industries peeking into the 1920×942 frame):**
+  - **The cause was the pin, not the layout:** the section ends at the frame edge, and at the exact pinned position (scroll 942) the bottom pixel rows are Services' background. But Services covered the screen at only that one scroll position, and Industries rose from the next pixel on. With ~100px wheel steps the page never stops at 942, so Industries always showed: 58px at y 1000, then 158, 258…
+  - **The fix:** the existing `hold` feature (as on `/industries`) keeps Services pinned and fully in view for 30svh (283px at 942, two to three wheel steps) before Industries starts to rise. This gives Services a resting position, as the Hero has at the top of the page. The page grows by the hold; nothing moves or resizes.
+  - **Side effect, by the hold's design:** while held, the section is at least one screen tall (`min-height: 100svh`). On screens taller than 942 its background extends below the cards (1080px tall at 1920×1080, the cards still ending at 880), so the next section never shows during the hold.
+  - **Verified with real 100px wheel steps** at 1920×942 (layout widths 1920 and 1905): Services 0–942 with 0px of Industries visible at y 1000, 1100 and 1200; Industries rises from y 1225. The bottom rows (938–941) of the held screen are Services' background, `rgb(234,226,221)`, as in the reference.
+- **Compact layout at 1920:**
+  - **Section:** 941.97px. The eyebrow is at y 62 (`lg:pt-[59px]`). `lg:pb-[61.75px]` instead of 62 absorbs the fractional heights (2 × 61.74px heading lines, 192.13px images at the 493.33px card width), which would otherwise end the section at 942.2.
+  - **Header:** heading 53.5px (`clamp(34px, 2.786vw, 53.5px)`) with a 9px top margin, cap tops at y 99 and 161. The right column (`lg:items-end`) holds the 22px description and the 48px outline button; the button's bottom sits level with the heading's last line, so the frame and every card position are as in the reference.
+  - **Cards:** 493×302 at x 180 / 713 / 1247, rows y 251–553 and 578–880 (40px and 25px gaps).
+    - **Image:** `aspect-[493/192]`, `object-cover` centred (the existing files).
+    - **Body:** `px-6 pt-[17px] pb-[18px]`.
+    - **Text:** title 20px / 26px semibold; description 17px / 22px (`clamp(15px, 0.885vw, 17px)` from `lg`, 16px below) at 0.025em, `#626262`, 5px below the title.
+    - **Corners:** 5px, on the card and the link's focus outline.
+  - **Unchanged:** the card links, hover and focus lift, shadow, and the 3 / 2 / 1 columns.
+- **QA 2026-11-16** (Playwright, Chrome):
+  - **Frame, 1920×942 screen** (Services pinned at the top after a real wheel scroll, Navbar hidden): the section runs 0–941.97 with every element inside the screen: eyebrow 59–79, heading 88–211.5, description 83.7–147.5, button 163.5–211.5, cards 251–553 and 578.1–880.2, lowest content 880.2. Industries starts at 941.97; `overflow: visible`, natural height.
+  - **Match against `Section.png`:** eyebrow, heading lines, card edges, image boundaries, all six titles and all twelve description lines within 0–2px, with identical line breaks. Mean difference 4.74/255 (header), 7.10 (card text), 12.41 (images: same files, centre crop), 7.95 overall.
+  - **Hand-offs (with the hold):** at 1920×942, 1920×1080, 1440×900, 1280×720 and 390×844, Hero + logos holds while Services rises 1:1. Services then holds through the 30svh hold (at 0, −96 at 1280×720 and −396…−1190 at 390, where it is taller than the screen), and Industries rises 1:1. Reverse scrolling gives identical positions, and the page ends exactly at the Footer.
+  - **Widths:** 2560, 1440, 1280, 1024, 768, 390 and 320: no horizontal overflow, no clipped card text. 3 / 2 / 1 columns, button 48px.
+  - **Interactions:** hover lift and keyboard focus (5px-rounded outline) work; all six cards link to their Details pages.
+  - **Reduced motion:** no sticky pins, page height equal to the sum of the sections.
+  - **Unchanged elsewhere:** the `/services` section hash is unchanged, and the Navbar dropdown keeps the shared descriptions.
+  - **Checks:** `tsc` and `eslint` pass; no console errors.
+
+### Homepage Mission & Vision (built 2026-11-16, **awaiting the owner's approval**)
+
+- **Reference:** `Frame 2147239025.png` (project root, 1920×942). It was removed from the root during the build; its measurements were recorded before that and the 1920 QA below is against them. Asset: `public/images/mission-vision/Industry Card.png` (1500×863 RGBA, rounded corners in the file), the only file supplied, shown whole at exactly half size.
+- **Files:**
+  - **`components/home/MissionVision.tsx`** (new): reuses `Container`, `SectionEyebrow`, `Reveal each` with `.ww-rise`, `MaskLine` (heading lines), `revealOrder`, `AssetImage` and the `ink`, `ink-muted`, `navy` and `brand` tokens. Sizes follow the `--u` pattern of the newer sections.
+  - **`lib/content/home.ts`:** `homeMissionVision` (Homepage-only content).
+  - **`lib/assets.ts`:** `missionVision`.
+  - **`app/page.tsx`:** between Services and Industries, in `<PinnedSection hold="30svh">`.
+- **Layout at 1920:**
+  - **Section:** background `#f4f0e9`; content from y 100 to 842 (100px above and below).
+  - **Left (x 180–930):** `SectionEyebrow` (18px, 0.068em, ink at y 102); heading 53.5px with 61.7px lines, cap tops at y 140 and 201, ink with red "Into" / "Solutions"; description 26px / 32px `ink-muted`, three lines from y 282; the image 750×431.5 at y 410.5–842. Its bottom is level with the second card's: the column stretches to the cards' height and the image takes the spare space (`xl:mt-auto`).
+  - **Right (x 990–1740):** two white cards, 750×359, 16px corners, at y 100–459 and 483–842 (`xl:grid-rows-2`, 24px gap). Each card has 24px sides and 27px / 41.95px top and bottom padding, a 47px semibold title (navy "Our", red second word), and text at 26px / 36px `ink-muted`, 20px below the title, six lines.
+  - **Columns:** side by side from `xl`. Between `lg` and `xl` each column would be about 450px (the heading's first line no longer fits and the cards run far taller than the left column), so below `xl` the left column comes first and the cards follow, full width.
+- **Content (to confirm with the owner):** transcribed exactly as drawn. The eyebrow and heading repeat the Case Study's "The Challenge & Our Solution" / "Turning Challenges Into Solutions" rather than naming Mission & Vision. Both card texts are Lorem Ipsum placeholder, with the reference's own small differences: a comma after "Lorem Ipsum" in Mission only, "…in the middle of text." in Vision. The image alt text describes the photo.
+- **Pinning:** Services holds while Mission & Vision rises; Mission & Vision holds through its own 30svh hold, then Industries rises. The hold gives it a resting position with nothing peeking, as for Services.
+- **QA 2026-11-16** (Playwright, Chrome):
+  - **1920 match (against the recorded reference):** eyebrow, heading lines, all three description lines (left 181, right ends 862 / 862 / 463), both cards (100–459, 483–842) and all twelve card text lines (tops and right ends identical) at the reference's pixels. Card titles within 0–1px vertically ("Mission" about 5px narrower); image top 410.5 against 410.
+  - **Frame:** the section is 941.97px at 1920. With real 100px wheel steps at 1920×942 (layout 1920 and 1905), Mission & Vision fills 0–942 with 0px of Industries visible at y 2200–2400, and Industries starts rising after the hold.
+  - **Hand-offs:** at 1920×942, 1920×1080, 1440×900, 1280×720, 1100×800, 1024×768, 768×1024, 390×844 and 320×640, Services holds while this section rises, it holds through its hold (pinned at `100svh − height` where taller than the screen), then Industries rises. Reverse scrolling retraces identical positions, and the page ends exactly at the Footer.
+  - **Widths:** no horizontal overflow and no clipped text at any size. The heading is two lines everywhere except 320, where "Into" takes its own line.
+  - **Reduced motion:** no pins, no hidden reveal states, natural height (747px at 1440), page height equal to the sum of the sections.
+  - **Checks:** `tsc` and `eslint` pass; no console errors.
+
+### Homepage Industries (built 2026-11-16, **awaiting the owner's approval**)
+
+- **Reference:** `Frame 2147239126.png` (project root, 1920×942). No new assets were supplied; the cards use the existing `public/images/industries/*.png` (1008×740).
+- **Owner instructions (2026-11-16):** keep the card behaviour and autoplay; exactly three cards in the frame; the other cards keep entering through the autoplay; no Phase 1/2/3 elements in this section.
+- **Files (Homepage only, `/services` byte-identical):**
+  - **`components/home/Industries.tsx`** and **`IndustryCarousel.tsx`** (frozen; changed with the owner's instruction): optional `variant` (`"default"` | `"compact"`), each with a `layouts` map whose `"default"` strings are the originals. The `/services` Industries section's HTML hash is the same before and after (SHA-256 `8847447…`, with the carousel's runtime `scroll-snap-type` style excluded). `"compact"` renders no Phase cards and no rule. `Industries` also takes an optional `cards` prop.
+  - **`lib/content/home.ts`:** `homeIndustryCards`, the shared `industryCards` with the reference's shorter descriptions for Attorney & Lawyers, Restaurant and Retailers. Doctor and Plumbers are not in the reference and keep their shared descriptions (to confirm).
+  - **`app/page.tsx`:** `<Industries variant="compact" cards={homeIndustryCards} />` in `<PinnedSection hold="30svh">`.
+- **Compact layout at 1920:**
+  - **Section:** `lg:pt-[84px] lg:pb-[72.95px]`; 941.97px.
+  - **Header:** eyebrow ink at y 87; heading 53.5px with 63px lines (`lg:leading-[1.178]`, `lg:mt-[7px]`), cap tops 123 / 186; right column from x 1048 (`868fr / 692fr`); intro `lg:max-w-[25.5em]`, `lg:pt-[7px]` (two lines, breaking after "Our team"); button y 184–235 (`lg:mt-[29px]` row); arrows unchanged.
+  - **Cards:** 504×562 (`aspect-[504/562]`) at x 180–684 / 708–1212 / 1236–1740, y 295–857 (`lg:mt-[46px]` on the scroller). Text unchanged from the original card (36px title, 24px description, 40px padding).
+  - **Three in view:** from `lg` the scroller ends at the content edge (`lg:mr-[calc(var(--g)-12px)]`, x 1752 at 1920, the 12px keeping room for the hover lift). Exactly three cards are in view, and the next one slides in from that edge rather than peeking past it. Autoplay (3s), arrows, hover and touch are unchanged.
+- **Photo framing (open point):** the reference's three photos are framed differently from the supplied files (tighter and higher). At 504×562 the files fill the height, so no CSS position matches; the best fits need different zooms per photo (1.04–1.13), and the Retailers photo matches no framing (error 54/255). Shown with `object-cover`, centred, as before; exact framing needs re-exported images.
+- **QA 2026-11-16** (Playwright, Chrome):
+  - **1920 match:** eyebrow, heading lines, intro lines, button and arrows within 0–2px (header mean difference 2.08/255). Card edges exact; all three titles and six description lines within 0–1px.
+  - **Frame:** with real 100px wheel steps at 1920×942, Industries fills 0–942 with 0px of Our Work visible at y 3400–3600, and Our Work rises after the hold.
+  - **Autoplay at 1920:** exactly three full cards in view at every sample (Attorney / Restaurant / Retailers → Restaurant / Retailers / Doctor → …), wrapping through all five; nothing past x 1752. Next advances one card.
+  - **Hand-offs:** at 2560×1300, 1920×1080, 1440×900, 1280×720, 1024×768, 768×1024, 390×844 and 320×640, Mission & Vision holds while Industries rises, Industries holds (or pins at `100svh − height`), then Our Work rises. Reverse scrolling is identical, and the page ends exactly at the Footer.
+  - **Widths:** three full cards from `lg`, two at 768, one on phones (the original responsive behaviour). No horizontal overflow; card text fits; no Phase text.
+  - **Reduced motion:** no autoplay, no pins, page height equal to the sum of the sections.
+  - **Checks:** `tsc` and `eslint` pass; no console errors.
+
+### Homepage Pricing phases (removed 2026-11-16, owner's instruction)
+
+- **Removed completely** under the updated project requirements: not hidden, redesigned or replaced. Deleted `components/home/PricingPhases.tsx`, `components/home/pricing-phases.css` and `homePricing` in `lib/content/home.ts`; its `PinnedSection` and import left `app/page.tsx`. Nothing else used them. Its reference, `Frame 2147239147.png`, is no longer used.
+- **Homepage order now:** Hero + logos → Services → Mission & Vision → Industries → Our Work → Footer. Industries (`hold="30svh"`) now hands off directly to Our Work, as before Pricing was added.
+- **Verified 2026-11-16** (Playwright CLI, 1920×942, 1440×900, 1024×768, 390×844): Our Work rises 1:1 over the held Industries, reverse scrolling is identical, the page ends exactly at the Footer, no horizontal overflow, no Pricing markup; reduced motion: page height equals the sum of the sections. `tsc` and `eslint` pass.
+- **Not affected:** the Phase pricing cards inside the default `Industries` on `/services` (a separate, older design).
+
+### Homepage Our Work frame fit (2026-11-16, owner's Option 2, **awaiting approval**)
+
+- **Reference:** no 1920×942 reference exists for Our Work. The only one is the original `waywise Tech/Tech dev/Our Work Section.png` (1920×3193, 2026-11-04; that folder is not the one listed under "Homepage and `/services` references"). It shows the full-length section, which the implementation already matches. The owner chose to apply the frame standard to the section's resting states, without redesign.
+- **Findings at 1920×942 (unchanged and correct):**
+  - **Arrival:** when the section reaches the top, its header and first card sit inside the frame (heading at y 122, card 1 at 323–853).
+  - **Pins:** every card pins fully visible (148–678, 164–694, 180–710, 196–726, 212–742).
+- **Fix (the only change, `components/home/OurWork.tsx`, the card list's classes):** Final CTA already showed 107px in the frame when card 5 pinned (it entered while card 5 was still rising). The card list's `::after` spacer now grows by `--hold` (`after:h-[calc(var(--cover)+var(--hold,0px))]`) while its negative margin stays `-30px − --cover`, so the finished stack stays pinned and Final CTA arrives later, as with `PinnedSection`'s `hold`.
+  - **Formula:** `--hold` = `30svh + max(0px, 100svh − --p5 − 27.604vw − 100px)`. `--p5` is card 5's pin (`--t` + 64px: 160 / 178 / 212px by breakpoint); 27.604vw is the card height (530px at 1920; minimum sizes only make cards taller at smaller widths, so the hold errs longer, never early); 100px is the bottom padding.
+  - **Where:** from `lg` with motion allowed (`lg:motion-safe:`). Elsewhere `--hold` is unset (0), so below `lg` and with reduced motion nothing changed.
+  - **Unchanged:** cards, content, sizes, stacking, `CardStack`, Final CTA and every other section.
+- **QA 2026-11-16** (Playwright CLI, one consolidated pass):
+  - **No early peek:** at 1920×942 (layout 1920 and 1905), 1440×900, 1280×720 and 1024×768, 0px of Final CTA appears before card 5 pins.
+  - **Hold:** the complete stack holds 280–284px (about 30svh) at 1920×942 and 280–344px at the smaller sizes before Final CTA enters, then Final CTA rises over the stack as before.
+  - **Reverse and end:** reverse scrolling gives identical positions, the page ends exactly at the Footer, and there is no horizontal overflow.
+  - **Reduced motion:** `--hold` unset, Our Work 3193px, page height equal to the sum of the sections.
+  - **Checks:** `tsc` and `eslint` pass.
+
+### Service List page (`/services`): global Navbar + Footer and Hero frame (2026-11-16, **awaiting the owner's approval**)
+
+- **Owner's global rules (2026-11-16):** every page uses the same shared Homepage Navbar and the same shared Homepage Footer, and every section follows the 1920×942 frame rule. No new reference or assets exist for `/services`: the existing design and `service List/Service list hero.png` are kept; only the minimum changes to apply those rules were made.
+- **`app/services/page.tsx`:**
+  - **Navbar:** `<SiteHeader showBanner={false} variant="floating" />`, the Homepage Navbar (no change to `SiteHeader`).
+  - **Footer:** the shared `Footer` (combined Final CTA + footer) replaces the page's `FinalCta` pin and `SiteFooter`, so there is no duplicate ending. FAQ is now the last pinned section.
+  - **FAQ pin cap:** `limitCoverTo="main:has(#services-hero) + footer"`. The Footer (942px at 1920) is shorter than FAQ's pin on tall screens, which would leave empty scrolling past it. The selector only matches on this page, so a kept-mounted Homepage Footer is never picked up.
+- **`components/services/ServicesHero.tsx`** (needed for the floating bar and the frame):
+  - **Frame:** `lg:aspect-[1920/810]` (was the artwork's 3840/1614, 807px): Hero 810 + the 132px logo strip = 942 at 1920, so Services starts exactly at the frame edge (was 2.4px inside it). The artwork is `object-cover`, so it loses about 1.5px top and bottom.
+  - **Clearing the floating bar:** below `lg` the text starts at 116px (`md`: 124px), as on the Homepage Hero. From `lg` the section adds `clamp(0px, 320px − 20vw, 64px)` of top padding, 0 from 1600px, so 1920 is unchanged (text 78px below the card). From `lg` the section is `overflow-visible`, so where the text needs more room than the artwork ratio gives (about 1024–1100px) the section grows instead of clipping the checklist. The artwork still fills it.
+  - **`id="services-hero"`** on the section, for the FAQ cap.
+  - **Unchanged:** artwork, text, typography, buttons, checklist, the logo strip (default 132px), and every section after the Hero.
+- **QA 2026-11-16** (Playwright CLI):
+  - **1920×942:** the Hero + logos unit ends at 942.0 and Services starts at 942.0. The Hero text sits 78px below the card.
+  - **Text vs card:** clear by 22–48px at 1440, 1280, 1100, 1024, 768 and 390, with no clipped content.
+  - **Hand-offs:** no two consecutive sections move together, except where a section is shorter than the screen (Our Process at 1440×900, as before). The page ends at the Footer (sub-pixel), with no horizontal overflow at 1920×942, 1920×1080, 1440, 1024 or 390.
+  - **Navbar and Footer:** the floating Navbar hides on scrolling down; no Final CTA or old Footer remains on the page.
+  - **Reduced motion:** page height equals the sum of the sections. No console errors. `tsc` and `eslint` pass.
+- **Services section (2026-11-16, reference `Section.png`, project root, 1920×942; awaiting the owner's approval):** the reference is the Homepage's compact Services layout, so `/services` now renders `<Services variant="compact" services={servicesPageCards} action={servicesSection.pageAction} />`. No change to `Services.tsx`.
+  - **Content:** `servicesPageCards` (`lib/content/home.ts`): all eight cards, with the reference's short descriptions for the six it shows (the Homepage's); Cloud, API & DevOps and Support & Maintenance keep their shared descriptions (three lines, so the third row is 324px tall).
+  - **Owner decision:** the reference has no header button; the owner kept "Discuss Your Project" (→ `/contact`), so the header is the Homepage's (description bottom-aligned with the button, not top-aligned as drawn).
+  - **At 1920:** cards 493×302 at x 180 / 713 / 1247, rows at 251 and 578 (exactly as drawn), the third row (two cards) at 905; section 1291px.
+  - **Scrolling (existing page flow, no new mechanism):** Services rises over the held Hero + logos; at the top it fills the 942 frame with the header and two rows (0px of Our Process visible); it then scrolls normally, bringing the third row into view; once its bottom reaches the screen bottom it holds while Our Process rises. Same at 1440, 1024, 768, 390 and 320; no nested scroll, no overflow, no clipped text.
+  - **Hold (fix 2026-11-16, after the owner saw Our Process enter before Services had finished):** Services had no resting point: the hand-off started at the exact scroll position where the third row finished revealing, so with 100px wheel steps Our Process was already 9px in at 1920x942. The Services `PinnedSection` now has `hold="30svh"` (as on the Homepage). Verified with real 100px wheel steps at 1920x942, 1920x1080, 1440x900, 1024x768 and 390x844: Our Process is never visible before Services is fully revealed, Services then rests fully revealed for 3 wheel steps, then Our Process rises 1:1; the page ends at the Footer; no overflow; no scrollable element on the page.
+  - **Difference from the reference:** the frame's bottom 37px (y 905–942) show the top of the third row, where the reference (which shows six cards) is plain background.
+  - **QA:** 1920 mean difference 9.42/255 overall (heading 8.27, cards' text 9.15 / 9.98, images 12.41). `tsc` and `eslint` pass.
+- **Our Process (2026-11-16, reference `Frame 2147238780.png`, project root, 1920×942; awaiting the owner's approval):** the existing section's content, steps, icons and colours, redesigned to a 942 frame.
+  - **`components/services/OurProcess.tsx`** (shared by six pages): new optional `variant` (`"default"` | `"compact"`) with a `layouts` map. `"default"` holds the original classes, so every other page is unchanged (`/about` still 1080px at 1920). `/services` passes `variant="compact"`.
+  - **Compact:** `lg:min-h-[clamp(628px,49.0625vw,942px)]` plus `lg:pt-1` (content centred, 2px lower), eyebrow 18px at 0.072em (`lg:-mt-1`), heading 53.5px (`lg:mt-2`), and the description top-aligned beside the heading (`lg:items-start`, `lg:pt-[clamp(27px,2.1875vw,42px)]`).
+  - **Pin:** `hold="30svh"`, as for Services, so Industries never peeks into its frame. With the hold the section is at least one screen tall (1080 at 1920×1080).
+  - **QA:** 1920 match within 0–1px on every measured element, mean difference 0.96/255. With real 100px wheel steps at 1920×942, 1920×1080, 1440×900, 1024×768, 768×1024, 390×844 and 320×640, Services rests 2–3 steps fully revealed before Our Process enters, Our Process rests 2–3 steps before Industries rises, and the section under a rising one never moves while visible. No overflow; reduced motion: page height equals the sum of the sections. `tsc` and `eslint` pass.
+- **Industries We Serve (2026-11-16, owner's instruction):** the Homepage Industries section reused exactly: `<Industries variant="compact" cards={homeIndustryCards} />` in `<PinnedSection hold="30svh">`, the same as `app/page.tsx`. No component or content changed. Verified: the section's HTML on `/services` is identical to the Homepage's (runtime styles and data attributes excluded), 942px at 1920×942, autoplay running; with real 100px wheel steps at 1920×942, 1440×900, 1024×768 and 390×844 Our Process rests 2–3 steps before Industries enters and Industries rests 3 steps before FAQ rises, with no overlap and no overflow. The original Phase-card Industries layout is no longer used on `/services` (still the `default` variant, now unused).
+- **FAQ (2026-11-16, owner's instruction: frame adjustment only):** `components/services/Faq.tsx` (frozen; changed with the owner's permission) has a new optional `frame` (`"default"` | `"compact"`) that changes only the vertical padding from `lg`: compact is 69px less above and below (`clamp(64px,8.802vw,169px)` / `clamp(64px,8.880vw,170.5px)`), so the same content stays centred in 941.8px at 1920 (default 1079.8). Design, content, sizes, accordion and animation unchanged; every other page keeps the default. On `/services` the FAQ pin also has `hold="30svh"` (with its Footer cap), so the Footer does not peek into its frame.
+  - **QA:** at 1920 every FAQ element sits exactly 69px higher than on `/contact` (default) and the rows keep their 775×80 size; the accordion opens. With real 100px wheel steps at 1920×942, 1920×1080, 1440×900, 1024×768 and 390×844, Industries rests 3 steps before FAQ enters, FAQ rests 2–3 steps before the Footer rises and never moves while the Footer rises, the page ends at the Footer (sub-pixel), no overflow. `tsc` and `eslint` pass.
+  - **All `/services` sections now follow the frame rule.**
+
+### Service Details pages: shared Navbar + Footer (2026-11-16, **awaiting the owner's approval**)
+
+- **Scope:** the first step of the Service Details redesign: only the shared Navbar and Footer, in the template, so all six Details pages change together. Section content not redesigned yet.
+- **`components/service-details/ServiceDetailsPage.tsx`:** `<SiteHeader showBanner={false} variant="floating" />` (the Homepage Navbar); the `FinalCta` pin and `SiteFooter` replaced by the shared `Footer` after `<main>`; `<main data-service={service.slug}>` and the FAQ pin capped with `limitCoverTo={`main[data-service="${slug}"] + footer`}`, unique per route because visited pages stay mounted.
+- **`components/service-details/ServiceDetailsHero.tsx`:** below `lg` the text starts at 116px (`md`: 124px) instead of 48/64, so it clears the floating card (it was 12–28px under it). From `lg` unchanged (text 98px below the card at 1920, 12px at 1024).
+- **QA 2026-11-16** (Playwright CLI, UI/UX and AI Details pages): shared Navbar at every width (hides on scroll down); shared Footer, no old Final CTA or footer; text clears the card at 1920, 1440, 1280, 1024, 768, 390 and 320; the page ends at the Footer (sub-pixel) with no overflow; FAQ does not move while the Footer rises (1920×1080, 1440×900). `tsc` and `eslint` pass.
+- **Note:** the UI/UX page is no longer pixel-identical to its earlier master below `lg` (Hero top padding) and at its end (the shared Footer), by the owner's global rule.
+
+### Case Study page: shared Navbar + Footer (2026-11-16, **awaiting the owner's approval**)
+
+- **`app/case-study/page.tsx`:** `<SiteHeader showBanner={false} variant="floating" />`; `SiteFooter` replaced by the shared `Footer` (the page had no Final CTA, so the Footer's CTA band is its first); the last pin (Recent Projects) capped with `limitCoverTo="main:has(#case-study-overview) + footer"`. Sections and their caps otherwise unchanged.
+- **`components/case-study/CaseStudyHero.tsx`:** below `lg` the text starts at 116px (`md`: 124px), clearing the floating card. From `lg` unchanged.
+- **QA 2026-11-16:** text clears the card at 1920 (101px), 1440 (48), 1024 (12), 768, 390 and 320 (40–48); shared Footer only; the page ends at the Footer (sub-pixel) with no overflow at 1920×942, 1920×1080, 1440×900, 1024×768, 768×1024, 390×844 and 320×640. Recent Projects stays still while the Footer rises, except where it is shorter than the screen (645–800px at 1024, 768 and 390), where it reaches the top with the Footer already in view below it, as any short pinned section does. `tsc` and `eslint` pass.
+
+- **Testimonials (2026-11-16, owner's instruction):** the `/our-work` testimonial carousel (`PortfolioTestimonials`) reused unchanged as the last section, after Recent Projects and before the shared Footer.
+  - **`app/case-study/page.tsx`:** Recent Projects and the testimonials each in `PinnedSection hold="30svh"` (the testimonials also capped with `limitCoverTo="main:has(#case-study-overview) + footer"`; the cap moved off Recent Projects). Without the holds both sections were shorter than the frame (testimonials 873px at 1920) and the next section showed in it; with them each fills at least one screen and rests before the next rises (content stays at the top, background extends).
+  - **`components/portfolio/TestimonialFlow.tsx`:** autoplay pauses while the next section covers the carousel; it found that section as its pin wrapper's next sibling, which does not exist when the carousel is the last section in `<main>`. It now falls back to the element after `<main>` (the Footer). `/our-work` is unaffected (it still has a next sibling).
+  - **QA 2026-11-16** (real 100px wheel steps at 1920×942, 1920×1080, 1440×900, 1024×768 and 390×844): order Our Process → Recent Projects → Testimonials → Footer; Recent Projects rests 2–3 steps before the testimonials enter, the testimonials rest 2–3 steps before the Footer and never move while it rises; the page ends at the Footer (sub-pixel), no overflow. Autoplay advances in view (1 → 2 of 6) and pauses under the Footer. No console errors. `tsc` and `eslint` pass.
+
+### Homepage Footer: Final CTA + footer combined (built 2026-11-16, **awaiting the owner's approval**)
+
+- **Reference:** `Frame 2147239202.png` (project root, **1920×922**).
+- **Owner decisions (2026-11-16):**
+  - **Scope:** Homepage only. Inner pages keep `FinalCta` + `SiteFooter` unchanged until their own redesign; then the old components go.
+  - **Height:** stretch to the 942 frame (10px more above the CTA content, 10px more below the bottom row).
+  - **Links:** existing routes only.
+  - **Button:** the text is exactly "START YOUR FREE CONSULTATION" (the reference reads "Start Our…").
+- **Naming:** one section, `components/layout/Footer.tsx` (a `<footer>` holding the CTA band and the footer band). No new duplicates: it reuses `finalCta` (`lib/content/contact.ts`), `navBrandCard`, `legalLinks` and `socialLinks` (`navigation.ts`), and the existing assets.
+- **Files:**
+  - **`components/layout/Footer.tsx`** (new).
+  - **`lib/content/home.ts`:** `homeFooter`, holding only the new parts: the CTA label and link (`/contact`), the three columns with links to existing routes (Details pages for UI/UX and Custom Software, `/services`, `/industries`, `/about`, `/our-work`, `/contact`; the rest `#`), and the copyright.
+  - **`app/page.tsx`:** the Final CTA `PinnedSection` and `SiteFooter` were replaced by `<Footer />` after `</main>`. `FinalCta.tsx` and `SiteFooter.tsx` themselves are unchanged.
+- **Assets (all existing, unedited):**
+  - **CTA background:** `cto/final-cta-background.png`, framed from `xl` as the reference draws it (117.5% wide, left-aligned, top at −20vw; best fit 21/255 against 33 for a plain top-aligned cover; below `xl` a plain cover).
+  - **Portraits:** `cto/Chairman.png`, `CEO.png`, `Fiona.png`, on the original tile colours, `object-cover object-top` in a 224×219 frame.
+  - **Footer:** `footer/logo-white.svg` (190×40) and the three 36px `footer/Button*.svg` social buttons.
+  - **Not used:** the old Footer's navy animated artwork.
+- **Layout at 1920 (942 tall):**
+  - **CTA band (0–532.5):** heading 64px (navy / red), description and promises 22px at 0.04em, the 72px red button at 401–473, and three 255×313 team cards at x 941 / 1213 / 1485, y 70–383.
+  - **Footer band (532.5–942, `#57432d`):** logo at 593.5, intro 18px / 22px, social row, columns at x 1069 / 1316 / 1628 (headings 20px, links 17.6px every 38px, "View All…" semibold), a 1px rule at 857, and the bottom row at 882 (copyright, three legal links 32px apart, regions; `justify-between`).
+  - **Responsive:** from `xl` the `--u` scale; below `xl` the parts stack.
+  - **Motion:** the CTA text and cards use the one-time `Reveal` rise. The section ends the page, so it is not pinned; it is positioned, so it rises over the Our Work stack (whose hold still keeps it from peeking early).
+- **Figma slip fixed:** the Industries column's last link read "View All Services"; it is "View All Industries".
+- **QA 2026-11-16** (Playwright CLI, consolidated):
+  - **1920×942:** the section is exactly 942px and fills the frame at the page end (footer top 0.25px, sub-pixel rounding of the page height). Every measured element is within 0–2px of the reference (+10). The button is 13px wider (owner's label) and "View All Industries" 6px wider (the fix).
+  - **Hand-off:** Our Work's finished stack still holds 280px with 0px of the footer visible before card 5 pins; then the footer rises.
+  - **Widths:** 320, 390, 768, 1024, 1279, 1280, 1440 and 1920: no horizontal overflow, no clipped text.
+  - **Reduced motion:** page height equal to the sum of the sections.
+  - **Checks:** `tsc` and `eslint` pass.
+  - **Bug found and fixed during QA:** inline links and the button carried their parent's 24px line box (+9px in total). The column links, "View All…" links and the CTA button are now block or flex boxes (`w-fit`).
 
 ## Hero + Client Logo Strip standard (owner, 2026-11-11)
 
@@ -272,7 +516,7 @@ Applies to the whole project: Homepage, `/services`, all Service Details pages, 
 | `/services/ai-data-automation` | `app/services/ai-data-automation/page.tsx` | **Implemented** 2026-11-09; **awaiting owner review**; temporary images |
 | `/services/branding-digital-growth` | `app/services/branding-digital-growth/page.tsx` | **Implemented** 2026-11-09; **awaiting owner review**; temporary images |
 | `/industries` | `app/industries/page.tsx` | Built 2026-11-09, section by section; **awaiting owner review**. See "Industries page" |
-| `/our-work` | `app/our-work/page.tsx` | "Our Portfolio". Hero and Client Logos built 2026-11-09; **Section 2 ON HOLD** (under design; it goes between the Hero and Recent Projects). Then the shared Recent Projects, Industries trust section and Our Process (added 2026-11-12, reused unchanged), then the shared Final CTA and the Footer (added 2026-11-12, reused unchanged; the Footer ends the page). The testimonial stack is built but **on hold** and not on the page (owner, 2026-11-12). See "Our Portfolio page" |
+| `/our-work` | `app/our-work/page.tsx` | "Our Portfolio". Hero and Client Logos built 2026-11-09; **Section 2** ("Why Businesses Choose WayWise", the 3D fan carousel) built 2026-11-15 between the Hero and Recent Projects, 3-second autoplay added 2026-11-16, **approved and frozen by the owner 2026-11-16**. Then the shared Recent Projects, Industries trust section and Our Process (added 2026-11-12, reused unchanged), then the shared Final CTA and the Footer (added 2026-11-12, reused unchanged; the Footer ends the page). The testimonial carousel (final redesign 2026-11-15, after the Framer Testimonial Flow Pro reference and the Figma white card) sits after Our Process, before Final CTA (**awaiting the owner's visual review**). See "Our Portfolio page" |
 | `/contact` | `app/contact/page.tsx` | "Contact Us". In progress, section by section: five sections built 2026-11-09 to 2026-11-10. See "Contact Us page" |
 | `/about` | `app/about/page.tsx` | "About Us". Started 2026-11-11, one section at a time: the combined Hero + Client Logo section, Our Story, the leadership messages and Our Global Presence are built, followed by the shared Our Process, Final CTA and Footer (reused unchanged, 2026-11-11). The leadership messages and Our Global Presence are **approved and frozen** (2026-11-11); the Hero + logos and Our Story are **awaiting the owner's visual review**. Linked since 2026-11-11 from every existing About Us link (Navbar Company dropdown, mobile menu, Footer). See "About Us page" |
 | `/faq` | `app/faq/page.tsx` | "FAQ". Started 2026-11-11, one section at a time: the combined Hero + Client Logo section and the questions section (accordion and animated question mark), both **awaiting the owner's visual review**, then the shared Footer (reused unchanged, 2026-11-11). Not linked from anywhere yet. See "FAQ page" |
@@ -291,11 +535,11 @@ These 15 are the only routes. Nothing links to `/case-study` yet. The Blog Detai
 
 | Section | Component | Notes |
 |---|---|---|
-| Hero | `components/home/Hero.tsx` | **Approved and frozen** |
-| Client Logo Strip | `components/home/ClientLogos.tsx` | **Approved and frozen**. Used on every page |
+| Hero | `components/home/Hero.tsx` | **Approved and frozen** (2026-11-06 design). Reopened by the owner for the 2026-11-16 Figma redesign; the redesigned Hero is **awaiting review** (see "Figma redesign 2026-11-16") |
+| Client Logo Strip | `components/home/ClientLogos.tsx` | **Approved and frozen**. Used on every page. 2026-11-16 (owner-approved): optional `height` prop; the Homepage uses `"compact"` (100px), every other page the unchanged 132px default (see "Figma redesign 2026-11-16") |
 | Contact Us "Have a Project Idea?" (world map) | `components/contact/ContactLocations.tsx`, `contactLocations` in `lib/content/contact.ts` | **APPROVED** by the owner 2026-11-10, with permission to proceed to the next Contact section. Its Navbar overlap on near-16:9 screens is an accepted known limitation (see "Contact Us page") |
-| Services | `components/home/Services.tsx` | **Approved and frozen**. Used on `/` and `/services`. Changed once after freezing (2026-11-09): each of the six cards now links to its Service Details page. The owner **approved this permanently** on 2026-11-10: the links must stay and must not be reverted. Everything else in the section stays frozen |
-| Industries | `components/home/Industries.tsx`, `IndustryCarousel.tsx` | **Frozen** (the owner listed it as approved and frozen). Used on `/` and `/services` |
+| Services | `components/home/Services.tsx` | **Approved and frozen**. Used on `/` and `/services`. Changed once after freezing (2026-11-09): each of the six cards now links to its Service Details page. The owner **approved this permanently** on 2026-11-10: the links must stay and must not be reverted. Everything else in the section stays frozen. *2026-11-16 (owner-approved): optional `variant` prop; the Homepage uses the redesigned `"compact"` layout (awaiting approval), `/services` the unchanged default (see "Figma redesign 2026-11-16")* |
+| Industries | `components/home/Industries.tsx`, `IndustryCarousel.tsx` | **Frozen** (the owner listed it as approved and frozen). Used on `/` and `/services`. *2026-11-16 (owner's instruction): optional `variant`; the Homepage uses the redesigned `"compact"` layout (three cards, no Phase cards; awaiting approval), `/services` the unchanged default (see "Figma redesign 2026-11-16")* |
 | FAQ | `components/services/Faq.tsx` | **Frozen** by the owner with the UI/UX Details page (2026-11-08). Shared by `/services` and every Details page |
 | Final CTA | `components/home/FinalCta.tsx` | **Frozen** by the owner with the UI/UX Details page (2026-11-08). Shared by `/`, `/services`, every Details page, `/industries`, `/about` (added 2026-11-11) and `/our-work` (added 2026-11-12); not on `/contact` |
 | UI/UX Details page | `app/services/ui-ux-product-design/page.tsx` and the `components/service-details/*` sections it renders | **Complete** (owner, 2026-11-08). The master Service Details design: any change to the shared template must keep this page pixel-identical |
@@ -303,12 +547,13 @@ These 15 are the only routes. Nothing links to `/case-study` yet. The Blog Detai
 | Case Study "The Challenge & Our Solution" | `components/case-study/CaseStudyChallenges.tsx`, `caseStudyChallenges` in `lib/content/case-study.ts` | **Complete and approved** by the owner 2026-11-12, after the final corrections (typo fixes, the manual "case / results" line break). The three repeated "On-page SEO and technical optimization" points stay exactly as in the reference (owner's decision). Make no further changes without the owner's instruction. Details under "Case Study page" |
 | Case Study trust section, "A Trusted Partner Across Industries" | `components/case-study/CaseStudyResults.tsx`, `components/case-study/case-study-results.css`, `caseStudyResults` in `lib/content/case-study.ts` | **Complete and approved** by the owner 2026-11-12, including the result animations (RollingNumber for 3.5x, 60%, 2x; fade-up for "High"; 120ms card stagger) and the reference copy as drawn. Make no further changes without the owner's instruction. Details under "Case Study page" |
 | About Us Leadership messages + stats bar | `components/about/AboutLeadership.tsx`, `aboutLeadership` in `lib/content/about.ts`, portrait entries `aboutChairman`/`aboutCeo` in `lib/assets.ts` | **Approved and frozen** by the owner 2026-11-11. Final implementation, QA and the accepted minor heading font-rendering difference are under "About Us page". Its stats bar repeats the Industries trust bar, so a change to either needs the owner's approval and must keep the two in step |
+| Our Portfolio Section 2, "Why Businesses Choose WayWise" (3D fan carousel) | `components/portfolio/PortfolioShowcase.tsx`, `ShowcaseFan.tsx`, `showcase-fan.css`, `portfolioShowcase` in `lib/content/portfolio.ts`, asset `portfolioProperty` | **Approved and frozen** by the owner 2026-11-16, as implemented: the layout, fan geometry, 900ms glide, 3-second autoplay with its pause conditions (off screen or covered, hidden tab, keyboard focus, reduced motion), manual controls (arrows, dots, keys, swipe, side-card click) and accessibility. Make no further changes without the owner's instruction. Details under "Our Portfolio page" |
 
 ### Protected, not explicitly approved
 
 | Section | Component | Notes |
 |---|---|---|
-| Navbar | `components/layout/SiteHeader.tsx` | Was frozen, reopened by the owner for sticky behaviour; later requests say not to modify it. Final version not explicitly re-approved. One change since, **approved** by the owner 2026-11-10: the Contact item links to `/contact` (see "Approved decisions"). Later on 2026-11-10 the owner asked for dropdown menus: these are built and **awaiting the owner's review** (see "Navbar dropdown menus"). The bar's own layout, logo, sizes, sticky/shrink behaviour and Contact link are unchanged. Make no further Navbar changes without the owner's instruction |
+| Navbar | `components/layout/SiteHeader.tsx` | Was frozen, reopened by the owner for sticky behaviour; later requests say not to modify it. Final version not explicitly re-approved. One change since, **approved** by the owner 2026-11-10: the Contact item links to `/contact` (see "Approved decisions"). Later on 2026-11-10 the owner asked for dropdown menus: these are built and **awaiting the owner's review** (see "Navbar dropdown menus"). The bar's own layout, logo, sizes, sticky/shrink behaviour and Contact link are unchanged. Make no further Navbar changes without the owner's instruction. *2026-11-16: the Homepage now uses the redesigned floating variant (owner's instruction, awaiting review); inner pages keep this bar unchanged (see "Figma redesign 2026-11-16"). Also 2026-11-16: hide-on-scroll on every route (owner's instruction, awaiting approval; see "Behaviour")* |
 | Our Work | `components/home/OurWork.tsx`, `CardStack.tsx` | Protected by later requests. `OurWork` is Homepage only; `CardStack` is also imported by Industry Solutions on `/industries`, so a change to it affects both |
 
 ### Implemented, awaiting owner review
@@ -325,7 +570,7 @@ These 15 are the only routes. Nothing links to `/case-study` yet. The Blog Detai
 | Mobile App Development, AI Data & Automation, Branding & Digital Growth pages | their `app/services/<slug>/page.tsx` and entries in `lib/content/service-details.ts` | **Implemented** 2026-11-09 from the master template; **awaiting owner review**. Copy written without dedicated Figma designs, accepted for now under the Content & SEO policy. Images are temporary |
 | Industries page (all five page sections) | `app/industries/page.tsx`, `components/industries/*`, `components/motion/RollingNumber.tsx`, `rolling-number.css` | Built 2026-11-09; **awaiting owner review**. No approval or freeze recorded |
 | Our Portfolio Hero | `components/portfolio/PortfolioHero.tsx` | Built 2026-11-09. No explicit approval or freeze recorded |
-| Our Portfolio testimonial stack (after Our Process) | `components/portfolio/PortfolioTestimonials.tsx`, `portfolio-testimonials.css`, `portfolioTestimonials` in `lib/content/portfolio.ts` | Built 2026-11-12 with its scroll-driven build; **ON HOLD** by the owner (2026-11-12): not on the page; its 3D animation is not to be developed further yet. Files kept untouched. Testimonial copy provisional. See "Our Portfolio page" |
+| Our Portfolio testimonials (after Our Process, before Final CTA) | `components/portfolio/PortfolioTestimonials.tsx`, `TestimonialFlow.tsx`, `portfolio-testimonials.css`, `portfolioTestimonials` in `lib/content/portfolio.ts`, six `portfolioTestimonial*` assets | Built 2026-11-12, on hold, restored 2026-11-15, then rebuilt the same day as the autoplaying carousel after the Framer Testimonial Flow Pro reference with the Figma white text panel (all quotes are draft sample copy). QA complete; **awaiting the owner's visual review**, not approved or frozen. See "Our Portfolio page" |
 | Contact Us Hero, Client Overview | `components/contact/ContactHero.tsx`, `ContactOverview.tsx` | Built 2026-11-09. No explicit approval or freeze recorded |
 | Contact Us "Send Us a Message / Our Offices" | `components/contact/ContactForm.tsx`, `contactMessage` and `contactOffices` in `lib/content/contact.ts` | Built 2026-11-10; implementation and QA complete; **awaiting the owner's visual review**. Not approved or frozen |
 | Case Study Hero + Client Logos | `components/case-study/CaseStudyHero.tsx`, `caseStudyHero` in `lib/content/case-study.ts` | Built 2026-11-12; QA complete; **awaiting the owner's visual review**. See "Case Study page" |
@@ -335,8 +580,6 @@ These 15 are the only routes. Nothing links to `/case-study` yet. The Blog Detai
 
 | Item | Notes |
 |---|---|
-| Our Portfolio, Section 2 | **ON HOLD**, still under design (owner, 2026-11-12). It goes between the Hero + logos and Recent Projects. Do not build, stub or approximate it until the owner releases it. (The testimonial stack is a separate section, after Our Process.) |
-| Our Portfolio testimonial stack | **ON HOLD** (owner, 2026-11-12). `PortfolioTestimonials` and its CSS stay in the project untouched but are not on the page. Do not change or re-add it, or develop its 3D animation, until the owner releases it |
 
 ### Incomplete or temporary
 
@@ -466,7 +709,184 @@ Labelled "Our Portfolio" (title "Our Portfolio | Way-Wise Tech"), at the URL of 
   - **Hero:** `components/portfolio/PortfolioHero.tsx`. The artwork (`our portfolio/Hero bg.png`, 3840×1616) fills a 1920/808 section from `lg`, shown whole, with the text vertically centred on its left. Below `lg` the text comes first and the whole artwork follows with its top edge faded. Buttons are `#`.
   - **Client Logos:** the frozen shared strip.
 - No explicit approval or freeze is recorded for the Hero.
-- **Testimonial stack "What Our Clients Say About Us"** (after Our Process; the page's last section) (`components/portfolio/PortfolioTestimonials.tsx`, `portfolio-testimonials.css`, `portfolioTestimonials` in `lib/content/portfolio.ts`, asset `portfolioTestimonialAmy` → `our portfolio/Frame 2147238128.png`, 600×674 with 52px corners in the file, `id="portfolio-testimonials"`): built 2026-11-12 from `Frame 2147239021.png` (project root). Placed after Our Process by the owner (2026-11-12; first built between the Hero and Recent Projects, then moved). **ON HOLD by the owner (2026-11-12): removed from the page; the files are kept untouched; do not develop its 3D animation further until released.** The notes below describe the build as it was when removed.
+- **Section 2, "Why Businesses Choose WayWise" (3D fan carousel)** (`components/portfolio/PortfolioShowcase.tsx`, `ShowcaseFan.tsx`, `showcase-fan.css`, `portfolioShowcase` and the `PortfolioProject` type in `lib/content/portfolio.ts`, asset `portfolioProperty` → `our portfolio/property.png`, 1026×840 with rounded top corners in the file, `id="portfolio-showcase"`): released by the owner and built 2026-11-15, refined the same day (larger front card, readable card text), 3-second autoplay and keyboard-focus pause added 2026-11-16. **Approved and frozen by the owner 2026-11-16.** Preserve the implementation, autoplay, animation, layout and interactions exactly as described below; make no changes to its component, CSS or content without the owner's instruction.
+  - **Sources:**
+    - **Section design:** `Frame 2147239009.png` (project root). It shows the sand section, the left text and two 513×665 project cards.
+    - **Carousel:** the CMS Fan Carousel live preview (cmsfancarousel.framer.website), inspected in Chrome for its geometry, timing and behaviour. No Framer code or dependency is used.
+  - **Content:**
+    - **Left column:** the reference's wording. Eyebrow "Why Choose WayWise"; heading "Why Businesses / Choose WayWise / for UI/UX" (red "WayWise" and "for UI/UX"); the description; seven category chips.
+    - **Chips:** plain labels, not filters (owner, 2026-11-15).
+    - **Cards:** six. Each repeats the reference's demo card (`referenceProject`: "Property Management Platform", its description, tags "Mobile App" and "eCommerce", and the same image), built with `Array.from` with ids `project-1` to `project-6`. Each entry has its own `image` (`{ src, width, height, alt }`) and text, so any card can be replaced later.
+    - **Not links:** the cards don't link anywhere yet (owner, 2026-11-15). No invented projects.
+  - **Layout:**
+    - **From `xl`:** the Figma left column (x 180–690 at 1920, `--u` sizing as in the Case Study sections). The fan's stage runs from the right column's start (x 690) to the screen edge (grid `col-[3/5]`), and the fan is centred in it (x ≈ 1300 at 1920).
+    - **Below `xl`:** the text stacks above, and the fan is centred at full width.
+    - **Card:** the Figma card (image, two pills, title, description). Every size is a fraction of the front card's width `--sf-w` (`card(px)` = px/513 of it), so the card scales as a whole. Font minimums: title 20px, description 16px, pills 13px.
+    - **`--sf-w` by width:**
+
+      | Width | `--sf-w` |
+      |---|---|
+      | Base | `min(78cqw, 340px)` |
+      | `sm` | `min(56cqw, 400px)` |
+      | `md` | `min(48cqw, 440px)` |
+      | `lg` | `min(40cqw, 460px)` |
+      | `xl` | `min(513u, 0.418 × stage)` (the stage cap is a safety limit only) |
+
+  - **Fan geometry** (`showcase-fan.css`):
+    - **Structure:** every card is in the same grid cell, placed by `data-offset` (-2…2, or `back`).
+    - **Reference values:** measured from the reference's 300px card and scaled to `--sf-w`:
+
+      | Offset | Position | Turn | Scale | Dim |
+      |---|---|---|---|---|
+      | Front | z +0.133w | none | 1 | none |
+      | ±1 | x ±0.6w, y 4.6% | rotateZ ±5°, rotateY ±14° | 0.84 | 10% |
+      | ±2 | x ±1.0w, y 15.4% | rotateZ ±10.5°, rotateY ±24° | 0.70 | 24% |
+
+    - **Spread:** the reference spreads its cards wider (0.74w and 1.26w). `--sf-s1`/`--sf-s2` are tighter so the fan clears the text column.
+    - **Perspective:** 5.667w on the stage.
+    - **Back:** the sixth card is parked behind the front card (`back`: scale 0.55, opacity 0), so a card leaving one end never sweeps across the front.
+    - **Painting order:** depth is by `z-index` (the stage is not `preserve-3d`), so the front card always paints on top. The cards behind never cover its title, description or tags (checked with `elementFromPoint` at every width).
+    - **Below `md`:** the ±2 cards are hidden (`--sf-far: 0`), and the ±1 cards peek from the screen edges.
+  - **Motion:** changing card glides every card to its new place over 900ms on the reference's curve, `cubic-bezier(0.72, 0, 0.18, 1)`, with opacity over 540ms. Only transform and opacity animate (the dim is an `::after` layer's opacity). The stage fades and rises in once with the usual `Reveal`; the left column uses `Reveal each` and `MaskLine`.
+  - **Interaction rules** (`ShowcaseFan`, client component; it holds only the front card's index):
+    - **Autoplay (owner's instruction, 2026-11-16; replaces the earlier no-autoplay decision):** the carousel moves to the next card every 3000ms, looping 6 → 1 indefinitely. The 900ms glide is unchanged.
+      - **Timer:** one `setTimeout` per resting card, restarted whenever the front card changes, autoplay pauses or resumes, or someone moves the carousel. Every manual move (arrows, dots, keys, swipe, card click) bumps an `interaction` counter, so the countdown restarts even when the same card stays in front (for example, the current dot clicked again).
+      - **Pauses:** when less than 40% of the carousel is visible and uncovered. An `IntersectionObserver` watches the carousel and the section after its pin wrapper, because while Recent Projects rises over the pinned section the carousel is still "in the viewport", only covered. This is the same method as the testimonial carousel. It also pauses while the tab is hidden (`visibilitychange`) and while keyboard focus is inside it (see "Accessibility").
+      - **Reduced motion:** no autoplay (a `matchMedia` listener, so it follows live changes).
+      - **Announcements:** autoplay is not announced; the live region speaks only after a move someone made.
+      - **Cleanup:** every timer, observer and listener is removed on unmount.
+    - **Ways to move:** round dark Prev and Next arrows (as in the reference, ink, red on hover) move one card; page dots go to a chosen card. It wraps round, as in the reference.
+    - **Keyboard:** on the focused carousel region, ← and → move one card; Home and End go to the first and last.
+    - **Swipe:** a horizontal pointer swipe of 40px or more (and more horizontal than vertical) moves one card. `touch-action: pan-y`, so vertical page scrolling is unaffected.
+    - **Mouse:** clicking a card behind brings it to the front; clicking the front card does nothing.
+      - **Fix (2026-11-16):** this never worked in the first build. The cards behind are `inert`, and inert elements are not hit-tested, so the click landed on the stage. The click handler now finds the card from the cards' on-screen boxes (`getBoundingClientRect`). It skips the front card, the parked `back` card and cards with opacity 0 (the ±2 cards on phones), and where boxes overlap the card nearest the front wins. Verified for the ±1 and ±2 cards at 1920.
+    - **Fast presses:** moves use functional state updates, so quick repeated presses each count.
+  - **Accessibility:**
+    - **Region:** `role="region"` with `aria-roledescription="carousel"`, labelled "Projects", focusable, with a visible focus ring.
+    - **Cards:** each is a `group` with `aria-roledescription="slide"` ("N of 6"). Every card except the front one is `inert` and `aria-hidden`, so keyboards and screen readers only reach the front card.
+    - **Buttons:** labelled "Previous project" and "Next project"; the dots are "Project N of 6", with `aria-current` on the current one.
+    - **Announcements:** a polite live region reads "Project N of 6" after a manual move, never on load or for autoplay.
+    - **Keyboard focus pauses autoplay (2026-11-16):** while keyboard focus (`:focus-visible`) is on the carousel region or any of its controls, autoplay stops; it resumes, with a fresh 3s countdown, when focus leaves. Mouse focus (a clicked arrow or dot) does not pause it. A key pressed on a mouse-focused element makes it `:focus-visible` without a new focus event, so the state is re-read on `focusin`, `keyup` and `pointerup` (document listeners), and `focusout` clears it.
+    - **Without JavaScript:** card 1 is in front and the controls are hidden (`noscript` style).
+  - **Reduced motion:**
+    - **Cards:** the same fan, flat (no rotation or depth) and instant (no transitions). The ±2 cards sit 8% nearer the centre, because flat cards are wider on screen and would otherwise come within 12px of the chips at 1920.
+    - **Dots:** the active dot does not animate.
+    - **Site rules:** pinning and the entrance reveal switch off through the site's existing rules.
+  - **Pinning:** in a `PinnedSection` with no cap. The Hero + logos unit holds while it rises; it holds (at `100svh − height` when taller than the screen) while Recent Projects rises. Recent Projects and everything after it are unchanged.
+  - **QA 2026-11-15** (Chrome, same-origin iframes; numbers include the iframe's 15px scrollbar):
+    - **Front card at 1920:** 511×662 in layout (513×665 without a scrollbar), shown at 523×678 because it sits nearer in perspective. Title 27.9px, description 19.9px, pills 17.9px, the Figma sizes.
+    - **Front card elsewhere:** 2560 513×665; 1440 385×508 (title 21px); 1280 342×466 (title 20px, description 16px); 1024 404×528; 768 361×484; 640 350×473; 390 293×467; 320 238×414 (title 20px and description 16px from 1280 down).
+    - **Clear of the text** (rightmost text or chip against the fan's left edge): 1920 600 / 659, 2560 921 / 1137, 1440 343 / 471, 1280 305 / 417. Below `xl` the text is above the fan.
+    - **Overflow and controls:** no horizontal overflow at 2560, 1920, 1440, 1280, 1024, 768, 640, 390 or 320. The controls fit at every width.
+    - **Section height:** 1009px at 1920.
+    - **Controls:** Prev, Next, dots, arrow keys, Home/End, swipe and clicking a side card all work, including wrap-round and fast double presses.
+    - **Pin hand-off** (1920×945): Hero + logos holds while this section rises 1:1. This section holds at −64 while Recent Projects rises 1:1, the reverse is identical, and the page ends exactly at the Footer.
+    - **Reduced motion:** headless Chrome render with `--force-prefers-reduced-motion` shows the flat fan, clear of the chips.
+    - **Checks:** `tsc` and `eslint .` pass; no console errors.
+  - **QA 2026-11-16, autoplay and focus pause** (Playwright, Chrome, 1920×1080, plus autoplay at 768×1024 and 390×844):
+    - **Timing:** advances 3004–3043ms apart at 1920, 3005ms at 768 and 3015ms at 390. The cards' transition is still `0.9s, 0.54s`.
+    - **Reset:** the first automatic advance after a mouse click on Next came 3069–3103ms later, and 3014ms after an arrow key.
+    - **Manual controls:** Prev, Next, dots, Home, End, ← and → (wrapping both ways), swipe, fast double presses and clicks on the ±1 and ±2 cards all work.
+    - **Pauses:** 0 advances in 4s each while off screen, while Recent Projects covers 80% of the section, while the tab is hidden (simulated `visibilitychange`) and with reduced motion emulated. Autoplay resumes in each case.
+    - **Keyboard focus:** 0 advances in 7s with keyboard focus on the stage, and none while tabbing through all eight controls. A mouse-focused stage keeps playing until a key is pressed, then pauses. Tabbing out resumes after 3016ms; Shift+Tab back in pauses again.
+    - **General:** no horizontal overflow and no console errors; `tsc` and `eslint` pass.
+  - **Not tested:** Safari, Firefox, real touch devices and a physical trackpad (swipe tested with synthetic pointer events). A real tab switch was not tested (Playwright cannot hide a page), only a simulated `visibilitychange`.
+- **Testimonials, final redesign (2026-11-15, owner's instruction)** (`components/portfolio/PortfolioTestimonials.tsx`, `TestimonialFlow.tsx` (new), `portfolio-testimonials.css`, `portfolioTestimonials` and the `PortfolioTestimonial` type in `lib/content/portfolio.ts`, `id="portfolio-testimonials"`). After Our Process, before Final CTA. **Awaiting the owner's visual review; not approved or frozen.** It replaced the scroll-built six-card stack of earlier the same day (and the 2026-11-12 build below); nothing in the section is scroll-driven any more.
+  - **Card widths (owner, 2026-11-15):** phones as above (76vw, max 360px, centred). 640–1023: unchanged; the white panel already fills the content width (585px at 640, 689 at 768), so it could only widen by shrinking the page gutters. 1024–1079: the text panel widened from 534 to 600px (still beside the portraits). 1080 and up: unchanged (534px at 1080). Verified with Playwright at 320, 390, 639, 640, 768, 1024, 1079 and 1080: no horizontal overflow, controls inside the panel.
+  - **Phone layout (below `sm`, owner's mobile reference, 2026-11-15):** a separate composition from `Screenshot 2026-11-15 174223.png` (project root, 351×716, from another site; only its layout is used: its copy, heading, colours and company logo are not). From `sm` up nothing changed (640, 768, 1024, 1440 and 1920 re-measured identical).
+    - **Structure:** `TestimonialFlow` renders a phone deck (`.pt-mobile`, `.pt-mdeck`, `.pt-mcard`) beside the desktop panel and portrait row. Below `sm` the panel and row are `display: none`; from `sm` the deck is. So only one is in the accessibility tree, and only one set of progress segments runs (their fill times the autoplay). Both share the same state, autoplay, keys and swipe.
+    - **Card** (sizes are fractions of the card width `--mw` = 76vw, max 360px; 296px at 390, 243 at 320, 360 at 639; was 66vw, max 280px, widened by the owner 2026-11-15; the reference card is 232): one white card with 12/232 corners and 16/232 padding. Inside: a square portrait at the top (10/232 corners); a dark (`#14110d`) opening quote mark 24/232 wide, 17/232 under it; the review at 13/232, at least 14px, line height 1.5, `rgb(111 119 132)`; then the name (at least 16px, 600) and role (at least 13px) 22/232 under the review. Amy Marie's rating sits under her review. The card is centred (the reference placed it 4% left of centre; centred since the widening, so the arrows keep equal room).
+    - **Cards behind:** two, tilted clockwise to the right and washed toward light grey: 0.03/0.035 card widths, 1.4°, wash 0.35; and 0.088/0.082, 2.6°, wash 0.7. They take the front card's height (measured), so none sticks out below it beyond the tilt.
+    - **Arrows:** 32px white circles (44px touch targets) centred 9.5/232 outside the card's edges (on the edges themselves below 360px, so they keep 15px from the screen edge), level with the start of the review (263/232 down).
+    - **Segments:** the six progress segments, kept under the deck (the reference has none; they are required and they time the autoplay), 24px under the front card.
+    - **Constant height:** a `ResizeObserver` in the component measures the tallest card (`--mdeck-h`) and the front card (`--mh`), so the section height never changes between testimonials (877 at 351, 904 at 390, 851 at 320; was 1178 and 1198 before at 390 and 320).
+    - **Headline:** the per-testimonial headline is not shown on phones (the reference has none); it stays in the data and on larger screens.
+    - **Motion:** Next sweeps the front card out to the left behind the deck, tilting the other way and fading, while the next card straightens into the front (700ms, expo-out). Prev reverses it. Reduced motion is instant, with no autoplay.
+    - **Live region:** moved to the carousel root, so it announces on phones too.
+    - **QA (Playwright, 351, 390 and 320):**
+      - **Match:** at 351 the front card is 232 wide and 465 tall for a six-line review (reference 232×461), the portrait 200×200, the quote mark 24 wide, the review 14px, the name 16px and the arrows 32px; cards behind about 20px below the front card (reference about 16).
+      - **All six testimonials:** constant section height, no horizontal overflow, no overlap.
+      - **Behaviour:** autoplay every 3.02–3.04s, arrows, swipe and segments work, and the live region announces ("Testimonial 2 of 6: Jad").
+      - **Pin and motion:** the testimonials hold at −60 at 390 while Final CTA rises 1:1, and the page ends at the Footer. Reduced motion is static. A mid-transition frame (slowed by a test-only style) shows the arriving card readable with the leaving card behind it.
+      - **Checks:** `tsc` and `eslint` pass, with no console errors.
+  - **Review-led hierarchy (owner-approved changes, 2026-11-15, after a read-only evaluation):** the client review is now the primary content and the portraits support it. These notes supersede the figures further down where they differ.
+    - **Portraits:** scaled by `--kp` = 0.915 × `--k` (the featured card about 8.5% smaller: 296×416 at 1920, was 324×455), arrangement, motion and proportions unchanged.
+    - **Panel:** a 490k text column with 36k sides and 34k top/bottom padding: 639px wide at 1920 (was 505). At least as tall as the plate (`min-height: var(--pt-plate-h)`); with the larger review text it is now about 50px taller than the plate at 1920 and 1440 (484 vs 433, 431 vs 381), and the two are centred on each other, so the panel extends about 25px past the plate's top and bottom edges.
+    - **Type:** quote 18.5k (21px at 1920, minimum 17px) in near-ink `rgb(35 31 32 / 0.86)`, line height 1.6; headline unchanged (34px at 1920); name 16.7k (19px, minimum 17px); role 13.2k (15px, minimum 14px); rating 13.5k.
+    - **One quote symbol:** the red Figma mark in the panel, enlarged to 37k (42px at 1920). The reference's black portrait badge was removed.
+    - **Author:** directly under the review (20k gap), with a short red rule in place of the removed avatar. The controls sit at the panel's foot (`margin-top: auto`), so any spare height of a shorter testimonial is above the controls, not between the quote and the author.
+    - **Background portraits:** washed toward the section's sand (`--color-sand`) instead of the reference's `#f2efe9`, slightly lighter than the reference: 0.35, 0.56, 0.7, 0.8.
+    - **Balance at 1920:** the visible portrait row is now about 1.4× the panel's area (was 2.2×).
+    - **QA (Playwright, Chrome):**
+      - **Widths:** 1920, 1440, 1024, 768, 390 and 320 with testimonials 3 and 6 (the longest). No horizontal overflow, no clipped text, the controls inside the panel at every width, and all 6 portraits load.
+      - **Regression:** autoplay every 3.015–3.03s with the card, text and counter in step. Next, Prev and swipe work, autoplay pauses while Final CTA covers the section, the pin hand-offs are unchanged (Our Process holds while the testimonials rise 1:1, then the testimonials hold while Final CTA rises), the page ends exactly at the Footer, and reduced motion is static. No console errors. `tsc` and `eslint` pass.
+  - **Sources:**
+    - **Portraits and motion:** the live preview of Framer's Testimonial Flow Pro (testimonialflowpro.framer.website), inspected with Playwright at rest and through autoplay and manual transitions, at 1440 and 390. No Framer code or dependency.
+    - **White text panel:** the Figma card `AdobeExpressPhotos_85957820b5764ef99e28eca7afea7fff_CopyEdited.png` (project root, 1060×497 = the 1020×457 card plus its shadow), measured at 1:1: 60px padding, 20px corners, a soft mostly-upward shadow, a red 42×30 quote mark at the top right of the text.
+  - **Page order and pins:** Hero + logos → Section 2 → Recent Projects → Industries trust (70svh hold) → Our Process → **Testimonials** → Final CTA → Footer. Our Process and the testimonials are each in a plain `PinnedSection` (the testimonials no longer have a `hold`); Final CTA rises over the testimonials.
+  - **Content:**
+    - **Shape:** `testimonials` is an array of `{ id, draft, headline?, name, role, quote, image: { src, width, height, alt }, rating? }`, in display order (Brandon first, Amy Marie last).
+    - **Draft status:** every entry has `draft: true`. Every quote and headline is **draft sample copy written for this build, not a verified review**, one per WayWise service; no figures, results, companies or claims. Replace them with real client testimonials before launch.
+    - **Names:** first names come only from the supplied file names. "Client Name" is used for `Search.png` (no name given). "Role, Company Name" is a visible placeholder on five cards. Amy Marie's name and "CEO & Marketing Manager" are the earlier design's.
+    - **Rating:** only Amy Marie's card has one: "4.5/5" and "Based on +300 reviews", still provisional pending the owner's verification. Shown on one line beside the stars.
+    - **Repeated wording:** the eyebrow ("Why Choose WayWise") and description still repeat Section 2's word for word (an open point).
+  - **Image mapping** (`lib/assets.ts`, all in `public/images/our portfolio/`, all supplied by the owner):
+
+    | Card | Asset key | File | File details | Alt text describes |
+    |---|---|---|---|---|
+    | 1 Brandon | `portfolioTestimonialBrandon` | `Brandon.png` | 667×1000 JPEG | man, navy blazer, tan trousers |
+    | 2 Jad | `portfolioTestimonialJad` | `jad.png` | 667×1000 JPEG | man, sunglasses, light blue shirt, laptop |
+    | 3 Morgan | `portfolioTestimonialMorgan` | `Morgan.png` | 668×1000 JPEG | man, glasses, dark blazer, arms folded |
+    | 4 Client Name | `portfolioTestimonialSearch` | `Search.png` | 668×1000 JPEG | grey-haired man, charcoal blazer, seated |
+    | 5 Nichol | `portfolioTestimonialNichol` | `Nichol.png` | 300×400 PNG, rounded corners in the file | smiling woman, thumbs up |
+    | 6 Amy Marie | `portfolioTestimonialAmy` | `Amy.png` | 600×674 PNG, 52px corners in the file | as before |
+
+    - **File names:** the four JPEGs have `.png` names. The owner renamed `Frame 2147238128.png` → `Amy.png` and `search.png` → `Search.png`; the asset paths follow.
+    - **Framing:** every portrait fills the reference's 285×400 (3:4) card with `object-cover` at `50% 16%`; the files are unedited.
+  - **Portrait arrangement (the reference's, measured):** sizes are the reference's pixels times `--k` (its card is 285×400 at `--k` = 1px), so portraits and text scale together.
+
+    | Place | Left edge (card widths) | Scale | Wash | z-index | Shown |
+    |---|---|---|---|---|---|
+    | 0 (featured) | 0 | 1 | 0 | 30 | yes, on the plate under the badge |
+    | 1 | 1.0842 | 0.86 | 0.40 | 19 | yes |
+    | 2 | 1.988 | 0.7396 | 0.64 | 18 | yes |
+    | 3 | 2.7618 | 0.636056 | 0.784 | 17 | yes |
+    | 4 | 3.4245 | 0.547008 | 0.87 | 16 | yes, running off the screen edge |
+    | far | 3.9922 | 0.470427 | 0 | 15 | no: the next card fades in from here |
+
+    - **No rotation:** the reference has none; every card shares one vertical centre line.
+    - **Card treatment:** white cards with 14k corners (15.4k here, so the corners baked into Nichol's file never show). The wash is a `#f2efe9` layer (the reference's colour and opacities, 1 − 0.6ⁿ). Photos behind the featured one are zoomed 1.12×.
+    - **Plate and badge:** a fixed white plate 8k around the featured place (22k corners, the reference's deep soft shadow) and a 44k dark (`#14110d`) quote badge ringed 6k in white over its top-left corner.
+    - **Depth:** each card has its own `perspective(4w)` and a real `translateZ`, with the X offset solved so the projection lands exactly on the reference's place and scale (z = 4w(1 − 1/s), x = w(X + s/2 − ½)/s). Painting order is by z-index, as in the reference. Verified at 1440: every card's offset and size from the featured card matches the reference to the pixel (card 1 at (309, 28) 245×344, card 2 (567, 52) 211×296, card 3 (787, 73) 181×254, card 4 (976, 91) 156×219; plate (−8, −8), badge (−26, −26)).
+  - **Text panel:** the reference's text column on the Figma card's white, corners and shadow, with the Figma red quote mark at the right end of the counter row. White is on the text panel only; the portraits are outside it.
+    - **Position:** from `lg` the panel is exactly as tall as the plate (416k) and shares its top and bottom edges; it sits 48k left of the plate, as the reference's text column does.
+    - **Width:** 380k of text (the reference's column is 335k; these quotes are longer than its samples and would otherwise outgrow the plate height), 32k padding at the sides, content centred vertically.
+    - **Type** (reference sizes in k, with minimums): counter 11k (0.16em tracking), headline 30k / 1.14 (Outfit 600, navy; the reference uses a serif), quote 15k / 1.65, avatar 40k, name 15k, role 12k, Prev/Next 11k; gaps 18k, 14k, 18k, 26k (the reference's 26, 18, 24, 34 tightened so the longer quotes fit the plate).
+  - **`--k`:** 1px below `lg` (cards also capped at 76% of the width), 0.95px from `lg`, and from `xl` it grows with the width to 1.137px at 1920, where the row shows the featured card, three behind it and part of the fourth at the screen edge.
+  - **Responsive:** from `lg` the panel is on the left and the portraits on the right, the row running off the right edge (the section clips it). Below `lg` the panel comes first and the portraits follow, running off the right edge the same way, as in the reference's phone layout.
+  - **Motion** (the reference's, measured):
+    - **Next:** the row advances one place (850ms, expo-out, 73% at 200ms). The featured card drifts left 0.55 card widths and fades out (`pt-leave`), then waits hidden at the far end; the next card fades in at the end of the row. Photos zoom and the wash changes with each card.
+    - **Prev:** reverses it; the arriving card comes in from the left, fading in (`pt-arrive`). The direction is stored on the stage (`data-dir`), unset until the first change so nothing plays on load.
+    - **Text:** the outgoing testimonial disappears at once; the new headline's words rise from below their masks 33ms apart from +40ms, the quote fades up 10px from +270ms, the rating from +320ms and the author from +370ms; the counter's number rises in.
+    - **Autoplay:** every 3 seconds. The active segment fills linearly over 3s and its `animationend` is the tick, so the bar and the timing never drift. It loops (6 → 1).
+    - **Pauses:** while less than 40% of the carousel is on screen or uncovered (it watches the next section, Final CTA, rising over it), while the tab is hidden, and while keyboard focus is inside it. Off with reduced motion. **No pause button** (owner's instruction).
+    - **Controls:** Prev and Next, the six segments, ←/→ and Home/End on the focused carousel, a horizontal swipe of 40px or more, and a click on a card behind. Any of them restarts the countdown. Presses within 750ms of a change are ignored, so transitions never pile up.
+  - **Accessibility:** a labelled carousel region; only the current testimonial and the featured portrait are exposed (the rest are `inert`/`aria-hidden`); a polite live region announces user-initiated changes only; segments are labelled "Show testimonial N of 6" with `aria-current`. Without JavaScript the first testimonial shows and the controls are hidden.
+  - **Reduced motion:** the same layout, every change instant, no autoplay, no pins.
+  - **QA 2026-11-15** (Playwright, Chrome, against the live reference):
+    - **Arrangement:** matches the reference to the pixel at 1440 (offsets above); at 1920 the featured card is 324×455, the panel 505×473 and the plate 342×473 with shared edges.
+    - **Widths 1920, 1440, 1024, 768, 390 and 320,** two testimonial states each (the first and the longest, Amy Marie): no horizontal overflow, all 12 images load, the text fits the panel at every width (panel and plate edges shared from `lg`: 473, 416 and 395px tall at 1920, 1440 and 1024).
+    - **Autoplay:** six changes in 19.5s, 3.015–3.040s apart, looping 6 → 1; the front card, the active text, the name and the counter always agree.
+    - **Transitions:** captured mid-flight with transitions slowed 10× by a test-only style. Next: the outgoing card drifts left 157px (0.55 × 285) and fades, the row advances, the hidden card fades in at the end. Prev: the reverse.
+    - **Controls:** a double → press moves once (lock); ←, End, Home; swipe left and right; a real mouse click on a card behind brings it forward.
+    - **Pauses:** with Final CTA 80% over the section, above the section, and with the tab hidden (simulated `visibilitychange`; switching tabs does not hide a Playwright page), nothing advances in 3.5s, and it resumes when visible again. Keyboard focus inside also pauses it.
+    - **Pin hand-offs** (1920 and 390): Our Process holds while the testimonials rise 1:1; the testimonials hold (at 0, or −334 at 390) while Final CTA rises 1:1; reverse scrolling gives identical positions; the page ends exactly at the Footer.
+    - **Reduced motion** (emulated, 1920 and 390): no autoplay, pins static, changes instant.
+    - **Console:** no errors; only dev-mode image hints (LCP, the Hero's `sizes`) and a CSS preload notice, none from this section.
+    - **Checks:** `tsc` and `eslint` pass.
+  - **Not tested:** Safari, Firefox, real touch devices and trackpads.
+  - **Known differences from the reference:** the site font (Outfit) instead of its serif headline and Inter text; a 380k text column instead of 335k, and tighter text gaps, because the draft quotes are longer; the white text panel and red quote mark (Figma), and the section's sand background instead of its white page.
+- **Testimonial stack, 2026-11-12 build (history; superseded where the notes above differ)** (asset then `our portfolio/Frame 2147238128.png`, now `Amy.png`): built 2026-11-12 from `Frame 2147239021.png` (no longer in the project root). Placed after Our Process by the owner (2026-11-12; first built between the Hero and Recent Projects, then moved). It was **on hold from 2026-11-12 until the owner released it on 2026-11-15**. The notes below describe that build.
   - **Owner decisions (2026-11-12):**
     - **Stack:** four cards as drawn. Only the front card has content (Amy Marie); the three behind are intentionally blank.
     - **Copy:** Amy Marie's testimonial and "Based on +300 reviews" are kept exactly as drawn, as **provisional content pending verification**. The quote reads like placeholder copy (a supplement testimonial).
@@ -549,7 +969,7 @@ Labelled "Our Portfolio" (title "Our Portfolio | Way-Wise Tech"), at the URL of 
     - **Shared background:** Recent Projects and the trust section share `#d0d0c8`, so no edge shows as the trust section rises over Recent Projects.
 - **Final CTA and Footer (added 2026-11-12, owner's instruction):** the shared `FinalCta` and `SiteFooter`, reused exactly (no change to either). The page now ends with Our Process (in a plain `PinnedSection`, held while Final CTA rises), Final CTA (in a `PinnedSection` with no cap, as on `/services` and the Service Details pages) and the Footer after `<main>`. The Footer is at least one screen tall when motion is allowed, so the last pin never outlasts it. The testimonial stack was taken off the page (on hold).
   - **Verified 2026-11-12** (Chrome, same-origin frames at 2560×1440, 1920×1080, 1440×900, 1024×768, 768×1024, 390×844 and 320×640): order Hero + logos → Recent Projects → Industries trust → Our Process → Final CTA → Footer at every size, with the testimonial section absent. Every hand-off (including trust → Our Process after the 70svh hold, Our Process → Final CTA and Final CTA → Footer) holds the lower section while the next rises 1:1. The page ends exactly at the Footer bottom (sub-pixel rounding only), with no horizontal overflow. Visual check of the Final CTA → Footer transition at 1100×700 and the page end at 390×700. Reduced motion (1440×900): no sticky pins, page height (4876px) equal to the Navbar plus the sections plus the 639px Footer. `tsc` and `eslint .` pass; no console errors.
-- The page has no Final CTA or Footer yet. The testimonial stack is its last section; it stays pinned for its build with a zero cover (see the testimonial stack notes above).
+- Since 2026-11-15 the page is: Hero + logos → Section 2 → Recent Projects → Industries trust → Our Process → Testimonials → Final CTA → Footer (see the restored testimonial notes above).
 
 ## Contact Us page (`/contact`)
 
@@ -1318,7 +1738,7 @@ Production assets are in `public/images/`: hero files at the root, then `logos/`
 - **Services card links (approved permanently, 2026-11-10):** each of the six Services cards links to its Service Details page: UI/UX → `/services/ui-ux-product-design`, Custom Software → `/services/custom-software-development`, Web → `/services/web-development`, Mobile → `/services/mobile-app-development`, AI → `/services/ai-data-automation`, Branding → `/services/branding-digital-growth`. The title is the link, and its `::after` covers the whole card, so the card's hover and `focus-within` lift work for mouse and keyboard. Do not remove or revert these links. The section's "View All" button is still `#`.
 - **Navbar Contact link (approved 2026-11-10):** the Contact item links to `/contact`. It is one entry in `primaryNav` in `lib/content/navigation.ts` (it was `navItems` in `SiteHeader.tsx` until the dropdown work), which both the desktop bar and the mobile menu render with `next/link`. Browser-tested: at 1920 the desktop link opens `/contact` without a full reload; at 390 the mobile menu link opens `/contact`, and the menu closes on tap. No other Navbar link changed: Industries, Our Work and Company are still `#` placeholders, and no dropdown has content.
 - **Red banner:** Homepage only. All inner pages use `showBanner={false}`.
-- **Our Portfolio second section:** on hold until the Figma team's feedback arrives.
+- **Our Portfolio second section:** released by the owner and built 2026-11-15 as a 3D fan carousel; 3-second autoplay added 2026-11-16 by the owner's instruction, replacing the earlier no-autoplay decision (see "Our Portfolio page"). **Approved and frozen by the owner 2026-11-16.**
 
 ## Pinned sections (overlapping scroll)
 
@@ -1357,11 +1777,11 @@ Since 2026-11-11 every "Hero + Client Logos" below is one combined pinned unit (
 
 | Page | Pinned | Not pinned | `limitCoverTo` |
 |---|---|---|---|
-| `/` | Hero + Client Logos (one unit), Services, Industries, Final CTA | Our Work (`relative` wrapper; keeps its own card stacking) | `"footer"` on Final CTA |
-| `/services` | All sections, Hero + Client Logos as one unit | none | none |
+| `/` | Hero + Client Logos (one unit), Services (`hold="30svh"` since 2026-11-16), Mission & Vision (`hold="30svh"`, added 2026-11-16), Industries (`hold="30svh"` since 2026-11-16) | Our Work (`relative` wrapper; keeps its own card stacking and, since 2026-11-16, its `--hold`); the combined `Footer` (Final CTA + footer, 2026-11-16) ends the page, positioned, not pinned | none (the Final CTA pin and its `"footer"` cap were removed with the redesign) |
+| `/services` | All sections in `<main>`, Hero + Client Logos as one unit; since 2026-11-16 the last is FAQ (Final CTA is inside the shared `Footer`) | none (the shared `Footer` follows, outside `<main>`) | `main:has(#services-hero) + footer` on FAQ |
 | Service Details | All sections, Hero + Client Logos as one unit | none | none |
 | `/industries` | Hero + Client Logos (one unit), Industries at a Glance, trust section (`hold="70svh"`), Final CTA | Industry Solutions (`relative` wrapper; keeps its own card stacking) | none |
-| `/our-work` | All five sections in `<main>`: Hero + Client Logos (one unit), Recent Projects, Industries trust section (`hold="70svh"`), Our Process, Final CTA | none (Footer follows, outside `<main>`) | On the trust section: `main:has([aria-labelledby="industries-trust-heading"]) [aria-labelledby="our-process-heading"]` (this page's Our Process); none on Our Process or Final CTA |
+| `/our-work` | All seven sections in `<main>`: Hero + Client Logos (one unit), Section 2 (fan carousel, no cap), Recent Projects, Industries trust section (`hold="70svh"`), Our Process, Testimonials (plain, no hold), Final CTA | none (Footer follows, outside `<main>`) | On the trust section: `main:has([aria-labelledby="industries-trust-heading"]) [aria-labelledby="our-process-heading"]` (this page's Our Process); none on Our Process or Final CTA |
 | `/contact` | All sections in `<main>`: Hero + Client Logos (one unit), Client Overview, "Have a Project Idea?", "Send Us a Message / Our Offices", FAQ | none (Footer follows, outside `<main>`) | `[aria-labelledby="contact-locations-heading"]` on Client Overview; `#contact-form` on the map section |
 | `/about` | All seven sections in `<main>`: Hero + Client Logos (`AboutHero`, one unit), Our Story, Leadership messages, Our Global Presence, Our Process, Final CTA | none (Footer follows, outside `<main>`) | `[aria-labelledby="about-story-heading"]` on the Hero; `#about-leadership` on Our Story; `#about-presence` on the leadership section; none on Our Global Presence, Our Process or Final CTA |
 | `/faq` | Both sections in `<main>`: Hero + Client Logos (`FaqHero`, one unit), questions section (measured `hold`, see "FAQ page") | none (Footer follows, outside `<main>`) | `#faq-questions` on the Hero; none on the questions section |
@@ -1376,7 +1796,7 @@ Since 2026-11-11 every "Hero + Client Logos" below is one combined pinned unit (
   - The trust section holds for an extra 70svh so its stats can roll, then Industry Solutions rises over it.
   - Industry Solutions is not pinned. Its cards stay stacked while Final CTA rises over them, like Our Work on the Homepage: its card list's spacer `--cover` is 600px from `lg` and 1000px below.
   - Final CTA pins with no `limitCoverTo`, as on `/services`.
-- **`/our-work`:** Hero + Client Logos, then the page ends. The next section is on hold.
+- **`/our-work`:** Hero + Client Logos → Section 2 (fan carousel) → Recent Projects → Industries trust section → Our Process → Testimonials (autoplaying carousel, no hold) → Final CTA → Footer (see "Our Portfolio page").
 - **`/contact`:** Hero + Client Logos → Client Overview → "Have a Project Idea?" → "Send Us a Message / Our Offices" → FAQ → Footer. Verified 2026-11-10 at 2560, 1920, 1440, 1280, 1024, 768, 390 and 320 for map→form, form→FAQ and FAQ→Footer: held, on top, 1:1, reversible, no end gap, no overflow; reduced motion static. The FAQ pin has no `limitCoverTo`, as on `/services`.
   - **Client Overview's cap:** its pin stays capped at the map section's height (802px against 842px at 1440×900). The cap was needed while the map ended the page; now it only shortens that hold slightly.
   - **Map's cap:** the map's pin is capped at the form section's height (`#contact-form`). Without it, wide screens would get empty scrolling at the end (map 1440px against the form section's 1080px at 2560×1440).
@@ -1386,6 +1806,40 @@ Since 2026-11-11 every "Hero + Client Logos" below is one combined pinned unit (
 
 - **Hero entrance:** CSS only (`app/globals.css`), so content shows without JavaScript. Reduced motion uses a fade with no movement.
 - **Navbar:** the red banner is not sticky. The bar's content never animates. The wrapper sticks at `-5px` (`-4px` below 1280px), and only a separate background layer moves. Height 100 → 90px at 1280 and up, 80 → 72px below. Compact look: 92% white, `backdrop-blur-sm`, soft shadow, 350ms `ease-in-out`. The state comes from an `IntersectionObserver` on the banner, with no scroll listeners. Solid white while the mobile menu is open. Mobile menu below 1280px.
+- **Navbar hide-on-scroll (owner's instruction 2026-11-16; built, awaiting the owner's approval):** on every route and both variants (the Homepage's floating card and the inner pages' bar), the bar slides up out of view while scrolling down and back in on any scroll up. Design, sizes and the compact look are unchanged.
+  - **Code** (`SiteHeader.tsx`): one passive `scroll` listener, throttled to one reading per animation frame. There is no wheel or touch handling and no scroll hijacking; scrolling stays native. This is the header's only scroll listener; the compact state still comes from the `IntersectionObserver`.
+  - **Direction and thresholds:** a direction counts once the page has moved far enough since it began: 12px down to hide, 4px up to show. Small jitter below those never flickers.
+  - **Always shown:** within 120px of the top of the page, while a dropdown or the mobile menu is open, and while keyboard focus is inside the bar (CSS `has-[:focus-visible]`, revealed instantly).
+  - **Timed visibility window (owner's instruction, 2026-11-16; awaiting approval):** once revealed by scrolling up, the bar slides away by itself after `AUTO_HIDE_MS` (2500ms) with no further upward scrolling. No new scroll event is needed.
+    - **Restarting:** every upward scroll reading restarts the window, and scrolling down hides the bar at once.
+    - **The timer:** one `setTimeout` in a ref. `startAutoHide` replaces any pending timer. `stopAutoHide` cancels it on scrolling down, at the top and while a menu is open, and on unmount. When it fires it re-checks the exceptions (top zone, open menu, mouse over the bar), so a timer started before a newer event cannot hide the bar wrongly. No polling.
+    - **Exceptions:** never at the top of the page (`TOP_ZONE`, 120px) or while a menu is open; closing a menu restarts the window. Keyboard focus inside the bar keeps it on screen through the CSS rule; when focus leaves, an expired window lets it slide away.
+    - **Addition (owner to confirm):** a mouse resting on the bar or its open sheet also holds it (`pointerenter`/`pointerleave`, mouse only), and leaving restarts the window. This stops the bar sliding away under the cursor just before a click. Remove `pointerProps` to drop it.
+    - **Motion:** the existing hide and show curves are unchanged; with reduced motion the change is instant.
+    - **QA 2026-11-16** (Playwright, Chrome, wheel events, scroll and visibility changes timestamped in the page):
+      - **Timing:** the auto-hide came 2,521ms (Homepage, 1920) and 2,538ms after the last upward scroll event.
+      - **Repeated upward scrolling:** one scroll a second for four seconds kept the bar visible, with a single hide 2.5s after the last.
+      - **Interruption and top:** scrolling down mid-window hid it within 36ms; within the top zone nothing changed in 3.5s.
+      - **Exceptions:** a dropdown open for 4s and the mobile menu open for 4s (390) kept it shown, and each auto-hid 2.5s after closing. Keyboard focus held it on screen for 4s and it slid away when focus left; a hovering mouse held it for 4s and it hid 2.5s after leaving.
+      - **Pages:** `/services` among pinned sections behaves the same; `/about` with reduced motion has the same window and an instant hide.
+      - **Checks:** `tsc` and `eslint` pass.
+  - **How it hides:** a `translate` on the existing sticky wrapper: `-104px`, or `-124px` from `xl` (just enough to clear each bar plus its shadow; the floating card sits 20px down from `xl`).
+  - **Motion (revised 2026-11-16 after the owner found the first version rough):** each state carries its own transition. Hide: 420ms `cubic-bezier(0.4, 0, 0.2, 1)`, a gentle start. Show: 360ms `cubic-bezier(0.2, 0.8, 0.2, 1)`, a quick start that settles softly.
+    - **Root cause of the roughness:** measured frame by frame, not dropped frames, long tasks, the backdrop blur (no difference with it off) or React (the slide starts one frame after the trigger). It was the curve: a single 300ms `ease-out` over 124px for both directions jumped 24px in the first frame and finished the visible part of the hide in about 130ms (five frames), then crawled off-screen.
+    - **Now:** the hide eases in (1.4, 2.9, 4.6px for the first frames), and its visible part spans about 12 frames (~200ms). The reveal shows the card in its first frame and decelerates into place. A reversal mid-slide continues from the current position. A translate is paint-only, so nothing in the page moves and the page height never changes (verified: 0.00px deviation). The wrapper keeps `z-30`, above every pinned section. The visible state is `translate: none`, so the dropdown's `fixed` page dim is never trapped by a transform. The wrapper carries `data-nav-hidden` while hidden.
+  - **Reduced motion:** the transition is off, so it hides and shows instantly.
+  - **`NavMenus.tsx`:** the page dim's `--dim-top` (fixed to the screen) subtracts any `translate` on the bar's ancestors, so a re-measure while the bar is hidden or mid-slide (resize, or the compact change) cannot misplace it. `--sheet-top` is relative to the nav, which moves with the bar, so it is not corrected. Verified shown, hidden and mid-slide on `/` and `/services`: the sheet is 10px below the visible bar and the dim starts exactly at its edge.
+  - **Known, existing behaviour (not changed):** pressing Shift+Tab from the page back into the header scrolls the page towards the top. Chrome scrolls a focused element inside a `position: sticky` header to the header's place in the page flow. It happens identically with the bar forced to stay shown, so it predates this feature.
+  - **QA 2026-11-16** (Playwright, Chrome, real wheel events where noted):
+    - **Homepage at 1920:** hides on scroll down (card at −104), shows on a 10px scroll up, and stays hidden after only 3px up (shows after 8px total). Jitter of ±2–6px never hides it. Rapid 80px down / 20px up alternation follows each direction.
+    - **All routes at 1440:** `/`, `/services`, two Details pages, `/industries`, `/our-work`, `/contact`, `/about`, `/faq`, `/insights`, `/case-study`, the Blog Details page and the 404 page. At 25%, 50% and 80% of each page it hides on scroll down and shows on a 15px scroll up, painting above the pinned sections.
+    - **Open menus:** a dropdown (pointer kept on the sheet) and the mobile menu (390) both keep the bar shown while scrolling down; after closing, the next scroll down hides it.
+    - **Navigation:** client navigation from a scrolled Homepage to `/contact` lands at the top with the bar shown.
+    - **Widths:** 1024, 768, 390 and 320: hides and shows, no horizontal overflow.
+    - **Revised motion:** re-tested the same day across 11 routes at 1920, 1024, 768, 390 and 320. Hide, show, painting above pinned sections and overflow are all fine. The threshold and jitter sequence is unchanged, and so are the dropdown and mobile-menu locks, the instant keyboard-focus reveal and instant reduced motion. Over 12 sampled movements, 3 had one 33ms frame and the rest ran at a steady 17ms. Those single frames come from the page repainting as it scrolls (they appear in reveal too, and on inner pages), not from the slide.
+    - **Reduced motion:** emulated, instant.
+    - **Checks:** `tsc` and `eslint` pass; no console errors from these changes.
+  - **Not tested:** Safari, Firefox, real touch devices, trackpads and iOS rubber-band scrolling (negative scroll positions fall inside the always-shown top zone).
 - **Services card hover (shared by Homepage and `/services`):** 4px lift and a soft shadow (`0 8px 20px rgba(35,31,32,0.1)`) over 300ms, matching the Industries card timing. CSS only, on `<article>` in `Services.tsx`; `translate` does not affect layout. Reduced motion keeps the shadow with no movement. Each card is now a link to its Details page (see "Approved decisions"): the title's `<Link>` has an `::after` covering the card, with a focus outline drawn on it, so keyboard focus triggers the same lift through `focus-within`.
 - **Industries carousel:** advances every 3000ms with a 700ms slide, cards moving leftward, looping through cloned sets. Clipped at the left content edge. Arrows and touch swipe. Pauses for hover, focus, touch and a hidden tab. No autoplay with reduced motion. Scrollable without JavaScript. Hover lift and image zoom are CSS, separate from carousel movement.
 - **Our Process:** matches `our progress.png` at 1920 within about 1px per text line, 0.66/255 across the frame. Columns are 260.8px with 64px gaps at 1920. The five icons are inline SVGs traced from the reference; difference on their pixels is 2.2% to 7.7%, the rocket being highest. Layouts: five across from 1280, three plus two from 1024, two columns from 640, one below. Hover uses Tailwind `group/step` on each `<li>`, so anywhere in a step lifts its circle 4px with a soft shadow and scales its icon to 1.08 over 300ms. Hover is off on touch and with reduced motion. The reveal uses the shared `Reveal` around the list: steps fade and rise 16px, 110ms apart, once. The hidden state only exists once JavaScript sets it, so steps show without JavaScript. On one-column phones lower steps finish revealing before they are scrolled to.
@@ -1437,6 +1891,32 @@ Run on the production build in headless Chrome at 1920, 1440, 1280, 1024, 768, 3
 **2026-11-10:** `tsc` and `eslint .` passed after the Contact map section and during the audit. The Contact map QA ran against the dev server on port 3000, in Chrome, using same-origin iframes sized to each screen (an iframe's own scrollbar takes 15px, so 1280 wide gives a 1265px page). Reduced motion was simulated by switching the page's `prefers-reduced-motion: no-preference` rules off in that frame. Later that day the Contact form section, the World Map spacing restore, both Budget Range updates and the Navbar Contact link each passed `tsc` and `eslint .`, and were checked in Chrome as recorded in their sections. The editor's Tailwind extension shows "suggestCanonicalClasses" hints (shorter spellings such as `leading-tight` for `leading-[1.25]`) in `ContactForm.tsx` and `SiteHeader.tsx`. They are style suggestions, not TypeScript or ESLint errors, and were left unchanged.
 
 **QA tips:** port 3100 is unusable on this machine, so 4173 was used for `next start`. Turn the browser cache off for pixel comparisons, or results are misleadingly large. Pixel comparisons between runs can flip with no code change: on one build, a line in the Our Work cards at 1024 moved 1px depending only on earlier scrolling (its y is fractional), so repeat a difference before treating it as a regression. In headless Chrome, `Input.synthesizeScrollGesture` scrolls with `mouse` but not `touch`; use `Input.dispatchTouchEvent` for touch. Bring the tab to the front or animation frames are throttled.
+
+### Browser verification with Playwright CLI (owner, 2026-11-16)
+
+Use Playwright CLI (`@playwright/cli`, installed globally, command `playwright-cli`) for browser verification. Its skill is installed at `.claude/skills/playwright-cli` (read `SKILL.md` for the full command list). Earlier QA in this file used the Playwright MCP tools; their notes still apply.
+
+- **Setup (done 2026-11-16):** `npm install -g @playwright/cli@latest`, then `playwright-cli install --skills` in the project root. That created the `.playwright-cli/` workspace (already in `.gitignore`), installed the skill, downloaded FFmpeg for recordings and chose the installed Chrome as the default browser.
+- **Session:** `playwright-cli open http://localhost:3000/` opens a browser that stays open between commands; `playwright-cli close` ends it. Use the running dev server on port 3000; never start, stop or restart it.
+- **Viewport:** `playwright-cli resize <w> <h>`, or `page.setViewportSize` in a script. **Correction (2026-11-16):** unlike the Playwright MCP browser, the CLI's Chrome has overlay scrollbars, so the layout width equals the viewport width. Use **1920×942** for the frame rule here (1935 gives a 1935 layout and shifts everything 7.5px). Check `document.documentElement.clientWidth` if in doubt. The MCP note "1935 = 1920 layout" applies to the MCP browser only.
+- **Measuring:** prefer `playwright-cli eval "() => …"` (one expression returning JSON) and `playwright-cli run-code --filename=.playwright-cli/<script>.js` for multi-width sweeps. A script default-exports `async page => { … }` and can resize, navigate and evaluate in a loop. Keep scratch scripts in `.playwright-cli/` (ignored), never in source folders.
+- **What to check for a section:**
+  - **Frame:** at 1920 layout width, the section height ≤ 942.
+  - **No peek:** with real wheel steps (`playwright-cli mousemove …` then `playwright-cli mousewheel 0 100`), the section fills 0–942 with 0px of the next section visible during its hold.
+  - **Hand-offs:** forward and reverse scrolling give identical positions.
+  - **Page end:** the page ends at the Footer.
+  - **Overflow:** `document.documentElement.scrollWidth − clientWidth` is 0 at 320, 390, 768, 1024, 1280, 1440 and 1920.
+  - **Reduced motion:** `playwright-cli set-reduced-motion reduce`, then `clear-reduced-motion`.
+  - **Console:** `playwright-cli console`.
+- **Finding horizontal overflow:** list the outermost elements whose `getBoundingClientRect().right` exceeds `clientWidth`. Elements inside their own scroll or clip container (carousels, closed Navbar sheets) also appear but do not widen the page, so compare against `scrollWidth`.
+- **Screenshots:** take them only for visual judgement (`playwright-cli screenshot --filename=…`). Measure layout with `eval`, and do not repeat passing tests.
+- **No commits or pushes;** the CLI never needs Git.
+- **Token-efficient use (owner's rules, 2026-11-16):** minimise token use while keeping quality and visual accuracy.
+  - **When:** use Playwright only for essential browser verification, never for routine code inspection or implementation. Prefer terminal commands, static analysis and the existing project structure.
+  - **Scope:** reuse the open browser session, and verify only the section or interaction being changed, in one consolidated QA pass after implementation.
+  - **What to avoid:** repeated full-page snapshots, unnecessary screenshots, DOM dumps and repeated inspections. Do not repeat tests that already passed unless the relevant code changed.
+  - **Output:** keep tool output minimal and report only relevant failures.
+  - **Boundaries:** never modify unrelated or frozen sections during QA.
 
 ## Known limitations and pending tasks
 

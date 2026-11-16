@@ -3,9 +3,8 @@ import { AboutHero } from "@/components/about/AboutHero";
 import { AboutLeadership } from "@/components/about/AboutLeadership";
 import { AboutPresence } from "@/components/about/AboutPresence";
 import { AboutStory } from "@/components/about/AboutStory";
-import { FinalCta } from "@/components/home/FinalCta";
 import { PinnedSection } from "@/components/home/PinnedSection";
-import { SiteFooter } from "@/components/layout/SiteFooter";
+import { Footer } from "@/components/layout/Footer";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { OurProcess } from "@/components/services/OurProcess";
 import { aboutHero } from "@/lib/content/about";
@@ -24,8 +23,8 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <>
-      {/* The red banner is Homepage only. */}
-      <SiteHeader showBanner={false} />
+      {/* Global rule (owner, 2026-11-16): the same shared Navbar and Footer as the Homepage. */}
+      <SiteHeader showBanner={false} variant="floating" />
       <main>
         {/*
           The whole Hero + logos section holds while Our Story rises over it, capped at Our Story's
@@ -54,20 +53,16 @@ export default function AboutPage() {
         <PinnedSection>
           <AboutPresence />
         </PinnedSection>
-        {/* The shared /services section, reused exactly as it is. Holds while Final CTA rises over it. */}
-        <PinnedSection>
+        {/*
+          The shared /services section, reused exactly as it is: the last section, held while the shared
+          Footer rises over it, capped at this page's Footer so the pin never adds empty scrolling.
+        */}
+        <PinnedSection limitCoverTo="main:has(#about-presence) + footer">
           <OurProcess />
         </PinnedSection>
-        {/*
-          The shared Final CTA, reused exactly as it is. Holds while the Footer rises over it. No
-          limitCoverTo, as on /services: the Footer is at least one screen tall when motion is
-          allowed, so this pin never outlasts it.
-        */}
-        <PinnedSection>
-          <FinalCta />
-        </PinnedSection>
       </main>
-      <SiteFooter />
+      {/* The shared combined Footer (Final CTA + footer) replaces FinalCta + SiteFooter. */}
+      <Footer />
     </>
   );
 }

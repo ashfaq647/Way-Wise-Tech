@@ -99,7 +99,37 @@ const stepVisuals = [
 
 const steps = ourProcess.steps.map((step, index) => ({ ...step, ...stepVisuals[index] }));
 
-export function OurProcess() {
+/*
+  Layout per variant. "default" is the original design (a 1080px frame at 1920; these strings are
+  unchanged, so every page that uses it renders as before). "compact" is the 2026-11-16 /services
+  redesign (`Frame 2147238780.png`, 1920x942): the same content centred in a 942px frame, an 18px
+  eyebrow, a 53.5px heading, and the description top-aligned beside the heading instead of on its
+  bottom line.
+*/
+const layouts = {
+  default: {
+    section: "flex items-center bg-[#faf5f1] lg:min-h-[clamp(720px,56.25vw,1080px)]",
+    header: "grid gap-5 lg:grid-cols-[minmax(0,968fr)_minmax(0,592fr)] lg:items-end lg:gap-0",
+    eyebrow: "lg:text-[clamp(16px,1.042vw,20px)]",
+    heading: "lg:text-[clamp(34px,2.71vw,52px)]",
+    description: "lg:-mb-px",
+  },
+  compact: {
+    section: "flex items-center bg-[#faf5f1] lg:min-h-[clamp(628px,49.0625vw,942px)] lg:pt-1",
+    header: "grid gap-5 lg:grid-cols-[minmax(0,968fr)_minmax(0,592fr)] lg:items-start lg:gap-0",
+    eyebrow: "lg:-mt-1 lg:text-[clamp(14px,0.9375vw,18px)] lg:tracking-[0.072em]",
+    heading: "lg:mt-2 lg:text-[clamp(34px,2.786vw,53.5px)]",
+    description: "lg:pt-[clamp(27px,2.1875vw,42px)]",
+  },
+};
+
+type OurProcessProps = {
+  /** "compact": the 2026-11-16 /services redesign (942 frame). Default: the original design. */
+  variant?: keyof typeof layouts;
+};
+
+export function OurProcess({ variant = "default" }: OurProcessProps) {
+  const l = layouts[variant];
   const panel = useRef<HTMLDivElement>(null);
 
   // Handled on the list, so the panel stays put while the pointer crosses the gap between steps.
@@ -124,12 +154,12 @@ export function OurProcess() {
   return (
     <section
       aria-labelledby="our-process-heading"
-      className="flex items-center bg-[#faf5f1] lg:min-h-[clamp(720px,56.25vw,1080px)]"
+      className={l.section}
     >
       <div className="mx-auto w-full max-w-[1600px] px-5 py-12 md:px-8 md:py-16 lg:pt-12 lg:pb-[49px] xl:px-5">
-        <Reveal className="grid gap-5 lg:grid-cols-[minmax(0,968fr)_minmax(0,592fr)] lg:items-end lg:gap-0">
+        <Reveal className={l.header}>
           <div>
-            <p className="ww-rise flex items-center gap-2 text-[16px] leading-5 font-bold tracking-[0.09em] text-brand uppercase lg:text-[clamp(16px,1.042vw,20px)]">
+            <p className={`ww-rise flex items-center gap-2 text-[16px] leading-5 font-bold tracking-[0.09em] text-brand uppercase ${l.eyebrow}`}>
               <span
                 className="h-[3px] w-[22px] shrink-0 -translate-y-px bg-brand"
                 aria-hidden="true"
@@ -138,7 +168,7 @@ export function OurProcess() {
             </p>
             <h2
               id="our-process-heading"
-              className="mt-1 text-[clamp(26px,7.4vw,48px)] leading-[1.154] font-semibold tracking-[-0.015em] text-[#0d1d44] lg:text-[clamp(34px,2.71vw,52px)]"
+              className={`mt-1 text-[clamp(26px,7.4vw,48px)] leading-[1.154] font-semibold tracking-[-0.015em] text-[#0d1d44] ${l.heading}`}
             >
               <MaskLine order={1}>{ourProcess.heading.first}</MaskLine>{" "}
               <MaskLine order={2} className="text-brand">
@@ -149,7 +179,7 @@ export function OurProcess() {
 
           <p
             style={revealOrder(3)}
-            className="ww-rise text-[18px] leading-[1.45] text-[#0d1d44] max-[1599px]:text-pretty lg:-mb-px lg:text-[clamp(17px,1.146vw,22px)]"
+            className={`ww-rise text-[18px] leading-[1.45] text-[#0d1d44] max-[1599px]:text-pretty lg:text-[clamp(17px,1.146vw,22px)] ${l.description}`}
           >
             {ourProcess.description}
           </p>

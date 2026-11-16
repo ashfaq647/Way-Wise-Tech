@@ -43,7 +43,12 @@ export function Hero() {
           className="object-cover"
         />
 
-        <div className="relative mx-auto grid w-full max-w-[1600px] gap-10 px-5 py-12 md:px-8 md:py-16 lg:grid-cols-[minmax(0,800fr)_minmax(0,760fr)] lg:items-center lg:gap-0 lg:py-[clamp(56px,5.2vw,100px)] xl:px-5">
+        {/*
+          The floating Navbar overlays the top of this section (Homepage redesign, 2026-11-16), so
+          the top padding is the bar's height (76px, 100px from xl) plus the gap below it: at 1920
+          the image grid starts 80px under the bar, at y 180.
+        */}
+        <div className="relative mx-auto grid w-full max-w-[1600px] gap-10 px-5 pt-[116px] pb-12 md:px-8 md:pt-[124px] md:pb-16 lg:grid-cols-[minmax(0,800fr)_minmax(0,760fr)] lg:items-center lg:gap-0 lg:pt-[calc(76px+clamp(40px,4.167vw,80px))] lg:pb-[clamp(56px,5.208vw,100px)] xl:px-5 xl:pt-[calc(100px+clamp(40px,4.167vw,80px))]">
           <div className="min-w-0 lg:pr-6">
             <p
               className={`${textEnter} inline-flex items-center gap-1.5 rounded-full border border-black bg-white/10 px-3 py-[5px] text-[11px] leading-[19px] font-medium tracking-[0.078em] text-black uppercase sm:pr-[13px] sm:pl-3.5 sm:text-[14px]`}
@@ -63,7 +68,7 @@ export function Hero() {
             </h1>
 
             <p
-              className={`${textEnter} mt-[25px] max-w-[26.5em] text-[18px] leading-[1.385] text-ink [animation-delay:160ms] lg:text-[clamp(18px,1.354vw,26px)]`}
+              className={`${textEnter} mt-[25px] max-w-[26.5em] text-[18px] leading-[1.385] text-ink [animation-delay:160ms] lg:max-w-[36em] lg:text-[clamp(16px,1.146vw,22px)] lg:leading-[1.636] lg:tracking-[0.042em]`}
             >
               {description}
             </p>
@@ -96,7 +101,7 @@ export function Hero() {
           </div>
 
           <div
-            className="grid aspect-[760/608] w-full grid-cols-[440fr_300fr] grid-rows-2 gap-x-[2.63%] gap-y-[3.29%]"
+            className="grid aspect-[760/562] w-full grid-cols-[440fr_300fr] grid-rows-2 gap-x-[2.63%] gap-y-[3.56%]"
           >
             {images.map((image) => (
               <div

@@ -1,178 +1,803 @@
 /*
-  Our Portfolio testimonial section only (prefixed pt-): the card stack and its scroll-linked build.
+  Our Portfolio testimonial carousel only (TestimonialFlow, prefixed pt-). Final redesign 2026-11-15.
+  Nothing here is scroll-linked.
 
-  Resting state = the design: four white cards, 57px apart at 1920 (--pt-step), the three behind
-  blank, each casting a soft shadow upwards onto the strip of the card behind it.
+  Source of truth: the live preview of Framer's Testimonial Flow Pro
+  (testimonialflowpro.framer.website), measured in Chrome at rest and through transitions; no Framer
+  code. Everything is sized in the reference's own pixels times --k, so the portraits and the text
+  panel always scale together (the reference card is 285x400; --k is 1px there):
 
-  Motion (CSS scroll-driven, no JavaScript, no scroll listeners, so reverse scrolling retraces it
-  exactly). The page pins the section with PinnedSection's hold (--pt-hold, 210svh from lg, 150svh
-  below), and everything runs on the pin wrapper's view timeline (--pt). The wrapper is never
-  sticky, so it moves 1:1 with the scroll while the section inside is held, as the FAQ timeline does.
-  On that timeline the hold starts at "cover" + --pin-height (the hold makes the section at least a
-  screen tall, so it pins when its top reaches the screen top) and lasts --pt-hold. Each animated
-  element sets its phase of the hold with --a and --b (fractions):
-    - an incoming card rises from below, fading in, and is uncovered from its bottom edge (a clip
-      reveal), so it seems to slide up out of a slot;
-    - the card underneath dips back (a slight scale and a soft navy dim) while it passes over, then
-      settles, so the stack reads in depth during the build and is exactly as drawn at rest;
-    - the testimonial's portrait settles from a small zoom and offset inside its rounded frame, and
-      its name, quote mark, quote and rating fade up in turn.
-  Only transform, opacity and clip-path animate. With reduced motion, or without scroll-driven
-  animation support, there is no hold and the finished stack shows as drawn.
+    Portraits (placed from the featured card's left edge, left-centre origin, no rotation):
+      place   left edge (cards)  scale      wash    z
+      0        0                 1          0       30   on the fixed white plate (8k around the
+                                                         card, 22k corners, deep soft shadow) under a
+                                                         44k dark quote badge ringed in white
+      1        1.0842            0.86       0.40    19
+      2        1.988             0.7396     0.64    18
+      3        2.7618            0.636056   0.784   17
+      4        3.4245            0.547008   0.87    16   (runs off the screen edge, as in the reference)
+      far      3.9922            0.470427   -       15   hidden; the next card fades in from here
+      leaving  -0.55             1          -       -    the featured card drifts here and fades out
+    Cards are white with 14k corners (raised to 15.4k here so the corners baked into Nichol's file
+    never show); the wash is a #f2efe9 layer; the photos behind the featured one are zoomed 1.12x.
+    A change takes about 850ms on an expo-out curve (73% at 200ms); the leaving card fades out
+    within about 350ms, the arriving one fades in.
+
+    Depth: each card carries its own perspective (4 card widths) and a real translateZ, with the
+    X offset solved so the projection lands exactly on the reference's left edge and scale above:
+    z = 4w(1 - 1/s), x = w(X + s/2 - 1/2) / s. At rest it is the reference; in motion the cards travel
+    through depth. Painting order is by z-index, as in the reference.
+
+    Text column (the reference's): 335k wide, centred on the card's centre line, 48k left of the
+    plate. Label row 11k (0.16em tracking), headline 30k/34.2k, quote 15k/24.75k, avatar 40k, name 15k,
+    role 12k, Prev/Next 11k, 2px segments; gaps 26k, 18k, 24k, 34k (here 18k, 14k, 18k, 26k, so the
+    longer quotes fit the plate height). Here it sits in the Figma card's
+    white panel (corners, soft upward shadow, red quote mark), 36k padding, and from lg the panel is
+    exactly as tall as the plate (416k) and shares its top and bottom edges.
+
+  --k: 1px below lg (cards also capped by the width), 0.95px from lg, and from xl it grows with the
+  width to 1.137px at 1920, where the row shows the featured card, three behind it and part of the
+  fourth at the screen edge, as the reference does.
+
+  Review-led hierarchy (owner, 2026-11-15), which changes the reference values above where they
+  differ: the portraits use --kp = 0.915 × --k (the featured card about 8.5% smaller); the panel holds
+  a 490k text column (639px wide at 1920) and is at least as tall as the plate, centred on it; the
+  quote is 18.5k in near-ink, the name 16.7k and the role 13.2k; the author sits directly under the
+  quote, marked by a short red rule (no avatar); the red quote mark in the panel is the only quote
+  symbol (the dark badge was removed); the cards behind are washed toward the section's sand at 0.35,
+  0.56, 0.7 and 0.8.
+
+  Reduced motion: the same layout, every change instant, no autoplay (the current segment is full).
 */
-/*
-  The section ends the Our Portfolio page, so nothing rises over it: its pin's cover is 0 (only
-  PinnedSection's hold remains), and the page ends on the finished frame with no empty scrolling.
-  PinnedSection only sets --pin-limit itself when given limitCoverTo, which this section is not.
-*/
-.pin-wrapper:has(> .pin-body > #portfolio-testimonials) {
-  --pin-limit: 0px;
-}
 
-.pt-stack {
-  --pt-step: 22px;
-}
-
-@media (min-width: 768px) {
-  .pt-stack {
-    --pt-step: calc(var(--u) * 40);
-  }
+.pt-flow {
+  --pt-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --k: 1px;
+  /* The portraits' scale: 0.915 of the text's (the featured card about 8.5% smaller than the
+     reference-proportioned 285k), so the review leads. */
+  --kp: calc(var(--k) * 0.915);
+  /* The plate's height (416 of the reference's pixels at the portrait scale). */
+  --pt-plate-h: calc(var(--kp) * 416);
+  display: grid;
+  gap: 48px;
 }
 
 @media (min-width: 1024px) {
-  .pt-stack {
-    --pt-step: calc(var(--u) * 57);
+  .pt-flow {
+    --k: 0.95px;
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: 0;
+    align-items: center;
   }
 }
 
-/* The design's soft shadow, cast mostly upwards onto the card behind. */
-.pt-card {
+@media (min-width: 1280px) {
+  .pt-flow {
+    --k: clamp(1px, 0.0592vw, 1.137px);
+  }
+}
+
+/* ---- The white text panel ---- */
+
+.pt-textcard {
+  border-radius: max(14px, calc(var(--k) * 20));
+  background: #fff;
   box-shadow:
     0 -6px 22px rgb(35 31 32 / 0.08),
     0 2px 8px rgb(35 31 32 / 0.06);
 }
 
-/* The dim used while a card is passed over; invisible at rest. */
-.pt-press::after {
+.pt-textcard__inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 24px;
+}
+
+@media (min-width: 640px) {
+  .pt-textcard__inner {
+    padding: calc(var(--k) * 32);
+  }
+}
+
+@media (min-width: 1024px) {
+  /*
+    Review-led balance (owner, 2026-11-15): a 490k text column (557px at 1920) with 36k padding, so
+    the panel is 630px wide at 1920, and at least as tall as the plate beside it (whose top and bottom
+    edges it shares while the text fits). The text starts at the top; the controls sit at the foot.
+  */
+  .pt-textcard {
+    width: calc(var(--k) * (490 + 72));
+    min-height: calc(var(--pt-plate-h));
+  }
+
+  .pt-textcard__inner {
+    padding: calc(var(--k) * 34) calc(var(--k) * 36);
+  }
+}
+
+/* 1024–1079: a wider text panel (owner, 2026-11-15; was 534px), still beside the portraits. */
+@media (min-width: 1024px) and (max-width: 1079.98px) {
+  .pt-textcard {
+    width: 600px;
+  }
+}
+
+.pt-counter {
+  font-size: max(12px, calc(var(--k) * 11));
+  line-height: 1.2;
+  letter-spacing: 0.16em;
+  color: var(--color-ink-muted, #626262);
+}
+
+/* The Figma card's red quote mark, at the right end of the label row. */
+.pt-mark {
+  width: max(26px, calc(var(--k) * 37));
+  flex-shrink: 0;
+  color: var(--color-brand, #d71920);
+}
+
+.pt-texts {
+  margin-top: calc(var(--k) * 18);
+}
+
+.pt-panel {
+  grid-area: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.pt-panel:not([data-active]) {
+  visibility: hidden;
+  opacity: 0;
+}
+
+.pt-headline {
+  font-size: max(24px, calc(var(--k) * 30));
+  line-height: 1.14;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+/* The review itself: the primary text (21px at 1920), in near-ink for contrast. */
+.pt-quote {
+  margin-top: calc(var(--k) * 16);
+  font-size: max(17px, calc(var(--k) * 18.5));
+  line-height: 1.6;
+  color: rgb(35 31 32 / 0.86);
+}
+
+.pt-rating {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px calc(var(--k) * 10);
+  margin-top: calc(var(--k) * 14);
+  font-size: max(13px, calc(var(--k) * 13.5));
+}
+
+.pt-rating svg {
+  width: max(14px, calc(var(--k) * 15));
+  height: max(14px, calc(var(--k) * 15));
+}
+
+/* The author, directly under the review (19px name, 15px role at 1920), with a short red rule. */
+.pt-author {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--k) * 12);
+  margin-top: calc(var(--k) * 20);
+}
+
+.pt-author::before {
   content: "";
+  width: max(18px, calc(var(--k) * 20));
+  height: 2px;
+  flex-shrink: 0;
+  border-radius: 2px;
+  background: var(--color-brand, #d71920);
+}
+
+.pt-name {
+  font-size: max(17px, calc(var(--k) * 16.7));
+  line-height: 1.2;
+}
+
+.pt-role {
+  margin-top: 3px;
+  font-size: max(14px, calc(var(--k) * 13.2));
+  line-height: 1.3;
+}
+
+/* At the foot of the panel; any spare height of the shorter testimonials sits above them. */
+.pt-controls {
+  gap: calc(var(--k) * 18);
+  margin-top: auto;
+  padding-top: calc(var(--k) * 26);
+}
+
+/* Prev and Next: the reference's small tracked labels, on a 44px-tall touch target. */
+.pt-nav {
+  flex-shrink: 0;
+  margin-block: -8px;
+  padding-block: 8px;
+  min-height: 44px;
+  font-size: max(12px, calc(var(--k) * 11));
+  letter-spacing: 0.16em;
+  color: var(--color-ink, #231f20);
+  transition: color 200ms;
+}
+
+.pt-nav:hover {
+  color: var(--color-brand, #d71920);
+}
+
+.pt-nav:focus-visible {
+  outline: 2px solid var(--color-ink, #231f20);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.pt-segbtn {
+  height: max(24px, calc(var(--k) * 22));
+}
+
+.pt-word-mask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  /* Room for descenders inside the mask. */
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
+  white-space: pre;
+}
+
+.pt-word {
+  display: inline-block;
+}
+
+.pt-count {
+  display: inline-block;
+}
+
+/* The progress segments: ink up to the current one, the current one in brand red. */
+.pt-seg {
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: rgb(13 29 68);
+  background: var(--color-ink, #231f20);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+.pt-seg[data-filled] {
+  transform: scaleX(1);
+}
+
+.pt-seg[data-current] {
+  background: var(--color-brand, #d71920);
+  transform: scaleX(1);
+}
+
+/* ---- The portraits ---- */
+
+.pt-stage-wrap {
+  container-type: inline-size;
+  min-width: 0;
+}
+
+.pt-stage-box {
+  /* The card width: the reference's 285k, capped on narrow phones. */
+  --pt-w: min(calc(var(--kp) * 285), 70cqw);
+  /* Room on the left and above for the quote badge, which overhangs the plate's corner. */
+  --pt-pad: calc(var(--pt-w) * 0.1);
+  position: relative;
+  width: calc(var(--pt-pad) + var(--pt-w));
+  height: calc(var(--pt-w) * 400 / 285);
+  margin-top: var(--pt-pad);
+  padding-left: var(--pt-pad);
+}
+
+@media (min-width: 1024px) {
+  .pt-stage-box {
+    --pt-w: calc(var(--kp) * 285);
+    --pt-pad: 0px;
+    /* The reference's 48k from the text column to the plate, plus the plate's 8k. */
+    margin-left: calc(var(--kp) * 56);
+  }
+}
+
+.pt-plate {
+  position: absolute;
+  top: calc(var(--pt-w) * -8 / 285);
+  left: calc(var(--pt-pad) - var(--pt-w) * 8 / 285);
+  width: calc(var(--pt-w) * 301 / 285);
+  height: calc(var(--pt-w) * 416 / 285);
+  border-radius: calc(var(--pt-w) * 22 / 285);
+  background: #fff;
+  box-shadow:
+    0 calc(var(--pt-w) * 50 / 285) calc(var(--pt-w) * 90 / 285) calc(var(--pt-w) * -40 / 285) rgb(20 17 13 / 0.42),
+    0 calc(var(--pt-w) * 16 / 285) calc(var(--pt-w) * 30 / 285) calc(var(--pt-w) * -18 / 285) rgb(20 17 13 / 0.18);
+}
+
+.pt-stage {
+  position: absolute;
+  top: 0;
+  left: var(--pt-pad);
+  width: var(--pt-w);
+  height: calc(var(--pt-w) * 400 / 285);
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.pt-stage img {
+  -webkit-user-drag: none;
+}
+
+.pt-card {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: calc(var(--pt-w) * 15.4 / 285);
+  background: #fff;
+  transform-origin: 50% 50%;
+  transform: perspective(calc(var(--pt-w) * 4))
+    translate3d(calc(var(--pt-w) * var(--tx, 0)), 0, calc(var(--pt-w) * var(--tz, 0)));
+}
+
+.pt-card__photo {
+  transform: scale(1.12);
+}
+
+.pt-card__wash {
+  position: absolute;
+  inset: 0;
+  background: var(--color-sand, #eae2dd);
+  opacity: var(--pt-wash, 0);
+  pointer-events: none;
+}
+
+.pt-card[data-place="0"] {
+  z-index: 30;
+}
+
+.pt-card[data-place="0"] .pt-card__photo {
+  transform: none;
+}
+
+.pt-card[data-place="1"] {
+  z-index: 19;
+  --tx: 1.17932;
+  --tz: -0.65116;
+  --pt-wash: 0.35;
+}
+
+.pt-card[data-place="2"] {
+  z-index: 18;
+  --tx: 2.5119;
+  --tz: -1.40833;
+  --pt-wash: 0.56;
+}
+
+.pt-card[data-place="3"] {
+  z-index: 17;
+  --tx: 4.0559;
+  --tz: -2.28875;
+  --pt-wash: 0.7;
+}
+
+.pt-card[data-place="4"] {
+  z-index: 16;
+  --tx: 5.84627;
+  --tz: -3.31251;
+  --pt-wash: 0.8;
+}
+
+.pt-card[data-place="far"] {
+  z-index: 15;
+  --tx: 7.92357;
+  --tz: -4.50291;
+  /* As in the reference: no wash on the hidden place, so the leaving card fades out unwashed. */
+  --pt-wash: 0;
   opacity: 0;
   pointer-events: none;
 }
 
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .pin-wrapper:has(> .pin-body > #portfolio-testimonials) {
-      view-timeline: --pt;
-      --pt-hold: 150svh;
-      --pt-rise: 30%;
-      --pt-clip: 22%;
-    }
+.pt-card[data-place="1"],
+.pt-card[data-place="2"],
+.pt-card[data-place="3"],
+.pt-card[data-place="4"] {
+  cursor: pointer;
+}
 
-    @media (min-width: 1024px) {
-      .pin-wrapper:has(> .pin-body > #portfolio-testimonials) {
-        --pt-hold: 210svh;
-        --pt-rise: 46%;
-        --pt-clip: 34%;
-      }
-    }
+/*
+  ---- Phones (below sm): the owner's mobile reference (Screenshot 2026-11-15 174223.png) ----
+  sm and up keep the layout above; on phones it is hidden and this deck shows instead (and the deck is
+  hidden from sm up). Measured from the reference (its card is 232px wide; every size here is a
+  fraction of the card width --mw, 66vw up to 280px: 257px at 390, 211px at 320):
+    card      white, 12/232 corners, 16/232 padding, a soft shadow; centred 4% left of the content's
+              centre to leave room for the cards behind (x 51 of 351 in the reference)
+    portrait  a square at the top, 10/232 corners
+    mark      a dark opening quote mark, 24/232 wide, 17/232 under the portrait
+    quote     13/232 (at least 14px), line height 1.5, rgb(111 119 132), 12/232 under the mark
+    author    the name (16/232, at least 16px, bold) and role (13/232, at least 13px) at the card's foot
+    behind    two cards tilted clockwise behind it to the right (the outer one 20/232 right, 19/232
+              down, 2.6deg), washed toward light grey
+    arrows    32px white circles centred 9.5/232 outside the card's left and right edges, level with
+              the start of the quote (263/232 down the card)
+  The six progress segments sit under the deck (they also time the autoplay).
+*/
+.pt-mobile {
+  display: none;
+}
 
-    .pt-anim {
-      animation-timeline: --pt;
-      animation-fill-mode: both;
-      animation-range:
-        cover calc(var(--pin-height) + var(--pt-hold) * var(--a))
-        cover calc(var(--pin-height) + var(--pt-hold) * var(--b));
-    }
+@media (max-width: 639.98px) {
+  .pt-textcard,
+  .pt-stage-wrap {
+    display: none;
+  }
 
-    .pt-enter {
-      animation-name: pt-enter;
-      animation-timing-function: cubic-bezier(0.25, 0.8, 0.3, 1);
-    }
-
-    .pt-press {
-      animation: pt-press linear both;
-      animation-timeline: --pt;
-      animation-range:
-        cover calc(var(--pin-height) + var(--pt-hold) * var(--na))
-        cover calc(var(--pin-height) + var(--pt-hold) * var(--nb));
-      transform-origin: 50% 0;
-    }
-
-    .pt-press::after {
-      animation: pt-dim linear both;
-      animation-timeline: --pt;
-      animation-range: inherit;
-    }
-
-    .pt-portrait-img {
-      animation-name: pt-portrait;
-      animation-timing-function: cubic-bezier(0.25, 0.8, 0.3, 1);
-    }
-
-    .pt-fade {
-      animation-name: pt-fade;
-      animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
-    }
+  .pt-mobile {
+    display: block;
+    /* Keeps the section the tallest card's height whichever testimonial is in front (the segments
+       sit right under the front card, so the rest of the reserved height goes below them). */
+    padding-bottom: calc(var(--mdeck-h, 0px) - var(--mh, 0px));
   }
 }
 
-/* Negative clip insets keep the card's shadow visible; only the bottom edge is uncovered. */
-@keyframes pt-enter {
-  from {
-    transform: translateY(var(--pt-rise));
-    opacity: 0;
-    clip-path: inset(-48px -48px var(--pt-clip) -48px);
+.pt-mdeck {
+  /* 76% of the screen (owner, 2026-11-15; was 66%, max 280px), centred, so the arrows keep equal
+     room on both sides. Capped at 360px so large phones do not get an oversized card. */
+  --mw: min(76vw, 360px);
+  position: relative;
+  display: grid;
+  width: var(--mw);
+  margin-left: calc(50% - var(--mw) / 2);
+  /* The tallest testimonial card, measured by the component, so the section height never changes. */
+  min-height: var(--mdeck-h, auto);
+  touch-action: pan-y;
+  user-select: none;
+}
+
+/* Nothing in a card shrinks, so a clipped card still reports its natural height (scrollHeight). */
+.pt-mcard > * {
+  flex-shrink: 0;
+}
+
+/* The cards behind take the front card's height (measured), so none sticks out below it. */
+.pt-mcard:not([data-place="0"]) {
+  height: var(--mh, auto);
+  overflow: hidden;
+}
+
+.pt-mcard {
+  --mx: 0;
+  --my: 0;
+  --mr: 0deg;
+  --ms: 1;
+  grid-area: 1 / 1;
+  /* Each card its natural height, as in the reference (the name 22/232 under the review), not
+     stretched to the longest testimonial. */
+  align-self: start;
+  position: relative;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  padding: calc(var(--mw) * 16 / 232);
+  border-radius: calc(var(--mw) * 12 / 232);
+  background: #fff;
+  box-shadow:
+    0 calc(var(--mw) * 10 / 232) calc(var(--mw) * 30 / 232) calc(var(--mw) * -12 / 232) rgb(20 17 13 / 0.28),
+    0 1px 4px rgb(20 17 13 / 0.06);
+  transform-origin: 50% 50%;
+  transform: translate(calc(var(--mw) * var(--mx)), calc(var(--mw) * var(--my))) rotate(var(--mr)) scale(var(--ms));
+}
+
+.pt-mcard[data-place="1"] {
+  z-index: 4;
+  --mx: 0.03;
+  --my: 0.035;
+  --mr: 1.4deg;
+  --ms: 0.99;
+  --mwash: 0.35;
+  cursor: pointer;
+}
+
+.pt-mcard[data-place="2"] {
+  z-index: 3;
+  --mx: 0.088;
+  --my: 0.082;
+  --mr: 2.6deg;
+  --ms: 0.985;
+  --mwash: 0.7;
+  cursor: pointer;
+}
+
+.pt-mcard[data-place="far"] {
+  z-index: 2;
+  --mx: 0.088;
+  --my: 0.082;
+  --mr: 2.6deg;
+  --ms: 0.985;
+  --mwash: 0.7;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* The leaving front card: swept out to the left behind the deck and tilted the other way, fading, so
+   the arriving card covers it and the two reviews never show through each other. */
+.pt-mcard[data-place="prev"] {
+  z-index: 1;
+  --mx: -0.2;
+  --my: 0.03;
+  --mr: -5deg;
+  --ms: 0.97;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pt-mcard__photo {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: calc(var(--mw) * 10 / 232);
+  background: #f4f0e9;
+}
+
+.pt-mcard__photo img {
+  -webkit-user-drag: none;
+}
+
+.pt-mcard__mark {
+  width: calc(var(--mw) * 24 / 232);
+  min-width: 22px;
+  margin-top: calc(var(--mw) * 17 / 232);
+  color: #14110d;
+}
+
+.pt-mcard__quote {
+  margin-top: calc(var(--mw) * 12 / 232);
+  font-size: max(14px, calc(var(--mw) * 13 / 232));
+  line-height: 1.5;
+  color: rgb(111 119 132);
+}
+
+.pt-mcard__rating {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  margin-top: 10px;
+  font-size: 13px;
+  color: rgb(111 119 132);
+}
+
+.pt-mcard__rating svg {
+  width: 13px;
+  height: 13px;
+}
+
+.pt-mcard__author {
+  display: flex;
+  flex-direction: column;
+  margin-top: auto;
+  padding-top: calc(var(--mw) * 22 / 232);
+}
+
+.pt-mcard__name {
+  font-size: max(16px, calc(var(--mw) * 16 / 232));
+  line-height: 1.25;
+  font-weight: 600;
+  color: var(--color-ink, #231f20);
+}
+
+.pt-mcard__role {
+  margin-top: 2px;
+  font-size: max(13px, calc(var(--mw) * 13 / 232));
+  line-height: 1.35;
+  color: rgb(111 119 132);
+}
+
+.pt-mcard__wash {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: #ececec;
+  opacity: var(--mwash, 0);
+  pointer-events: none;
+}
+
+.pt-marrow {
+  position: absolute;
+  z-index: 10;
+  top: calc(var(--mw) * 263 / 232);
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--color-ink, #231f20);
+  box-shadow: 0 2px 8px rgb(20 17 13 / 0.18);
+  translate: -50% -50%;
+  transition: color 200ms;
+}
+
+/* A 44px touch target around the 32px circle. */
+.pt-marrow::before {
+  content: "";
+  position: absolute;
+  inset: -6px;
+}
+
+.pt-marrow svg {
+  width: 16px;
+  height: 16px;
+}
+
+.pt-marrow:hover {
+  color: var(--color-brand, #d71920);
+}
+
+.pt-marrow:focus-visible {
+  outline: 2px solid var(--color-ink, #231f20);
+  outline-offset: 2px;
+}
+
+.pt-marrow--prev {
+  left: calc(var(--mw) * -9.5 / 232);
+}
+
+.pt-marrow--next {
+  left: calc(100% + var(--mw) * 9.5 / 232);
+}
+
+/* Very narrow phones: the arrows centred on the card's edges, so they keep about 15px from the
+   screen edge with the wider card. */
+@media (max-width: 359.98px) {
+  .pt-marrow--prev {
+    left: 0;
   }
-  18% {
+
+  .pt-marrow--next {
+    left: 100%;
+  }
+}
+
+.pt-msegs {
+  --mw: min(76vw, 360px);
+  display: flex;
+  gap: 4px;
+  width: var(--mw);
+  /* 24px under the front card: the deck reserves the tallest card, so step back by the difference. */
+  margin: calc(24px - var(--mdeck-h, 0px) + var(--mh, 0px)) 0 0 calc(50% - var(--mw) / 2);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pt-mcard {
+    transition:
+      transform 700ms var(--pt-ease),
+      opacity 450ms cubic-bezier(0.33, 1, 0.68, 1);
+  }
+
+  .pt-mcard__wash {
+    transition: opacity 700ms var(--pt-ease);
+  }
+
+  .pt-card {
+    transition:
+      transform 850ms var(--pt-ease),
+      opacity 450ms cubic-bezier(0.33, 1, 0.68, 1);
+    will-change: transform;
+  }
+
+  .pt-card__photo {
+    transition: transform 850ms var(--pt-ease);
+  }
+
+  .pt-card__wash {
+    transition: opacity 850ms var(--pt-ease);
+  }
+
+  /* Next: the leaving featured card drifts left and fades out, as in the reference, then waits at
+     the hidden far end of the row. */
+  .pt-stage[data-dir="next"] .pt-card[data-place="far"] {
+    animation: pt-leave 850ms both;
+  }
+
+  /* Prev: the arriving featured card comes in from that same place, fading in. */
+  .pt-stage[data-dir="prev"] .pt-card[data-place="0"] {
+    animation: pt-arrive 850ms var(--pt-ease) both;
+  }
+
+  /* The incoming headline, word by word, then the quote, rating and author. The outgoing one has
+     no transition, so it vanishes at once and resets while hidden. */
+  .pt-word {
+    transform: translateY(115%);
+  }
+
+  .pt-panel[data-active] .pt-word {
+    transform: none;
+    transition: transform 750ms var(--pt-ease) calc(40ms + var(--w) * 33ms);
+  }
+
+  .pt-rise {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  .pt-panel[data-active] .pt-rise {
     opacity: 1;
+    transform: none;
+    transition:
+      opacity 700ms cubic-bezier(0.33, 1, 0.68, 1) var(--d),
+      transform 750ms var(--pt-ease) var(--d);
+  }
+
+  .pt-count {
+    animation: pt-count 550ms var(--pt-ease) both;
+  }
+
+  .pt-seg {
+    transition: transform 500ms var(--pt-ease);
+  }
+
+  /* The countdown: the current segment fills over the autoplay interval; its end advances. */
+  .pt-seg[data-current] {
+    transition: none;
+    animation: pt-fill var(--pt-autoplay, 3000ms) linear both;
+  }
+
+  [data-paused] .pt-seg[data-current] {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes pt-count {
+  from {
+    transform: translateY(115%);
   }
   to {
     transform: none;
-    opacity: 1;
-    clip-path: inset(-48px -48px -48px -48px);
   }
 }
 
-@keyframes pt-press {
-  0%,
+@keyframes pt-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes pt-leave {
+  0% {
+    transform: perspective(calc(var(--pt-w) * 4)) translate3d(0, 0, 0);
+    opacity: 1;
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  60% {
+    transform: perspective(calc(var(--pt-w) * 4)) translate3d(calc(var(--pt-w) * -0.55), 0, 0);
+    opacity: 0;
+    animation-timing-function: step-end;
+  }
   100% {
-    transform: none;
-  }
-  50% {
-    transform: scale(0.982) translateY(-0.6%);
-  }
-}
-
-@keyframes pt-dim {
-  0%,
-  100% {
+    transform: perspective(calc(var(--pt-w) * 4))
+      translate3d(calc(var(--pt-w) * 7.92357), 0, calc(var(--pt-w) * -4.50291));
     opacity: 0;
   }
-  50% {
-    opacity: 0.07;
-  }
 }
 
-@keyframes pt-portrait {
+@keyframes pt-arrive {
   from {
-    transform: translateY(6%) scale(1.1);
-  }
-  to {
-    transform: none;
-  }
-}
-
-@keyframes pt-fade {
-  from {
+    transform: perspective(calc(var(--pt-w) * 4)) translate3d(calc(var(--pt-w) * -0.55), 0, 0);
     opacity: 0;
-    transform: translateY(14px);
   }
   to {
+    transform: perspective(calc(var(--pt-w) * 4)) translate3d(0, 0, 0);
     opacity: 1;
-    transform: none;
   }
 }

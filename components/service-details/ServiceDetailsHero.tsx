@@ -22,7 +22,8 @@ export function ServiceDetailsHero({ breadcrumb, headline, description, image }:
         <AssetImage src={image.src} alt="" sizes="100vw" priority className="object-contain" />
       </div>
 
-      <div className="relative mx-auto w-full max-w-[1600px] px-5 py-12 md:px-8 md:py-16 lg:py-0 xl:px-5">
+      {/* Below lg the text starts under the shared floating Navbar card (76px), as on the Homepage Hero. */}
+      <div className="relative mx-auto w-full max-w-[1600px] px-5 pt-[116px] pb-12 md:px-8 md:pt-[124px] md:pb-16 lg:py-0 xl:px-5">
         <nav aria-label="Breadcrumb" className={textEnter}>
           <ol className="flex flex-wrap items-center gap-x-[0.3em] text-[16px] leading-5 font-semibold tracking-[0.003em] text-brand uppercase lg:text-[clamp(14px,0.9375vw,18px)]">
             <li>

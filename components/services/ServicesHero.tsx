@@ -12,7 +12,7 @@ const textEnter = "animate-hero-text motion-reduce:animate-hero-fade";
 
 export function ServicesHero() {
   return (
-    <section className="relative overflow-hidden bg-[#eedac2] lg:flex lg:aspect-[3840/1614] lg:items-center">
+    <section id="services-hero" className="relative overflow-hidden bg-[#eedac2] lg:flex lg:aspect-[1920/810] lg:items-center lg:overflow-visible lg:pt-[clamp(0px,calc(320px-20vw),64px)]">
       {/* From lg the artwork fills the section. Below that it sits under the text, cropped to the devices. */}
       <div className="absolute inset-0 hidden lg:block">
         <AssetImage
@@ -24,7 +24,7 @@ export function ServicesHero() {
         />
       </div>
 
-      <div className="relative mx-auto w-full max-w-[1600px] px-5 py-12 md:px-8 md:py-16 lg:pt-[38px] lg:pb-10 xl:px-5">
+      <div className="relative mx-auto w-full max-w-[1600px] px-5 pt-[116px] pb-12 md:px-8 md:pt-[124px] md:pb-16 lg:pt-[38px] lg:pb-10 xl:px-5">
         <p
           className={`${textEnter} text-[16px] leading-5 font-bold tracking-[0.066em] text-brand uppercase lg:text-[clamp(14px,0.833vw,16px)]`}
         >

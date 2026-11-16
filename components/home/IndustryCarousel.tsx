@@ -24,6 +24,31 @@ type IndustryCarouselProps = {
   heading: ReactNode;
   intro: ReactNode;
   action: ReactNode;
+  /** "compact": the 2026-11-16 Homepage redesign (see `layouts`). Default: the original design. */
+  variant?: keyof typeof layouts;
+};
+
+/*
+  Layout per variant. "default" holds the original strings (/services). "compact" is the Homepage
+  redesign (reference 1920x942): the header's right column starts at x 1048, the button sits 6px
+  lower, the cards are 504x562, and from lg the scroller ends at the content edge, so exactly three
+  cards are in view and the next one slides in from that edge instead of peeking past it.
+*/
+const layouts = {
+  default: {
+    header: "grid gap-5 lg:grid-cols-[minmax(0,885fr)_minmax(0,675fr)] lg:gap-0",
+    actions: "mt-[23px] flex items-end justify-between gap-1 sm:gap-3",
+    scroller:
+      "relative mt-[28px] ml-[calc(var(--g)-12px)] snap-x snap-mandatory scroll-pl-3 overflow-x-auto py-3 [scrollbar-width:none] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink [&::-webkit-scrollbar]:hidden",
+    card: "aspect-[504/370]",
+  },
+  compact: {
+    header: "grid gap-5 lg:grid-cols-[minmax(0,868fr)_minmax(0,692fr)] lg:gap-0",
+    actions: "mt-[23px] flex items-end justify-between gap-1 sm:gap-3 lg:mt-[29px]",
+    scroller:
+      "relative mt-[28px] ml-[calc(var(--g)-12px)] snap-x snap-mandatory scroll-pl-3 overflow-x-auto py-3 [scrollbar-width:none] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink lg:mt-[46px] lg:mr-[calc(var(--g)-12px)] [&::-webkit-scrollbar]:hidden",
+    card: "aspect-[504/562]",
+  },
 };
 
 const AUTOPLAY_MS = 3000;
@@ -57,10 +82,10 @@ function ArrowIcon({ direction }: { direction: "left" | "right" }) {
   );
 }
 
-function Card({ card, isClone }: { card: IndustryCard; isClone: boolean }) {
+function Card({ card, isClone, aspect }: { card: IndustryCard; isClone: boolean; aspect: string }) {
   return (
     <li className="w-[var(--card)] shrink-0 snap-start" aria-hidden={isClone || undefined}>
-      <article className="group relative aspect-[504/370] min-h-[240px] w-full overflow-hidden rounded-[10px] transition-transform duration-300 ease-out motion-safe:hover:-translate-y-1 motion-safe:hover:scale-[1.01]">
+      <article className={`group relative ${aspect} min-h-[240px] w-full overflow-hidden rounded-[10px] transition-transform duration-300 ease-out motion-safe:hover:-translate-y-1 motion-safe:hover:scale-[1.01]`}>
         <Image
           src={card.image}
           alt={isClone ? "" : card.alt}
@@ -88,7 +113,8 @@ function Card({ card, isClone }: { card: IndustryCard; isClone: boolean }) {
   );
 }
 
-export function IndustryCarousel({ cards, heading, intro, action }: IndustryCarouselProps) {
+export function IndustryCarousel({ cards, heading, intro, action, variant = "default" }: IndustryCarouselProps) {
+  const layout = layouts[variant];
   // Clones exist only once JavaScript runs, so the fallback is a plain scrollable list.
   const looping = useSyncExternalStore(
     subscribeToNothing,
@@ -251,7 +277,9 @@ export function IndustryCarousel({ cards, heading, intro, action }: IndustryCaro
   };
 
   const renderSet = (isClone: boolean, set: string) =>
-    cards.map((card) => <Card key={`${set}-${card.title}`} card={card} isClone={isClone} />);
+    cards.map((card) => (
+      <Card key={`${set}-${card.title}`} card={card} isClone={isClone} aspect={layout.card} />
+    ));
 
   return (
     <div
@@ -267,11 +295,11 @@ export function IndustryCarousel({ cards, heading, intro, action }: IndustryCaro
 
       <div className="[--card:calc(100cqw-var(--g)-56px)] [--g:20px] md:[--card:calc((100cqw-var(--g)-104px)/2)] md:[--g:32px] lg:[--card:calc((100cqw-2*var(--g)-48px)/3)] xl:[--g:max(20px,calc((100cqw-1560px)/2))]">
         <div className="mx-auto w-full max-w-[1600px] px-5 md:px-8 xl:px-5">
-          <div className="grid gap-5 lg:grid-cols-[minmax(0,885fr)_minmax(0,675fr)] lg:gap-0">
+          <div className={layout.header}>
             <div>{heading}</div>
             <div>
               {intro}
-              <div className="mt-[23px] flex items-end justify-between gap-1 sm:gap-3">
+              <div className={layout.actions}>
                 {action}
                 <div data-carousel-arrows className="-mr-1 -mb-1 flex shrink-0 gap-1">
                   <button
@@ -316,7 +344,7 @@ export function IndustryCarousel({ cards, heading, intro, action }: IndustryCaro
           }}
           onTouchEnd={() => resume("touch")}
           onTouchCancel={() => resume("touch")}
-          className="relative mt-[28px] ml-[calc(var(--g)-12px)] snap-x snap-mandatory scroll-pl-3 overflow-x-auto py-3 [scrollbar-width:none] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink [&::-webkit-scrollbar]:hidden"
+          className={layout.scroller}
         >
           <ul className="flex w-max gap-6 pl-3">
             {looping && renderSet(true, "before")}

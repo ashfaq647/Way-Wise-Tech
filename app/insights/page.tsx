@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { PinnedSection } from "@/components/home/PinnedSection";
 import { InsightsArticles } from "@/components/insights/InsightsArticles";
 import { InsightsHero } from "@/components/insights/InsightsHero";
+import { Footer } from "@/components/layout/Footer";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { insightsHero } from "@/lib/content/insights";
 
@@ -18,8 +19,8 @@ export const metadata: Metadata = {
 export default function InsightsPage() {
   return (
     <>
-      {/* The red banner is Homepage only. */}
-      <SiteHeader showBanner={false} />
+      {/* The shared floating Homepage Navbar. */}
+      <SiteHeader showBanner={false} variant="floating" />
       <main>
         {/*
           The whole Hero + logos section holds while the article grid rises over it. No limitCoverTo:
@@ -29,14 +30,15 @@ export default function InsightsPage() {
           <InsightsHero />
         </PinnedSection>
         {/*
-          The article grid is the last built section, so under the last-section rule it is not pinned
-          yet. When the next section is added, wrap it in PinnedSection and put the new section in
-          this relative wrapper.
+          The article grid holds while the shared Footer rises over it, capped at this page's Footer
+          (942px at 1920, shorter than this pin on tall screens), as on /faq and /contact.
         */}
-        <div className="relative">
+        <PinnedSection limitCoverTo="main:has(#insights-articles) + footer">
           <InsightsArticles />
-        </div>
+        </PinnedSection>
       </main>
+      {/* The shared Footer (Final CTA + footer), as on the Homepage. */}
+      <Footer />
     </>
   );
 }

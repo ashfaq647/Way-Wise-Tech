@@ -10,10 +10,6 @@ import { servicesFaq } from "@/lib/content/faq";
 
 type Question = { question: string; answer: string };
 
-// The questions in two equal columns, as in the design: the first half on the left, the rest on the right.
-const half = Math.ceil(servicesFaq.items.length / 2);
-const columns: Question[][] = [servicesFaq.items.slice(0, half), servicesFaq.items.slice(half)];
-
 function FaqItem({ question, answer, order }: Question & { order: number }) {
   const [open, setOpen] = useState(false);
   const id = useId();
@@ -63,21 +59,11 @@ function FaqItem({ question, answer, order }: Question & { order: number }) {
 }
 
 /*
-  Frame per variant (2026-11-16): only the vertical padding differs. "default" is the original
-  1080px frame at 1920 (unchanged on every page). "compact" is the 1920x942 frame (/services): 69px
-  less above and below, so the same content stays centred. Nothing else changes.
+  One design on every page (owner, 2026-11-17), from `Frame 2147239032.png` (1920x942): a single
+  column of full-width rows (all eight questions; the first six fill the 942 frame), 75px above and
+  76px below at 1920, an 18px eyebrow and a 53.5px heading.
 */
-const frames = {
-  default: "lg:pt-[clamp(64px,12.396vw,238px)] lg:pb-[clamp(64px,12.474vw,239.5px)]",
-  compact: "lg:pt-[clamp(64px,8.802vw,169px)] lg:pb-[clamp(64px,8.880vw,170.5px)]",
-};
-
-type FaqProps = {
-  /** "compact": the 1920x942 frame. Default: the original 1080px frame. */
-  frame?: keyof typeof frames;
-};
-
-export function Faq({ frame = "default" }: FaqProps) {
+export function Faq() {
   return (
     <section aria-labelledby="faq-heading" className="bg-[#eae2dd]">
       <noscript>
@@ -85,10 +71,10 @@ export function Faq({ frame = "default" }: FaqProps) {
           {"[data-faq-answer]{visibility:visible!important;grid-template-rows:1fr!important}"}
         </style>
       </noscript>
-      <div className={`mx-auto w-full max-w-[1600px] px-5 py-12 md:px-8 md:py-16 xl:px-5 ${frames[frame]}`}>
+      <div className={`mx-auto w-full max-w-[1600px] px-5 py-12 md:px-8 md:py-16 xl:px-5 lg:pt-[clamp(48px,3.906vw,75px)] lg:pb-[clamp(48px,3.958vw,76px)]`}>
         <Reveal className="grid gap-5 lg:grid-cols-[minmax(0,1002fr)_minmax(0,558fr)] lg:gap-0">
           <div>
-            <p className="ww-rise flex items-center gap-2 text-[16px] leading-5 font-bold tracking-[0.078em] text-brand uppercase lg:text-[clamp(16px,1.042vw,20px)]">
+            <p className="ww-rise flex items-center gap-2 text-[16px] leading-5 font-bold tracking-[0.078em] text-brand uppercase lg:text-[clamp(16px,0.9375vw,18px)]">
               <span
                 className="h-[3px] w-[22px] shrink-0 -translate-y-px bg-brand"
                 aria-hidden="true"
@@ -97,7 +83,7 @@ export function Faq({ frame = "default" }: FaqProps) {
             </p>
             <h2
               id="faq-heading"
-              className="mt-1 text-[clamp(26px,7.4vw,48px)] leading-[1.154] font-semibold tracking-[-0.015em] text-[#0d1d44] lg:text-[clamp(34px,2.71vw,52px)]"
+              className="mt-1 text-[clamp(26px,7.4vw,48px)] leading-[1.154] font-semibold tracking-[-0.015em] text-[#0d1d44] lg:mt-2 lg:text-[clamp(34px,2.786vw,53.5px)] lg:leading-[1.159]"
             >
               <MaskLine order={1}>{servicesFaq.heading.first}</MaskLine>{" "}
               <MaskLine order={2} className="text-brand">
@@ -106,8 +92,8 @@ export function Faq({ frame = "default" }: FaqProps) {
             </h2>
           </div>
 
-          <div style={revealOrder(3)} className="ww-rise lg:pt-0.5">
-            <p className="text-[18px] leading-[1.45] tracking-[0.036em] text-[#0d1d44] max-[1599px]:text-pretty lg:text-[clamp(17px,1.146vw,22px)]">
+          <div style={revealOrder(3)} className="ww-rise">
+            <p className="text-[18px] leading-[1.45] tracking-[0.036em] text-[#0d1d44] max-[1599px]:text-pretty lg:text-[clamp(17px,1.146vw,22px)] lg:leading-[1.5]">
               {servicesFaq.description}
             </p>
             <ButtonLink
@@ -122,14 +108,10 @@ export function Faq({ frame = "default" }: FaqProps) {
 
         <Reveal
           each
-          className="mt-8 grid items-start gap-6 lg:mt-[60.5px] lg:grid-cols-2 lg:gap-x-10 min-[1600px]:-mx-[14.5px]"
+          className="mt-8 flex flex-col gap-5 lg:mt-[60.5px] min-[1600px]:-mx-[14.5px]"
         >
-          {columns.map((column, columnIndex) => (
-            <div key={columnIndex} className="flex flex-col gap-6">
-              {column.map((item, rowIndex) => (
-                <FaqItem key={item.question} {...item} order={(columnIndex + rowIndex) * 0.6} />
-              ))}
-            </div>
+          {servicesFaq.items.map((item: Question, index) => (
+            <FaqItem key={item.question} {...item} order={index * 0.3} />
           ))}
         </Reveal>
       </div>

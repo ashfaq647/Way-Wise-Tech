@@ -27,7 +27,8 @@ function ArrowIcon() {
 }
 
 /**
- * "Our Global Presence" on the About Us page, from Frame 2147239135.png. At 1920 the section is
+ * "Our Global Presence" on the About Us page, from Frame 2147239135.png; fitted to the 942 frame on
+ * 2026-11-17 (Frame 2147239039.png: 942px, 504x300 photos, tighter padding). Originally the section was
  * 1080px tall on #d0d0c8: the heading on the left and the description on the right share a bottom
  * line (the Industries trust header pattern), then three 504px office cards, 24px apart and 739px
  * tall. Each card is a 504x350 photo (its top corners rounded in the file) over a white body with
@@ -40,7 +41,7 @@ export function AboutPresence() {
   return (
     // overflow-x-clip: cards entering from the sides (about-presence.css) never widen the page.
     <section id="about-presence" aria-labelledby="about-presence-heading" className="overflow-x-clip bg-[#d0d0c8]">
-      <Container className="py-14 md:py-20 lg:pt-[clamp(48px,4.063vw,78px)] lg:pb-[clamp(56px,4.167vw,80px)]">
+      <Container className="py-14 md:py-20 lg:pt-[clamp(36px,2.448vw,47px)] lg:pb-[clamp(40px,2.5vw,48px)]">
         <Reveal each>
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
             <div className="min-w-0">
@@ -50,7 +51,7 @@ export function AboutPresence() {
               <SectionHeading
                 id="about-presence-heading"
                 tone="navy"
-                className="mt-2 lg:mt-[clamp(2px,0.208vw,4px)]"
+                className="mt-2 lg:mt-[clamp(4px,0.365vw,7px)]"
               >
                 <MaskLine order={1}>{heading.first}</MaskLine>{" "}
                 <MaskLine order={2} className="text-brand">
@@ -81,7 +82,7 @@ export function AboutPresence() {
               >
                 <article className="flex h-full flex-col overflow-hidden rounded-2xl bg-white">
                   {/* overflow-hidden clips the photo's settling zoom to the card. */}
-                  <div className="wp-presence-card__media relative aspect-[1008/700] overflow-hidden">
+                  <div className="wp-presence-card__media relative aspect-[1008/700] lg:aspect-[504/300] overflow-hidden">
                     <AssetImage
                       src={office.image.src}
                       alt={office.image.alt}
@@ -89,17 +90,17 @@ export function AboutPresence() {
                       className="object-cover"
                     />
                   </div>
-                  <div className="px-6 pt-6 pb-8 lg:px-[clamp(20px,1.667vw,32px)] lg:pt-[clamp(18px,1.458vw,28px)] lg:pb-[clamp(22px,1.875vw,36px)]">
+                  <div className="px-6 pt-6 pb-8 lg:px-[clamp(20px,1.667vw,32px)] lg:pt-[clamp(10px,0.781vw,15px)] lg:pb-[clamp(13px,1.042vw,20px)]">
                     <h3 className="text-[24px] leading-[1.286] font-semibold text-ink lg:text-[clamp(19px,1.458vw,28px)]">
                       {office.title}
                     </h3>
                     <p className="mt-1 text-[18px] leading-[1.273] text-ink-muted lg:mt-[clamp(2px,0.156vw,3px)] lg:text-[clamp(15px,1.146vw,22px)]">
                       {office.location}
                     </p>
-                    <p className="mt-5 text-[19px] leading-[1.36] font-medium text-[#2a2a2a] lg:mt-[clamp(14px,1.163vw,22.3px)] lg:text-[clamp(16px,1.146vw,22px)]">
+                    <p className="mt-5 text-[19px] leading-[1.36] font-medium text-[#2a2a2a] lg:mt-[clamp(16px,1.266vw,24.3px)] lg:text-[clamp(16px,1.146vw,22px)]">
                       {operationsLabel}
                     </p>
-                    <ul className="mt-3 grid gap-4 lg:mt-[clamp(9px,0.729vw,14px)] lg:gap-[clamp(12px,0.938vw,18px)]">
+                    <ul className="mt-3 grid gap-4 lg:mt-[clamp(8px,0.625vw,12px)] lg:gap-[clamp(12px,0.938vw,18px)]">
                       {office.operations.map((operation) => (
                         <li
                           key={operation}

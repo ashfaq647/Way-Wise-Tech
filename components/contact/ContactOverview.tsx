@@ -60,13 +60,13 @@ export function ContactOverview() {
   const { eyebrow, heading, description, image, channels } = contactOverview;
   return (
     <section aria-labelledby="contact-overview-heading" className="bg-[#eee9e1]">
-      <Container className="py-12 md:py-16 lg:py-[clamp(56px,8.75vw,168px)]">
+      <Container className="py-12 md:py-16 lg:py-[clamp(56px,5.938vw,114px)]">
         <Reveal
           each
           className="grid gap-8 lg:grid-cols-[minmax(0,810fr)_minmax(0,750fr)] lg:items-start lg:gap-0"
         >
           <div className="min-w-0">
-            <SectionEyebrow size="lg" weight="bold" tracking="0.078em" className="ww-rise">
+            <SectionEyebrow weight="bold" tracking="0.078em" className="ww-rise">
               {eyebrow}
             </SectionEyebrow>
             {/*
@@ -75,7 +75,7 @@ export function ContactOverview() {
             */}
             <h2
               id="contact-overview-heading"
-              className="mt-2 text-[clamp(26px,7.4vw,48px)] leading-[1.13] font-semibold tracking-[-0.015em] text-navy lg:mt-[clamp(4px,0.365vw,7px)] lg:text-[clamp(34px,2.8125vw,54px)]"
+              className="mt-2 text-[clamp(26px,7.4vw,48px)] leading-[1.13] font-semibold tracking-[-0.015em] text-navy lg:mt-[clamp(4px,0.365vw,7px)] lg:text-[clamp(34px,2.8125vw,54px)] lg:leading-[1.1667]"
             >
               {/* Two lines at every width, as in the design: each MaskLine is its own line. */}
               <MaskLine order={1}>{heading.first} </MaskLine>
@@ -85,28 +85,30 @@ export function ContactOverview() {
             </h2>
             <p
               style={revealOrder(3)}
-              className="ww-rise mt-6 max-w-[25em] text-[18px] leading-[1.45] text-navy lg:mt-[clamp(20px,1.615vw,31px)] lg:text-[clamp(16px,1.25vw,24px)] lg:leading-[1.3333]"
+              className="ww-rise mt-6 max-w-[25em] text-[18px] leading-[1.45] text-navy lg:mt-[clamp(20px,1.615vw,31px)] lg:max-w-[28em] lg:text-[clamp(16px,1.146vw,22px)] lg:leading-[1.4545]"
             >
               {description}
             </p>
           </div>
 
           <div
-            style={{ ...revealOrder(2), aspectRatio: `${image.width} / ${image.height}` }}
-            className="ww-rise relative w-full"
+            style={revealOrder(2)}
+            // From lg the reference crops the image to 750x246 (centred) with 14px corners and a faint
+            // 1px outline; below lg the whole image shows, its corners baked into the file.
+            className="ww-rise relative aspect-[1500/545] w-full lg:aspect-[750/246] lg:overflow-hidden lg:rounded-[clamp(10px,0.729vw,14px)] lg:after:pointer-events-none lg:after:absolute lg:after:inset-0 lg:after:rounded-[inherit] lg:after:ring-1 lg:after:ring-black/8 lg:after:ring-inset"
           >
             <AssetImage
               src={image.src}
               alt={image.alt}
               sizes="(min-width: 1600px) 750px, (min-width: 1024px) 48vw, 100vw"
-              className="object-contain"
+              className="object-contain lg:object-cover"
             />
           </div>
         </Reveal>
 
         <Reveal
           each
-          className="mt-10 grid gap-5 lg:mt-[clamp(32px,3.125vw,60px)] lg:grid-cols-2 lg:gap-[clamp(20px,1.563vw,30px)]"
+          className="mt-10 grid gap-5 lg:mt-[clamp(32px,3.073vw,59px)] lg:grid-cols-2 lg:gap-[clamp(20px,1.563vw,30px)]"
         >
           {channels.map((channel, index) => (
             <article

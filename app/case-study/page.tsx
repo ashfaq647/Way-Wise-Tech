@@ -45,7 +45,7 @@ export default function CaseStudyPage() {
           the pin would otherwise leave empty scrolling at the page end. The id is unique to this
           route, so the lookup is safe with kept-mounted pages.
         */}
-        <PinnedSection limitCoverTo="#case-study-challenges">
+        <PinnedSection limitCoverTo="#case-study-challenges" hold="30svh">
           <CaseStudyOverview />
         </PinnedSection>
         {/*
@@ -53,7 +53,7 @@ export default function CaseStudyPage() {
           We Used rises over it. Capped at that section's height in case it is the shorter one, so the
           pin never leaves empty scrolling at the page end; the id is unique to this route.
         */}
-        <PinnedSection limitCoverTo="#case-study-tech">
+        <PinnedSection limitCoverTo="#case-study-tech" hold="30svh">
           <CaseStudyChallenges />
         </PinnedSection>
         {/*
@@ -61,7 +61,7 @@ export default function CaseStudyPage() {
           section rises over it, capped at that section's height so the pin never leaves empty
           scrolling at the page end; the id is unique to this route.
         */}
-        <PinnedSection limitCoverTo="#case-study-results">
+        <PinnedSection limitCoverTo="#case-study-results" hold="30svh">
           <CaseStudyTech />
         </PinnedSection>
         {/*
@@ -69,10 +69,12 @@ export default function CaseStudyPage() {
           it. From here on the page ends as the Service Details pages do: the shared Our Process and
           Recent Projects, reused exactly, then the shared Footer.
         */}
-        <PinnedSection>
+        {/* A 942 frame since 2026-11-17: it rests in view for 30svh before Our Process rises. */}
+        <PinnedSection hold="30svh">
           <CaseStudyResults />
         </PinnedSection>
-        <PinnedSection>
+        {/* Our Process is one shared 942 frame (2026-11-17): it rests in view for 30svh before the next section rises. */}
+        <PinnedSection hold="30svh">
           <OurProcess />
         </PinnedSection>
         {/* 30svh holds here and below: each section rests in its 942 frame before the next rises. */}

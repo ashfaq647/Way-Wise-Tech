@@ -63,7 +63,7 @@ export function AboutLeadership() {
 
   return (
     <section id="about-leadership" aria-label="Leadership messages" className="bg-[#f4f0e9]">
-      <Container className="py-14 md:py-20 xl:pt-[clamp(80px,7.552vw,145px)] xl:pb-[clamp(80px,7.708vw,148px)]">
+      <Container className="py-14 md:py-20 xl:pt-[clamp(64px,4.948vw,95px)] xl:pb-[clamp(63px,5.052vw,97px)]">
         <Reveal each>
           <div className="grid gap-14 xl:grid-cols-2 xl:gap-[clamp(32px,3.125vw,60px)]">
             {messages.map((message, index) => {
@@ -92,21 +92,25 @@ export function AboutLeadership() {
                     reference, where "long-" ends a 469px line.
                   */}
                   <div className="min-w-0 xl:w-[calc(100%+clamp(2px,0.208vw,4px))]">
-                    <SectionEyebrow weight="bold" tracking="0.095em" className="ww-rise">
+                    <SectionEyebrow weight="bold" tracking="0.066em" className="ww-rise">
                       {message.eyebrow}
                     </SectionEyebrow>
 
                     <h2
                       id={headingId}
-                      className="mt-3 text-[clamp(26px,7vw,40px)] leading-[1.154] font-semibold tracking-[-0.015em] text-ink xl:mt-[clamp(8px,0.625vw,12px)] xl:text-[clamp(30px,2.396vw,46px)]"
+                      className="mt-3 text-[clamp(26px,7vw,40px)] leading-[1.154] font-semibold tracking-[-0.015em] text-ink xl:mt-[clamp(2px,0.182vw,3.5px)] xl:text-[clamp(28px,2.208vw,42.4px)] xl:leading-[1.286]"
                     >
-                      <MaskLine order={1}>{message.heading.first}</MaskLine>{" "}
+                      {/*
+                        942 frame (2026-11-17, Frame 2147239037.png): the short connecting word ("a",
+                        "and") ends the first line and the red words take the second, as drawn.
+                      */}
+                      <MaskLine order={1}>{`${message.heading.first} ${message.heading.second}`}</MaskLine>{" "}
                       <MaskLine order={2}>
-                        {message.heading.second} <span className="text-brand">{message.heading.accent}</span>
+                        <span className="text-brand">{message.heading.accent}</span>
                       </MaskLine>
                     </h2>
 
-                    <div className="mt-6 xl:mt-[clamp(15px,1.354vw,26px)]">
+                    <div className="mt-6 xl:mt-[clamp(8px,0.677vw,13px)]">
                       {message.paragraphs.map((paragraph, paragraphIndex) => (
                         <p
                           key={paragraph}
@@ -145,7 +149,7 @@ export function AboutLeadership() {
           */}
           <ul
             style={revealOrder(4)}
-            className="ww-rise relative mt-14 grid overflow-clip gap-6 rounded-2xl bg-white px-6 py-7 sm:grid-cols-2 lg:grid-cols-4 lg:gap-0 lg:px-0 lg:py-0 xl:mt-[clamp(40px,4.063vw,78px)]"
+            className="ww-rise relative mt-14 grid overflow-clip gap-6 rounded-2xl bg-white px-6 py-7 sm:grid-cols-2 lg:grid-cols-4 lg:gap-0 lg:px-0 lg:py-0 xl:mt-[clamp(31px,3.073vw,59px)]"
           >
             {stats.map((stat, index) => (
               <li

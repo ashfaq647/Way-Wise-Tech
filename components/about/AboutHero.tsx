@@ -30,10 +30,9 @@ const primarySize = "h-[59px] pr-7 lg:h-[clamp(44px,3.073vw,59px)] lg:pr-[clamp(
 const secondarySize = "h-[61px] pr-8 lg:h-[clamp(45px,3.177vw,61px)] lg:pr-[clamp(20px,1.667vw,32px)]";
 
 /**
- * The About Us page Hero, from "Hero Section (1).png": the Hero and the Client Logo strip as one
- * section (owner, 2026-11-11), so they pin as one unit and the next section rises over both. The
- * artwork (3840x1614) is the whole 1920x807 Hero area with nothing drawn over it, so from lg it
- * fills an area of the same ratio, shown whole, with the text centred vertically on its left. Below
+ * The About Us page Hero: the Hero and the Client Logo strip as one section (owner, 2026-11-11), so
+ * they pin as one unit and the next section rises over both. From lg it follows the Homepage Hero's
+ * layout (2026-11-17), with the About artwork (3840x1614) covering the area. Below
  * lg the text comes first and the whole artwork follows, its top edge faded, as on the Our
  * Portfolio and Contact Heroes. The frozen ClientLogos strip follows directly, reused unchanged.
  */
@@ -42,16 +41,25 @@ export function AboutHero() {
 
   return (
     <section aria-labelledby="about-hero-heading" className="relative">
-      <div className="relative overflow-hidden bg-[#e8d6c0] lg:flex lg:aspect-[3840/1614] lg:items-center">
+      {/*
+        Homepage Hero standard (owner, 2026-11-17): the same frame as components/home/Hero.tsx. From lg
+        the content sits in the Homepage's two-column grid with its top padding (bar height plus
+        clamp(40px, 4.167vw, 80px)) and bottom padding (clamp(56px, 5.208vw, 100px)). The right column
+        holds an empty 760/562 box in place of the Homepage photo grid, so the area has the Homepage
+        Hero's height (842px at 1920) and the text is centred against it. The About artwork covers the
+        whole area behind the content, as the Homepage background does.
+      */}
+      <div className="relative overflow-hidden bg-[#e8d6c0]">
         <div className="absolute inset-0 hidden lg:block">
-          <AssetImage src={image.src} alt={image.alt} sizes="100vw" priority className="object-contain" />
+          <AssetImage src={image.src} alt={image.alt} sizes="100vw" priority className="object-cover" />
         </div>
 
         {/* Below lg the text starts under the shared floating Navbar card (76px), as on the Homepage Hero. */}
-        <div className="relative mx-auto w-full max-w-[1600px] px-5 pt-[116px] pb-12 md:px-8 md:pt-[124px] md:pb-16 lg:py-0 xl:px-5">
+        <div className="relative mx-auto grid w-full max-w-[1600px] px-5 pt-[116px] pb-12 md:px-8 md:pt-[124px] md:pb-16 lg:grid-cols-[minmax(0,800fr)_minmax(0,760fr)] lg:items-center lg:pt-[calc(76px+clamp(40px,4.167vw,80px))] lg:pb-[clamp(56px,5.208vw,100px)] xl:px-5 xl:pt-[calc(100px+clamp(40px,4.167vw,80px))]">
+          <div className="min-w-0 lg:pr-6">
           <SectionEyebrow
             weight="bold"
-            tracking="0.095em"
+            tracking="0.067em"
             className={`${textEnter} lg:text-[clamp(14px,0.9375vw,18px)]`}
           >
             {eyebrow}
@@ -110,6 +118,10 @@ export function AboutHero() {
               </li>
             ))}
           </ul>
+          </div>
+
+          {/* The Homepage photo grid's box (760x562 at 1920), left empty: the artwork shows through. */}
+          <div aria-hidden="true" className="hidden aspect-[760/562] w-full lg:block" />
         </div>
 
         {/* Below lg: the whole artwork, centred in its box with no crop or zoom, top edge faded. */}
@@ -118,8 +130,9 @@ export function AboutHero() {
         </div>
       </div>
 
-      {/* Attached to the Hero, inside the same section, so both pin together. */}
-      <ClientLogos />
+      {/* Attached to the Hero, inside the same section, so both pin together: the Homepage's compact
+          100px strip, directly under the Hero with no gap, as on the Homepage. */}
+      <ClientLogos height="compact" />
     </section>
   );
 }

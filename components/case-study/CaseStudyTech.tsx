@@ -25,18 +25,18 @@ export function CaseStudyTech() {
 
   return (
     <section id="case-study-tech" aria-labelledby="case-study-tech-heading" className={`bg-[#d0d0c8] ${unit}`}>
-      <Container className="py-12 md:py-16 lg:pt-[calc(var(--u)*97)] lg:pb-[calc(var(--u)*101)]">
+      <Container className="py-12 md:py-16 lg:pt-[calc(var(--u)*98)] lg:pb-[calc(var(--u)*81)]">
         <Reveal
           each
-          className="grid gap-6 lg:grid-cols-[minmax(0,968fr)_minmax(0,592fr)] lg:items-end lg:gap-0"
+          className="grid gap-6 lg:grid-cols-[minmax(0,968fr)_minmax(0,592fr)] lg:items-start lg:gap-0"
         >
           <div className="min-w-0">
-            <SectionEyebrow size="lg" weight="bold" tracking="0.078em" className="ww-rise">
+            <SectionEyebrow weight="bold" tracking="0.078em" className="ww-rise">
               {eyebrow}
             </SectionEyebrow>
             <h2
               id="case-study-tech-heading"
-              className="mt-2 text-[clamp(30px,8.4vw,56px)] leading-[1.09] font-semibold tracking-[-0.007em] text-navy lg:mt-[calc(var(--u)*14)] lg:text-[max(40px,calc(var(--u)*64))]"
+              className="mt-2 text-[clamp(30px,8.4vw,56px)] leading-[1.09] font-semibold tracking-[-0.007em] text-navy lg:mt-[calc(var(--u)*10)] lg:text-[max(40px,calc(var(--u)*52.5))] lg:leading-[1.181]"
             >
               <MaskLine order={1}>{heading.first} </MaskLine>
               <MaskLine order={2} className="text-brand">
@@ -46,7 +46,7 @@ export function CaseStudyTech() {
           </div>
           <p
             style={revealOrder(3)}
-            className="ww-rise max-w-[30em] text-[18px] leading-[1.45] text-navy lg:-mb-[calc(var(--u)*15)] lg:max-w-[calc(var(--u)*560)] lg:text-[max(16px,calc(var(--u)*24))] lg:leading-[1.3333]"
+            className="ww-rise max-w-[30em] text-[18px] leading-[1.45] text-navy lg:mt-[calc(var(--u)*45)] lg:max-w-[calc(var(--u)*560)] lg:text-[max(16px,calc(var(--u)*22))] lg:leading-[1.5]"
           >
             {description}
           </p>
@@ -54,13 +54,13 @@ export function CaseStudyTech() {
 
         <Reveal
           each
-          className="mt-10 grid grid-cols-2 gap-3 sm:gap-4 lg:mt-[calc(var(--u)*75)] lg:grid-cols-4 lg:gap-[calc(var(--u)*20)]"
+          className="mt-10 grid grid-cols-2 gap-3 sm:gap-4 lg:mt-[calc(var(--u)*59)] lg:grid-cols-4 lg:gap-[calc(var(--u)*20)]"
         >
           {items.map((item, index) => (
             <article
               key={item.name}
               style={revealOrder(index)}
-              className="ww-rise flex flex-col items-center justify-center rounded-[calc(var(--u)*15)] bg-white px-3 py-7 text-center lg:h-[calc(var(--u)*198)] lg:p-0"
+              className="ww-rise flex flex-col items-center justify-center rounded-[calc(var(--u)*15)] bg-white px-3 py-7 text-center lg:h-[calc(var(--u)*170)] lg:p-0"
             >
               {/* A fixed band, so every name lines up whatever the logo's shape. */}
               <div className="relative flex h-[calc(var(--u)*53)] w-full items-center justify-center">

@@ -12,7 +12,7 @@ const { eyebrow, heading, description, primaryAction, secondaryAction, features,
 const textEnter = "animate-hero-text motion-reduce:animate-hero-fade";
 const imageEnter = "animate-hero-image motion-reduce:animate-hero-fade";
 
-/** The right column, top to bottom. Each export is twice its 300px design width, so none is cropped. */
+/** The right column, top to bottom. Each is cropped to its 300x162 frame (the files are 300x176). */
 const sidePhotos = [
   {
     src: assets.industryHeroLaw,
@@ -31,14 +31,20 @@ const sidePhotos = [
   },
 ];
 
+/** The reference's photo corners: about 8px at 1920. */
+const photoFrame = "relative overflow-hidden rounded-[clamp(6px,0.417vw,8px)]";
+
 /**
- * The Industries page Hero, from industry.png. At 1920 the section is 808px tall, the background
- * export's ratio, with the text and a 620x567 photo grid centred in it. The photos' rounded corners
- * are in the files. Below lg the text comes first and the grid follows at full width.
+ * The Industries page Hero, on the Homepage Hero standard (2026-11-17, reference `Homepage.png`,
+ * which shows this page): the Homepage Hero's grid, padding and floating-Navbar clearance, so the
+ * Hero is 842px at 1920 and the shared compact logo strip completes the 942 frame. The content,
+ * text styles and photo arrangement are this page's own: a 640x527 grid at 1920 (a 320px column
+ * beside three 300x162 photos, 20px gaps), right-aligned and centred in the Homepage's 760x562
+ * image area. Below lg the text comes first and the grid follows.
  */
 export function IndustriesHero() {
   return (
-    <section className="relative overflow-hidden bg-[#e8d5c0] lg:flex lg:min-h-[42.083vw] lg:items-center">
+    <section className="relative overflow-hidden bg-[#e8d5c0]">
       <AssetImage
         src={assets.industryHeroBackground}
         alt={imageAlts.background}
@@ -47,13 +53,14 @@ export function IndustriesHero() {
         className="object-cover"
       />
 
-      <div className="relative mx-auto grid w-full max-w-[1600px] gap-10 px-5 py-12 md:px-8 md:py-16 lg:grid-cols-[minmax(0,852fr)_minmax(0,620fr)_minmax(0,88fr)] lg:items-center lg:gap-0 lg:py-[clamp(40px,4vw,76px)] xl:px-5">
-        <div className="min-w-0 lg:pr-[clamp(24px,2.5vw,48px)]">
+      <div className="relative mx-auto grid w-full max-w-[1600px] gap-10 px-5 pt-[116px] pb-12 md:px-8 md:pt-[124px] md:pb-16 lg:grid-cols-[minmax(0,800fr)_minmax(0,760fr)] lg:items-center lg:gap-0 lg:pt-[calc(76px+clamp(40px,4.167vw,80px))] lg:pb-[clamp(56px,5.208vw,100px)] xl:px-5 xl:pt-[calc(100px+clamp(40px,4.167vw,80px))]">
+        {/* No right padding: the description's first line needs 784px of the 800 (as drawn, breaking after "types of"). */}
+        <div className="min-w-0">
           <SectionEyebrow
             weight="bold"
-            tracking="0.078em"
+            tracking="0.05em"
             barClassName="-translate-y-px"
-            className={`${textEnter} lg:text-[clamp(14px,0.9375vw,18px)]`}
+            className={`${textEnter} lg:text-[clamp(15px,1.042vw,20px)]`}
           >
             {eyebrow}
           </SectionEyebrow>
@@ -90,7 +97,7 @@ export function IndustriesHero() {
               // ink within 3% at 1920 (700 was 7% heavier). ButtonLink has no option for this, and an
               // inline weight wins over its font-semibold class without !important. Outfit is variable.
               style={{ fontWeight: 650 }}
-              className="h-[59px] px-[27.5px] text-[20px] lg:h-[clamp(44px,3.073vw,59px)] lg:px-[clamp(17px,1.432vw,27.5px)] lg:text-[clamp(16px,1.042vw,20px)]"
+              className="h-[61px] px-[27.5px] text-[20px] lg:h-[clamp(46px,3.177vw,61px)] lg:px-[clamp(17px,1.432vw,27.5px)] lg:text-[clamp(16px,1.042vw,20px)]"
             >
               {secondaryAction.label}
             </ButtonLink>
@@ -119,27 +126,30 @@ export function IndustriesHero() {
           </ul>
         </div>
 
-        {/* 620x567 at 1920: two 300px columns 20px apart; three 176px photos 19.5px apart. */}
-        <div className="grid aspect-[620/567] w-full max-w-[620px] grid-cols-2 grid-rows-3 gap-x-[3.226%] gap-y-[3.439%] lg:max-w-none">
-          <div className={`${imageEnter} relative row-span-3 [animation-delay:150ms]`}>
-            <AssetImage
-              src={assets.industryHeroLaundry}
-              alt={imageAlts.laundry}
-              sizes="(min-width: 1024px) 16vw, 50vw"
-              priority
-              className="object-contain"
-            />
-          </div>
-          {sidePhotos.map((photo) => (
-            <div key={photo.src} className={`${imageEnter} relative ${photo.delay}`}>
+        {/* The Homepage's 760x562 image area (so the Hero has its height), holding this page's grid. */}
+        <div className="lg:flex lg:aspect-[760/562] lg:items-center lg:justify-end">
+          {/* 640x527 at 1920: a 320px and a 300px column 20px apart; three 162px photos 20px apart. */}
+          <div className="grid aspect-[640/527] w-full max-w-[640px] grid-cols-[320fr_300fr] grid-rows-3 gap-x-[3.125%] gap-y-[3.795%] lg:w-[84.211%] lg:max-w-none">
+            <div className={`${imageEnter} ${photoFrame} row-span-3 [animation-delay:150ms]`}>
               <AssetImage
-                src={photo.src}
-                alt={photo.alt}
-                sizes="(min-width: 1024px) 16vw, 50vw"
-                className="object-contain"
+                src={assets.industryHeroLaundry}
+                alt={imageAlts.laundry}
+                sizes="(min-width: 1024px) 17vw, 50vw"
+                priority
+                className="object-cover object-[50%_31%]"
               />
             </div>
-          ))}
+            {sidePhotos.map((photo) => (
+              <div key={photo.src} className={`${imageEnter} ${photoFrame} ${photo.delay}`}>
+                <AssetImage
+                  src={photo.src}
+                  alt={photo.alt}
+                  sizes="(min-width: 1024px) 16vw, 50vw"
+                  className="object-cover"
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

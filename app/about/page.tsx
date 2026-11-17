@@ -36,28 +36,35 @@ export default function AboutPage() {
         </PinnedSection>
         {/*
           Our Story holds while the leadership section rises over it, capped at that section's height
-          (it can be shorter than this pin on some screens).
+          (it can be shorter than this pin on some screens). Since the 942 frame fit (2026-11-17) it
+          rests fully in view for 30svh before that section rises, as the Homepage sections do.
         */}
-        <PinnedSection limitCoverTo="#about-leadership">
+        <PinnedSection limitCoverTo="#about-leadership" hold="30svh">
           <AboutStory />
         </PinnedSection>
         {/*
           The leadership section (frozen, reused unchanged) holds while Our Global Presence rises over
           it. The cap at Our Global Presence's height was needed while that section ended the page;
-          with sections after it, it only shortens the hold on some screens.
+          with sections after it, it only shortens the hold on some screens. Since its 942 frame fit
+          (2026-11-17) it rests fully in view for 30svh before Our Global Presence rises.
         */}
-        <PinnedSection limitCoverTo="#about-presence">
+        <PinnedSection limitCoverTo="#about-presence" hold="30svh">
           <AboutLeadership />
         </PinnedSection>
-        {/* Our Global Presence (frozen, reused unchanged) holds while Our Process rises over it. */}
-        <PinnedSection>
+        {/*
+          Our Global Presence holds while Our Process rises over it. Since its 942 frame fit
+          (2026-11-17) it first rests fully in view for 30svh, as the sections above do.
+        */}
+        <PinnedSection hold="30svh">
           <AboutPresence />
         </PinnedSection>
         {/*
           The shared /services section, reused exactly as it is: the last section, held while the shared
           Footer rises over it, capped at this page's Footer so the pin never adds empty scrolling.
+          Since 2026-11-17 (Frame 2147239038.png, 1920x942) it uses the existing compact 942-frame
+          layout from /services, and rests fully in view for 30svh before the Footer rises.
         */}
-        <PinnedSection limitCoverTo="main:has(#about-presence) + footer">
+        <PinnedSection limitCoverTo="main:has(#about-presence) + footer" hold="30svh">
           <OurProcess />
         </PinnedSection>
       </main>

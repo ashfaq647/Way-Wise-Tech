@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { AssetImage } from "@/components/ui/AssetImage";
 import { Container } from "@/components/ui/Container";
 import { SectionEyebrow } from "@/components/ui/SectionEyebrow";
@@ -8,7 +9,12 @@ import type { WhyChooseContent } from "@/lib/content/service-details";
 
 /**
  * "Why Choose" on the Service Details pages: the image card beside the text from lg, the image on
- * top below that. The image is shown whole at its own ratio; its rounded corners are in the file.
+ * top below that. One shared design for every Service Details page (only the content differs).
+ *
+ * From lg, a 942 frame at 1920 (2026-11-17, reference `Frame 2147238537.png`): 100px above and
+ * below a 727×742 image card (cover crop, 12px corners, a 1px warm outline), 60px gap, then the
+ * text column (773px) centred on the card. Below lg the image is shown whole at its own ratio
+ * (its rounded corners are in the file), as before.
  */
 export function WhyChoose({ eyebrow, heading, description, points, image }: WhyChooseContent) {
   return (
@@ -16,28 +22,28 @@ export function WhyChoose({ eyebrow, heading, description, points, image }: WhyC
       <Container className="py-12 md:py-16 lg:py-[clamp(56px,5.208vw,100px)]">
         <Reveal
           each
-          className="grid gap-10 md:gap-12 lg:grid-cols-[minmax(0,707fr)_minmax(0,772fr)] lg:items-center lg:gap-x-[clamp(32px,4.219vw,81px)]"
+          className="grid gap-10 md:gap-12 lg:grid-cols-[minmax(0,727fr)_minmax(0,773fr)] lg:items-center lg:gap-x-[clamp(32px,3.125vw,60px)]"
         >
           <div
-            className="ww-rise relative w-full max-w-[520px] lg:max-w-none"
-            style={{ aspectRatio: `${image.width} / ${image.height}` }}
+            className="ww-rise relative aspect-(--ar) w-full max-w-[520px] lg:aspect-[727/742] lg:max-w-none lg:overflow-hidden lg:rounded-[12px] lg:after:pointer-events-none lg:after:absolute lg:after:inset-0 lg:after:rounded-[inherit] lg:after:border lg:after:border-[#ceb8b1]"
+            style={{ "--ar": `${image.width} / ${image.height}` } as CSSProperties}
           >
             <AssetImage
               src={image.src}
               alt={image.alt}
-              sizes="(min-width: 1600px) 707px, (min-width: 1024px) 45vw, 520px"
-              className="object-contain"
+              sizes="(min-width: 1600px) 727px, (min-width: 1024px) 46vw, 520px"
+              className="object-contain lg:object-cover"
             />
           </div>
 
-          <div className="min-w-0">
+          <div className="min-w-0 lg:pb-[clamp(2px,0.156vw,3px)]">
             <SectionEyebrow size="md" weight="bold" tracking="0.1em" barClassName="max-h-[2px] -translate-y-0.5" className="ww-rise">
               {eyebrow}
             </SectionEyebrow>
 
             <h2
               id="why-choose-heading"
-              className="mt-[10px] text-[clamp(28px,7.4vw,48px)] leading-[1.0625] font-semibold tracking-[-0.013em] text-ink lg:mt-[clamp(6px,0.365vw,7px)] lg:text-[clamp(34px,3.333vw,64px)]"
+              className="mt-[10px] text-[clamp(28px,7.4vw,48px)] leading-[1.0625] font-semibold tracking-[-0.013em] text-ink lg:mt-[clamp(6px,0.469vw,9px)] lg:text-[clamp(34px,2.786vw,53.5px)] lg:leading-[1.153]"
             >
               <MaskLine order={1}>{heading.first}</MaskLine>{" "}
               <MaskLine order={2} className="text-brand">
@@ -47,7 +53,7 @@ export function WhyChoose({ eyebrow, heading, description, points, image }: WhyC
 
             <p
               style={revealOrder(3)}
-              className="ww-rise mt-6 text-[18px] leading-[1.45] text-ink-muted lg:mt-[clamp(18px,1.823vw,35px)] lg:text-[clamp(16px,1.25vw,24px)] lg:leading-[1.3333]"
+              className="ww-rise mt-6 text-[18px] leading-[1.45] text-ink-muted lg:mt-[clamp(18px,1.667vw,32px)] lg:text-[clamp(16px,1.146vw,22px)] lg:leading-[1.4545] lg:tracking-[0.041em]"
             >
               {description}
             </p>

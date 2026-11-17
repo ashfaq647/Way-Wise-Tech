@@ -272,11 +272,12 @@ export function ProjectCarousel({ cards, heading, intro }: ProjectCarouselProps)
 
       <div className="[--card:calc(100cqw-var(--g)-56px)] [--g:20px] md:[--card:calc((100cqw-var(--g)-104px)/2)] md:[--g:32px] lg:[--card:calc((100cqw-2*var(--g)-48px)/3)] xl:[--g:max(20px,calc((100cqw-1560px)/2))]">
         <div className="mx-auto w-full max-w-[1600px] px-5 md:px-8 xl:px-5">
-          <div className="grid gap-5 lg:grid-cols-[minmax(0,885fr)_minmax(0,675fr)] lg:items-end lg:gap-0">
+          <div className="grid gap-5 lg:grid-cols-[minmax(0,833fr)_minmax(0,727fr)] lg:gap-0">
             <div>{heading}</div>
-            <div className="flex items-end justify-between gap-4">
-              <div className="min-w-0">{intro}</div>
-              <div data-project-arrows className="-mr-1 -mb-1 flex shrink-0 gap-1">
+            {/* From lg (942 frame, 2026-11-17): the intro at the top, the arrows under it at the right edge. */}
+            <div className="flex items-end justify-between gap-4 lg:flex-col lg:items-end lg:justify-between">
+              <div className="min-w-0 lg:mt-[clamp(28px,2.344vw,45px)] lg:w-full">{intro}</div>
+              <div data-project-arrows className="-mr-1 -mb-1 flex shrink-0 gap-1 lg:-mt-4 lg:-mb-[9px]">
                 <button
                   type="button"
                   aria-label="Previous project"
@@ -298,7 +299,7 @@ export function ProjectCarousel({ cards, heading, intro }: ProjectCarouselProps)
           </div>
         </div>
 
-        <div className="relative mt-[clamp(28px,2.448vw,47px)]">
+        <div className="relative mt-[clamp(24px,1.719vw,33px)]">
           {/* The thin rule behind the cards, across the content width, showing in the gaps. */}
           <div
             className="absolute inset-x-[var(--g)] top-1/2 h-px bg-[#adada6]"
@@ -325,7 +326,7 @@ export function ProjectCarousel({ cards, heading, intro }: ProjectCarouselProps)
             }}
             onTouchEnd={() => resume("touch")}
             onTouchCancel={() => resume("touch")}
-            className="relative ml-[calc(var(--g)-12px)] snap-x snap-mandatory scroll-pl-3 overflow-x-auto py-3 [scrollbar-width:none] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink [&::-webkit-scrollbar]:hidden"
+            className="relative ml-[calc(var(--g)-12px)] snap-x lg:mr-[calc(var(--g)-12px)] snap-mandatory scroll-pl-3 overflow-x-auto py-3 [scrollbar-width:none] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink [&::-webkit-scrollbar]:hidden"
           >
             <ul className="flex w-max gap-6 pl-3">
               {looping && renderSet(true, "before")}

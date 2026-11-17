@@ -100,36 +100,20 @@ const stepVisuals = [
 const steps = ourProcess.steps.map((step, index) => ({ ...step, ...stepVisuals[index] }));
 
 /*
-  Layout per variant. "default" is the original design (a 1080px frame at 1920; these strings are
-  unchanged, so every page that uses it renders as before). "compact" is the 2026-11-16 /services
-  redesign (`Frame 2147238780.png`, 1920x942): the same content centred in a 942px frame, an 18px
-  eyebrow, a 53.5px heading, and the description top-aligned beside the heading instead of on its
-  bottom line.
+  One design on every page (owner, 2026-11-17), from `Frame 2147239038.png` (1920x942): the content
+  centred in a 942px frame, an 18px eyebrow, a 53.5px heading on 60px lines, the description on the
+  heading's bottom line, then the five steps.
 */
-const layouts = {
-  default: {
-    section: "flex items-center bg-[#faf5f1] lg:min-h-[clamp(720px,56.25vw,1080px)]",
-    header: "grid gap-5 lg:grid-cols-[minmax(0,968fr)_minmax(0,592fr)] lg:items-end lg:gap-0",
-    eyebrow: "lg:text-[clamp(16px,1.042vw,20px)]",
-    heading: "lg:text-[clamp(34px,2.71vw,52px)]",
-    description: "lg:-mb-px",
-  },
-  compact: {
-    section: "flex items-center bg-[#faf5f1] lg:min-h-[clamp(628px,49.0625vw,942px)] lg:pt-1",
-    header: "grid gap-5 lg:grid-cols-[minmax(0,968fr)_minmax(0,592fr)] lg:items-start lg:gap-0",
-    eyebrow: "lg:-mt-1 lg:text-[clamp(14px,0.9375vw,18px)] lg:tracking-[0.072em]",
-    heading: "lg:mt-2 lg:text-[clamp(34px,2.786vw,53.5px)]",
-    description: "lg:pt-[clamp(27px,2.1875vw,42px)]",
-  },
+const l = {
+  section: "flex items-center bg-[#faf5f1] lg:min-h-[clamp(628px,49.0625vw,942px)]",
+  header: "grid gap-5 lg:grid-cols-[minmax(0,968fr)_minmax(0,592fr)] lg:items-end lg:gap-0",
+  eyebrow: "lg:text-[clamp(14px,0.9375vw,18px)] lg:tracking-[0.09em]",
+  heading: "lg:mt-2 lg:text-[clamp(34px,2.786vw,53.5px)] lg:leading-[1.1215]",
+  description: "lg:mb-[clamp(9px,0.729vw,14px)]",
+  steps: "lg:mt-[46px]",
 };
 
-type OurProcessProps = {
-  /** "compact": the 2026-11-16 /services redesign (942 frame). Default: the original design. */
-  variant?: keyof typeof layouts;
-};
-
-export function OurProcess({ variant = "default" }: OurProcessProps) {
-  const l = layouts[variant];
+export function OurProcess() {
   const panel = useRef<HTMLDivElement>(null);
 
   // Handled on the list, so the panel stays put while the pointer crosses the gap between steps.
@@ -185,7 +169,7 @@ export function OurProcess({ variant = "default" }: OurProcessProps) {
           </p>
         </Reveal>
 
-        <Reveal className="group/steps relative mt-10 lg:mt-[60px]">
+        <Reveal className={`group/steps relative mt-10 ${l.steps}`}>
           <div ref={panel} className="ww-process__panel" aria-hidden="true" />
           <ol
           onPointerOver={movePanel}

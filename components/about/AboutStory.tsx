@@ -25,7 +25,8 @@ function PinIcon() {
 }
 
 /**
- * "Our Story" on the About Us page, from Frame 2147239133.png. At 1920 the section is 1080px tall
+ * "Our Story" on the About Us page, from Frame 2147239133.png, fitted to the 942 frame on 2026-11-17
+ * (Frame 2147239036.png: same design, less padding). At 1920 the section is 942px tall
  * on sand: the text on the left (eyebrow, two-line heading, three paragraphs) and, on the right, a
  * 730px grid of four 353x286 photo cards, 24px apart, each with a white location label in its
  * top-right corner. The photos' rounded corners are in the files. Below lg the text comes first;
@@ -36,18 +37,19 @@ export function AboutStory() {
 
   return (
     <section aria-labelledby="about-story-heading" className="bg-sand">
-      <Container className="py-14 md:py-20 lg:py-[clamp(80px,12.604vw,242px)]">
+      {/* 1920x942 frame (2026-11-17, Frame 2147239036.png): 172.5px above and below the cards (was 242). */}
+      <Container className="py-14 md:py-20 lg:py-[clamp(80px,8.984vw,172.5px)]">
         <Reveal
           each
           className="grid gap-10 lg:grid-cols-[minmax(0,830fr)_minmax(0,730fr)] lg:items-center lg:gap-0"
         >
-          {/* The reference sits the text 12px above the cards' centre; the bottom padding keeps that. */}
-          <div className="min-w-0 lg:pr-[clamp(24px,3.125vw,60px)] lg:pb-[clamp(12px,1.25vw,24px)]">
+          {/* The 942 reference (2026-11-17): 11px more between eyebrow and heading than before, with the eyebrow where it was; the smaller bottom padding keeps it there. */}
+          <div className="min-w-0 lg:pr-[clamp(24px,3.125vw,60px)] lg:pb-[clamp(7px,0.677vw,13px)]">
             <SectionEyebrow weight="bold" tracking="0.095em" className="ww-rise">
               {eyebrow}
             </SectionEyebrow>
 
-            <SectionHeading id="about-story-heading" className="mt-3 lg:mt-[clamp(8px,0.625vw,12px)]">
+            <SectionHeading id="about-story-heading" className="mt-3 lg:mt-[clamp(8px,1.198vw,23px)]">
               <MaskLine order={1}>{heading.first}</MaskLine>{" "}
               <MaskLine order={2}>
                 {heading.second}{" "}

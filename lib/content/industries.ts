@@ -133,7 +133,7 @@ export const industriesAtAGlance = [
   {
     title: "Law Firms",
     description:
-      "Professional and trustworthy designs to attract clients and build a strong online presence.",
+      "Professional, trustworthy designs that win clients and grow your brand.",
     image: assets.industryLawFirm,
     alt: "Two lawyers shaking hands across a desk with a gavel, scales of justice and signed documents",
   },

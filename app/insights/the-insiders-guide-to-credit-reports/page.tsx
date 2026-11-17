@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { BlogDetails } from "@/components/blog-details/BlogDetails";
-import { SiteFooter } from "@/components/layout/SiteFooter";
+import { Footer } from "@/components/layout/Footer";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { blogDetails } from "@/lib/content/blog-details";
 
@@ -18,12 +18,14 @@ export const metadata: Metadata = {
 export default function BlogDetailsPage() {
   return (
     <>
-      {/* The red banner is Homepage only. */}
-      <SiteHeader showBanner={false} />
-      <main>
+      {/* The shared floating Homepage Navbar. It takes no space, so <main> keeps the old bar's 80px
+          (100px from xl): the article sits exactly where it did, clear of the floating card. */}
+      <SiteHeader showBanner={false} variant="floating" />
+      <main className="pt-20 xl:pt-[100px]">
         <BlogDetails />
       </main>
-      <SiteFooter />
+      {/* The shared Footer (Final CTA + footer), as on the Homepage. Normal scrolling: it follows the article. */}
+      <Footer />
     </>
   );
 }

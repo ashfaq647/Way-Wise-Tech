@@ -259,12 +259,12 @@ export function FaqQuestions() {
 
       <Reveal
         each
-        className="mx-auto grid w-full max-w-[1560px] items-start gap-6 px-5 py-14 md:px-8 md:py-20 lg:grid-cols-[minmax(0,428fr)_minmax(0,1016fr)] lg:gap-[clamp(52px,3.958vw,76px)] lg:py-[clamp(96px,7.917vw,152px)] xl:px-5"
+        className="mx-auto grid w-full max-w-[1560px] items-start gap-6 px-5 py-14 md:px-8 md:py-20 lg:grid-cols-[minmax(0,428fr)_minmax(0,1016fr)] lg:gap-[clamp(52px,3.958vw,76px)] lg:py-[clamp(56px,4.323vw,83px)] xl:px-5"
       >
         {/* From lg the card stays in view beside the scrolling questions (motion-safe, as other sticky parts): 110px from the top as in the reference, 96px below xl (shorter Navbar). */}
         <div className="wf-card ww-rise lg:motion-safe:sticky lg:motion-safe:top-[96px] xl:motion-safe:top-[110px] flex flex-col items-center rounded-xl bg-[#4b2524] px-6 pt-8 pb-8 text-center text-white md:px-10 lg:px-[clamp(24px,2.083vw,40px)] lg:pt-[clamp(28px,2.344vw,45px)] lg:pb-[clamp(28px,2.083vw,40px)]">
           <FaqQuestionMark className="w-[150px] lg:w-[clamp(130px,9.375vw,180px)]" />
-          <p className="mt-4 text-[27px] leading-[1.25] font-light lg:mt-[clamp(9px,0.729vw,14px)] lg:text-[clamp(23px,1.563vw,30px)]">
+          <p className="mt-4 text-[27px] leading-[1.25] font-semibold lg:mt-[clamp(9px,0.729vw,14px)] lg:text-[clamp(23px,1.615vw,31px)]">
             {card.title}
           </p>
           <p className="mt-3 w-fit max-w-[18.25em] text-center text-balance lg:text-left lg:text-wrap text-[16px] leading-[1.375] lg:mt-[clamp(10px,0.885vw,17px)] lg:text-[clamp(14px,0.833vw,16px)]">

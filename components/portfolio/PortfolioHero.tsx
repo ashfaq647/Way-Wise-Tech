@@ -12,23 +12,25 @@ const { eyebrow, heading, description, primaryAction, secondaryAction, imageAlt:
   portfolioHero;
 
 /**
- * The Our Portfolio page Hero, from "our protfolio.png". The artwork (3840x1616) holds the desk,
- * laptop and phone, so from lg it fills a section of the same 1920/808 ratio, shown whole, with the
- * text centred vertically on its left. Below lg the text comes first and the whole artwork follows,
+ * The Our Portfolio page Hero (reference `Homepage.png`, 2026-11-17, which shows this page). From lg
+ * it follows the Homepage Hero standard, as on About, FAQ, Contact and Insights: the Homepage Hero's
+ * grid, top and bottom padding and an empty 760/562 right column, so the Hero is 842px at 1920 and
+ * the compact strip completes the 942 frame. The artwork (3840x1616) and its left fade cover the
+ * whole area, with the text centred vertically on the left. Below lg the text comes first and the whole artwork follows,
  * its top edge faded, as on the Service Details Hero.
  */
 export function PortfolioHero() {
   return (
-    <section className="relative overflow-hidden bg-[#ecdac4] lg:flex lg:aspect-[1920/808] lg:items-center">
+    <section className="relative overflow-hidden bg-[#ecdac4]">
       <div className="absolute inset-0 hidden lg:block">
-        <AssetImage src={assets.portfolioHero} alt={heroImageAlt} sizes="100vw" priority className="object-contain" />
+        <AssetImage src={assets.portfolioHero} alt={heroImageAlt} sizes="100vw" priority className="object-cover" />
         {/*
           The design's gradient layer at 80% opacity, measured against the export at 1920: left to
           right, solid #ffeed3 across the left 30.2% (behind the text), fading linearly to a
           transparent rgb(204 190 173) at 60.4%, the same from top to bottom. Figma fades colour and
           opacity separately, so the colour darkens as it fades; CSS would keep it cream, so the
-          in-between stops are spelled out. The image fills the section exactly, so percentages
-          line up.
+          in-between stops are spelled out. The image covers the section, so the fade spans the
+          same width.
         */}
         <div
           aria-hidden="true"
@@ -36,12 +38,14 @@ export function PortfolioHero() {
         />
       </div>
 
-      <div className="relative mx-auto w-full max-w-[1600px] px-5 py-12 md:px-8 md:py-16 lg:py-0 xl:px-5">
+      {/* Below lg the text starts under the shared floating Navbar card, as on the Homepage Hero. */}
+      <div className="relative mx-auto grid w-full max-w-[1600px] px-5 pt-[116px] pb-12 md:px-8 md:pt-[124px] md:pb-16 lg:grid-cols-[minmax(0,800fr)_minmax(0,760fr)] lg:items-center lg:pt-[calc(76px+clamp(40px,4.167vw,80px))] lg:pb-[clamp(56px,5.208vw,100px)] xl:px-5 xl:pt-[calc(100px+clamp(40px,4.167vw,80px))]">
+        <div className="min-w-0">
         <SectionEyebrow
           weight="bold"
-          tracking="0.078em"
+          tracking="0.05em"
           barClassName="-translate-y-px"
-          className={`${textEnter} lg:text-[clamp(14px,0.9375vw,18px)]`}
+          className={`${textEnter} lg:text-[clamp(15px,1.042vw,20px)]`}
         >
           {eyebrow}
         </SectionEyebrow>
@@ -91,6 +95,10 @@ export function PortfolioHero() {
             {secondaryAction.label}
           </ButtonLink>
         </div>
+        </div>
+
+        {/* The Homepage photo grid's box (760x562 at 1920), left empty: the artwork shows through. */}
+        <div aria-hidden="true" className="hidden aspect-[760/562] w-full lg:block" />
       </div>
 
       {/* Below lg: the whole artwork, centred in its box with no crop or zoom, top edge faded. */}

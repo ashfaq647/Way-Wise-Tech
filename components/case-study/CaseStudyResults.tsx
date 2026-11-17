@@ -40,7 +40,7 @@ export function CaseStudyResults() {
       aria-labelledby="case-study-results-heading"
       className={`bg-sand ${unit}`}
     >
-      <Container className="py-12 md:py-16 lg:pt-[calc(var(--u)*136)] lg:pb-[calc(var(--u)*138)]">
+      <Container className="py-12 md:py-16 lg:pt-[calc(var(--u)*65)] lg:pb-[calc(var(--u)*63.2)]">
         <Reveal
           each
           className="grid gap-6 lg:grid-cols-[minmax(0,968fr)_minmax(0,592fr)] lg:items-end lg:gap-0"
@@ -51,7 +51,7 @@ export function CaseStudyResults() {
             </SectionEyebrow>
             <h2
               id="case-study-results-heading"
-              className="mt-2 text-[clamp(26px,7.4vw,48px)] leading-[1.173] font-semibold tracking-[-0.015em] text-navy lg:mt-[calc(var(--u)*7)] lg:text-[max(34px,calc(var(--u)*52))]"
+              className="mt-2 text-[clamp(26px,7.4vw,48px)] leading-[1.173] font-semibold tracking-[-0.015em] text-navy lg:mt-[calc(var(--u)*7)] lg:text-[max(34px,calc(var(--u)*53.5))] lg:leading-[1.159]"
             >
               <MaskLine order={1}>{heading.first} </MaskLine>
               <MaskLine order={2} className="text-brand">
@@ -69,7 +69,7 @@ export function CaseStudyResults() {
 
         <Reveal
           each
-          className="mt-10 grid gap-4 lg:mt-[calc(var(--u)*58)] lg:grid-cols-2 lg:gap-x-[calc(var(--u)*24)] lg:gap-y-[calc(var(--u)*27)]"
+          className="mt-10 grid gap-4 lg:mt-[calc(var(--u)*61)] lg:grid-cols-2 lg:gap-x-[calc(var(--u)*24)] lg:gap-y-[calc(var(--u)*27)]"
         >
           {results.map((result, index) => (
             <article

@@ -42,7 +42,7 @@ export default function ServicesPage() {
         {/* Hold as for Services: Our Process rests in its 942 frame before Industries rises. */}
         <PinnedSection hold="30svh">
           {/* 2026-11-16 redesign (Frame 2147238780.png): the 942 frame. Other pages keep the default. */}
-          <OurProcess variant="compact" />
+          <OurProcess />
         </PinnedSection>
         {/*
           The Homepage Industries section exactly (owner, 2026-11-16): same variant and cards, so the two
@@ -54,7 +54,7 @@ export default function ServicesPage() {
         {/* Capped at this page's Footer (942px at 1920), so the FAQ pin never adds empty scrolling past it. */}
         <PinnedSection limitCoverTo="main:has(#services-hero) + footer" hold="30svh">
           {/* The 1920x942 frame (frame adjustment only, 2026-11-16). Other pages keep the default. */}
-          <Faq frame="compact" />
+          <Faq />
         </PinnedSection>
       </main>
       {/* The shared combined Footer (Final CTA + footer) replaces FinalCta + SiteFooter. */}

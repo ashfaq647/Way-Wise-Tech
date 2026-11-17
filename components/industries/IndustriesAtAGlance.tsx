@@ -10,15 +10,21 @@ import { industriesAtAGlance, industriesAtAGlanceSection } from "@/lib/content/i
 const { eyebrow, heading, description } = industriesAtAGlanceSection;
 
 /**
- * "Industries at a Glance" on the Industries page, from Frame 2147239119.png. At 1920 the text sits
- * in the left 610px and four 459px cards fill the right 950px, 32px apart, all centred in a 1080px
- * section. Card images are 2x exports of their 459x250 frame. Cards share the Services card styles,
+ * Each photo's framing in its 459x232 frame, matched to `industriesAtAGlance` by position (fitted to
+ * `Frame 2147239232.png`). Reordering the cards needs this list reordered too.
+ */
+const imagePositions = ["object-[50%_17%]", "object-[50%_72%]", "object-top", "object-center"];
+
+/**
+ * "Industries at a Glance" on the Industries page, from Frame 2147239232.png (2026-11-17, 942 frame).
+ * At 1920 the text sits in the left 610px and four 459x380 cards fill the right 950px, 32px apart,
+ * with 75px above and below (942px). Photos are cropped to 459x232. Cards share the Services card styles,
  * including its hover lift. Below lg the text comes first; cards are two across from md, one below.
  */
 export function IndustriesAtAGlance() {
   return (
     <section aria-labelledby="industries-glance-heading" className="bg-sand">
-      <Container className="py-12 md:py-16 lg:py-[clamp(56px,5.781vw,111px)]">
+      <Container className="py-12 md:py-16 lg:py-[clamp(48px,3.906vw,75px)]">
         <Reveal
           each
           className="grid gap-10 lg:grid-cols-[minmax(0,610fr)_minmax(0,950fr)] lg:items-center lg:gap-0"
@@ -47,12 +53,12 @@ export function IndustriesAtAGlance() {
             {industriesAtAGlance.map((industry, index) => (
               <li key={industry.title} style={revealOrder(2 + index)} className="ww-rise">
                 <article className="flex h-full flex-col overflow-hidden rounded-2xl bg-white transition-[translate,box-shadow] duration-300 ease-out hover:shadow-[0_8px_20px_rgba(35,31,32,0.1)] motion-safe:hover:-translate-y-1">
-                  <div className="relative aspect-918/500">
+                  <div className="relative aspect-[459/232]">
                     <AssetImage
                       src={industry.image}
                       alt={industry.alt}
                       sizes="(min-width: 1024px) 24vw, (min-width: 768px) 50vw, 100vw"
-                      className="object-cover"
+                      className={`object-cover ${imagePositions[index]}`}
                     />
                   </div>
                   <div className="px-6 pt-5 pb-6">

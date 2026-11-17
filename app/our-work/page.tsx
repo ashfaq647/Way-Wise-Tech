@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import { ClientLogos } from "@/components/home/ClientLogos";
-import { FinalCta } from "@/components/home/FinalCta";
 import { PinnedSection } from "@/components/home/PinnedSection";
 import { IndustriesTrust } from "@/components/industries/IndustriesTrust";
-import { SiteFooter } from "@/components/layout/SiteFooter";
+import { Footer } from "@/components/layout/Footer";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { PortfolioHero } from "@/components/portfolio/PortfolioHero";
 import { PortfolioShowcase } from "@/components/portfolio/PortfolioShowcase";
@@ -29,19 +28,22 @@ export const metadata: Metadata = {
 export default function OurPortfolioPage() {
   return (
     <>
-      {/* The red banner is Homepage only. */}
-      <SiteHeader showBanner={false} />
+      {/* The shared floating Homepage Navbar. */}
+      <SiteHeader showBanner={false} variant="floating" />
       <main>
         {/* Hero + Client Logo strip, one combined section, pinned as one unit. */}
         <PinnedSection>
           <PortfolioHero />
-          <ClientLogos />
+          {/* The Homepage's 100px strip: Hero (842) + strip fill the 1920x942 frame. */}
+          <ClientLogos height="compact" />
         </PinnedSection>
         {/* Held while Recent Projects rises over it, like every other section here. */}
-        <PinnedSection>
+        {/* A 942 frame since 2026-11-17 (82 / 68px padding): it rests in view for 30svh before Recent Projects rises. */}
+        <PinnedSection hold="30svh">
           <PortfolioShowcase />
         </PinnedSection>
-        <PinnedSection>
+        {/* A 942 frame since 2026-11-17: it rests in view for 30svh before the trust section rises. */}
+        <PinnedSection hold="30svh">
           <RecentProjects {...recentProjects} />
         </PinnedSection>
         {/*
@@ -58,24 +60,22 @@ export default function OurPortfolioPage() {
         >
           <IndustriesTrust />
         </PinnedSection>
-        {/* Held while the testimonials rise over it. */}
-        <PinnedSection>
+        {/* Held while the testimonials rise over it; since the shared 942 frame (2026-11-17) it first rests for 30svh. */}
+        <PinnedSection hold="30svh">
           <OurProcess />
         </PinnedSection>
-        {/* The testimonial carousel, held while Final CTA rises over it (no extra hold). */}
-        <PinnedSection>
+        {/*
+          The testimonial carousel, held while the shared Footer rises over it. As on /case-study it first
+          rests fully in view for 30svh (it is shorter than the frame, 873px at 1920). Capped
+          at this page's Footer (942px at 1920, shorter than this pin on tall screens), as on /faq,
+          /contact and /insights.
+        */}
+        <PinnedSection limitCoverTo="main:has(#portfolio-showcase) + footer" hold="30svh">
           <PortfolioTestimonials />
         </PinnedSection>
-        {/*
-          As on /services and the Service Details pages: held while the Footer rises over it, with no
-          cap. The Footer is at least one screen tall when motion is allowed, so the pin never
-          outlasts it.
-        */}
-        <PinnedSection>
-          <FinalCta />
-        </PinnedSection>
       </main>
-      <SiteFooter />
+      {/* The shared Footer (Final CTA + footer), as on the Homepage. */}
+      <Footer />
     </>
   );
 }

@@ -40,11 +40,11 @@ const leftWash =
   "bg-[linear-gradient(to_right,rgb(255_239_211/0.8)_0%,rgb(255_239_211/0.8)_39.53%,rgb(255_239_211/0)_61.93%)]";
 
 /**
- * The Case Study page Hero, from "Hero Section (1).png" (Case Study version): the Hero and the
- * Client Logo strip as one section (the project-wide standard), so they pin as one unit once the
- * next section is added. The artwork (3840x1616) is the whole 1920x808 Hero area, so from lg it
- * fills an area of the same ratio, shown whole, under the reference's left gradient, with the text
- * centred vertically on its left. Below lg the text comes first on the gradient's colour behind the
+ * The Case Study page Hero (reference `Homepage.png`, 2026-11-17, which shows this page): the Hero and
+ * the Client Logo strip as one section, pinned as one unit. From lg it follows the Homepage Hero
+ * standard, as on About, FAQ, Contact, Insights and Our Portfolio (842px at 1920 with the compact
+ * 100px strip): the artwork (3840x1616) covers the Hero area under the reference's left gradient,
+ * with the text centred vertically on its left. Below lg the text comes first on the gradient's colour behind the
  * text (#f9e9d0) and the whole artwork follows, its top edge faded, as on the other inner-page
  * Heroes. The frozen ClientLogos strip follows, reused unchanged.
  */
@@ -53,18 +53,19 @@ export function CaseStudyHero() {
 
   return (
     <section aria-labelledby="case-study-hero-heading" className="relative">
-      <div className="relative overflow-hidden bg-[#f9e9d0] lg:flex lg:aspect-[3840/1616] lg:items-center">
+      <div className="relative overflow-hidden bg-[#f9e9d0]">
         <div className="absolute inset-0 hidden lg:block">
-          <AssetImage src={image.src} alt={image.alt} sizes="100vw" priority className="object-contain" />
+          <AssetImage src={image.src} alt={image.alt} sizes="100vw" priority className="object-cover" />
           <div aria-hidden="true" className={`absolute inset-0 ${leftWash}`} />
         </div>
 
         {/* Below lg the text starts under the shared floating Navbar card (76px), as on the Homepage Hero. */}
-        <div className="relative mx-auto w-full max-w-[1600px] px-5 pt-[116px] pb-12 md:px-8 md:pt-[124px] md:pb-16 lg:py-0 xl:px-5">
+        <div className="relative mx-auto grid w-full max-w-[1600px] px-5 pt-[116px] pb-12 md:px-8 md:pt-[124px] md:pb-16 lg:grid-cols-[minmax(0,800fr)_minmax(0,760fr)] lg:items-center lg:pt-[calc(76px+clamp(40px,4.167vw,80px))] lg:pb-[clamp(56px,5.208vw,100px)] xl:px-5 xl:pt-[calc(100px+clamp(40px,4.167vw,80px))]">
+          <div className="min-w-0">
           <SectionEyebrow
             weight="bold"
-            tracking="0.104em"
-            className={`${textEnter} lg:text-[clamp(14px,0.9375vw,18px)]`}
+            tracking="0.05em"
+            className={`${textEnter} lg:text-[clamp(15px,1.042vw,20px)]`}
           >
             {eyebrow}
           </SectionEyebrow>
@@ -72,11 +73,12 @@ export function CaseStudyHero() {
           {/*
             Below lg each of the two lines is too long for the screen and wraps; balancing splits it
             evenly ("Accident Law / Firm Website") instead of leaving one word alone. From lg each
-            line fits, so nothing changes there.
+            line stays on one line (lg:whitespace-nowrap): the first is wider than the Homepage grid's
+            800fr text column, as drawn, and runs into the empty right column.
           */}
           <h1
             id="case-study-hero-heading"
-            className="mt-[22px] text-[clamp(28px,8.8vw,64px)] leading-[1.04] font-[630] tracking-[-0.007em] text-ink max-lg:text-balance lg:mt-[clamp(14px,1.094vw,21px)] lg:text-[clamp(38px,3.75vw,72px)]"
+            className="mt-[22px] text-[clamp(28px,8.8vw,64px)] leading-[1.04] font-[630] tracking-[-0.007em] text-ink max-lg:text-balance lg:mt-[clamp(15px,1.198vw,23px)] lg:whitespace-nowrap lg:text-[clamp(38px,3.75vw,72px)]"
           >
             <MaskLine onLoad order={1}>
               {heading.first}{" "}
@@ -112,6 +114,10 @@ export function CaseStudyHero() {
               {secondaryAction.label}
             </ButtonLink>
           </div>
+          </div>
+
+          {/* The Homepage photo grid's box (760x562 at 1920), left empty: the artwork shows through. */}
+          <div aria-hidden="true" className="hidden aspect-[760/562] w-full lg:block" />
         </div>
 
         {/* Below lg: the whole artwork, centred in its box with no crop or zoom, top edge faded. */}
@@ -120,8 +126,9 @@ export function CaseStudyHero() {
         </div>
       </div>
 
-      {/* Attached to the Hero, inside the same section, so both pin together. */}
-      <ClientLogos />
+      {/* Attached to the Hero, inside the same section, so both pin together: the Homepage's compact
+          100px strip, as on the Homepage. */}
+      <ClientLogos height="compact" />
     </section>
   );
 }

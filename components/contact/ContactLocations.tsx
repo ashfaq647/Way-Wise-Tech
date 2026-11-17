@@ -17,14 +17,16 @@ export function ContactLocations() {
     <section
       aria-labelledby="contact-locations-heading"
       // #dbeefd is the map's sky at the top centre, so the faded top edge meets it below lg.
-      className="relative overflow-hidden bg-[#dbeefd] lg:aspect-[1920/1080]"
+      className="relative overflow-hidden bg-[#dbeefd] lg:aspect-[1920/942]"
     >
       <div className="absolute inset-0 hidden lg:block">
         <AssetImage
           src={image.src}
           alt={image.alt}
           sizes="100vw"
-          className="object-contain"
+          // The 942 frame (2026-11-17, Frame 2147239027.png): the 1920x1080 artwork at its own size,
+          // showing its rows 84-1026 (84 of the 138 spare rows above), as drawn.
+          className="object-cover object-[50%_60.87%]"
         />
       </div>
 
@@ -34,7 +36,7 @@ export function ContactLocations() {
       >
         <h2
           id="contact-locations-heading"
-          className="text-[clamp(28px,8.4vw,56px)] leading-[1.06] font-semibold tracking-[-0.01em] text-navy lg:text-[clamp(35px,3.4375vw,66px)]"
+          className="text-[clamp(28px,8.4vw,56px)] leading-[1.06] font-semibold tracking-[-0.01em] text-navy lg:text-[clamp(34px,2.786vw,53.5px)] lg:leading-[1.178]"
         >
           {/* Two lines at every width, as in the design: each MaskLine is its own line. */}
           <MaskLine order={1}>{heading.first} </MaskLine>
@@ -46,7 +48,7 @@ export function ContactLocations() {
           style={revealOrder(3)}
           // The reference's description looks like Inter. Outfit is kept, spaced 0.04em so its
           // first line is as wide (745px at 1920) and breaks after the same word.
-          className="ww-rise mx-auto mt-5 max-w-[34.4em] text-[18px] leading-[1.5] tracking-[0.04em] text-navy lg:mt-[clamp(10px,0.9375vw,18px)] lg:text-[clamp(16px,1.146vw,22px)]"
+          className="ww-rise mx-auto mt-5 max-w-[34.4em] text-[18px] leading-[1.5] tracking-[0.04em] text-navy lg:mt-[clamp(10px,0.9375vw,18px)] lg:text-[clamp(16px,1.146vw,22px)] lg:leading-[1.4545]"
         >
           {description}
         </p>

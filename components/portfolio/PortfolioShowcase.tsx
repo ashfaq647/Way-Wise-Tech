@@ -99,15 +99,15 @@ export function PortfolioShowcase() {
       className="@container overflow-x-clip bg-sand"
     >
       <div
-        className={`grid gap-10 py-12 md:gap-12 md:py-16 lg:py-20 xl:grid-cols-[var(--g)_minmax(0,510fr)_minmax(0,1050fr)_var(--g)] xl:items-center xl:gap-0 xl:py-[calc(var(--u)*110)] ${layout}`}
+        className={`grid gap-10 py-12 md:gap-12 md:py-16 lg:py-20 xl:grid-cols-[var(--g)_minmax(0,510fr)_minmax(0,1050fr)_var(--g)] xl:items-center xl:gap-0 xl:pt-[calc(var(--u)*82)] xl:pb-[calc(var(--u)*68)] ${layout}`}
       >
-        <Reveal each className="min-w-0 px-[var(--g)] xl:col-start-2 xl:px-0">
+        <Reveal each className="min-w-0 px-[var(--g)] xl:col-start-2 xl:-mt-[calc(var(--u)*16)] xl:px-0">
           <SectionEyebrow weight="bold" tracking="0.1em" className="ww-rise">
             {eyebrow}
           </SectionEyebrow>
           <h2
             id="portfolio-showcase-heading"
-            className="mt-2 text-[clamp(26px,7.4vw,48px)] leading-[1.154] font-semibold tracking-[-0.015em] text-ink lg:mt-[calc(var(--u)*6)] lg:text-[max(34px,calc(var(--u)*52))] lg:leading-[calc(var(--u)*60)]"
+            className="mt-2 text-[clamp(26px,7.4vw,48px)] leading-[1.154] font-semibold tracking-[-0.015em] text-ink lg:mt-[calc(var(--u)*8)] lg:text-[max(34px,calc(var(--u)*53.5))] lg:leading-[calc(var(--u)*61.7)]"
           >
             <MaskLine order={1}>{heading.first} </MaskLine>
             <MaskLine order={2}>

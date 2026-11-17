@@ -30,22 +30,25 @@ export function ServiceDetailsPage({ service }: { service: ServiceDetails }) {
           <ServiceDetailsHero {...service.hero} />
           <ClientLogos />
         </PinnedSection>
-        <PinnedSection>
+        {/* A 942 frame since 2026-11-17: it rests in view for 30svh before Our Process rises. */}
+        <PinnedSection hold="30svh">
           <WhyChoose {...service.whyChoose} />
         </PinnedSection>
-        {/* The /services section, reused exactly as it is. */}
-        <PinnedSection>
+        {/* The /services section, reused exactly as it is, with the same 30svh rest in its 942 frame. */}
+        <PinnedSection hold="30svh">
           <OurProcess />
         </PinnedSection>
-        <PinnedSection>
+        {/* A 942 frame since 2026-11-17: it rests in view for 30svh before the next section rises. */}
+        <PinnedSection hold="30svh">
           <RecentProjects {...recentProjects} />
         </PinnedSection>
-        <PinnedSection>
+        {/* A 942 frame since 2026-11-17: it rests in view for 30svh before the FAQ rises. */}
+        <PinnedSection hold="30svh">
           <WhyChooseUs {...service.whyChooseUs} />
         </PinnedSection>
         {/* The /services section, reused exactly as it is. */}
         {/* Capped at this page's Footer, so the FAQ pin never adds empty scrolling past it. */}
-        <PinnedSection limitCoverTo={`main[data-service="${service.slug}"] + footer`}>
+        <PinnedSection limitCoverTo={`main[data-service="${service.slug}"] + footer`} hold="30svh">
           <Faq />
         </PinnedSection>
       </main>

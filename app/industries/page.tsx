@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
 import { ClientLogos } from "@/components/home/ClientLogos";
-import { FinalCta } from "@/components/home/FinalCta";
 import { PinnedSection } from "@/components/home/PinnedSection";
 import { IndustriesAtAGlance } from "@/components/industries/IndustriesAtAGlance";
 import { IndustriesHero } from "@/components/industries/IndustriesHero";
 import { IndustriesSolutions } from "@/components/industries/IndustriesSolutions";
 import { IndustriesTrust } from "@/components/industries/IndustriesTrust";
-import { SiteFooter } from "@/components/layout/SiteFooter";
+import { Footer } from "@/components/layout/Footer";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 
 export const metadata: Metadata = {
@@ -23,19 +22,21 @@ export const metadata: Metadata = {
 export default function IndustriesPage() {
   return (
     <>
-      {/* The red banner is Homepage only. */}
-      <SiteHeader showBanner={false} />
+      {/* The shared Homepage Navbar (floating over the Hero), as on every redesigned page. */}
+      <SiteHeader showBanner={false} variant="floating" />
       <main>
         {/*
           Hero + Client Logo strip standard: one combined section, pinned as one unit, so Industries
-          at a Glance rises over both.
+          at a Glance rises over both. The Homepage's 100px strip: Hero (842) + strip fill the
+          1920x942 frame, as on the Homepage.
         */}
         <PinnedSection>
           <IndustriesHero />
-          <ClientLogos />
+          <ClientLogos height="compact" />
         </PinnedSection>
         {/* Held while the trust section rises over it, as Services is on the Homepage. */}
-        <PinnedSection>
+        {/* A 942 frame since 2026-11-17: it rests fully in view for 30svh before the trust section rises. */}
+        <PinnedSection hold="30svh">
           <IndustriesAtAGlance />
         </PinnedSection>
         {/*
@@ -47,17 +48,17 @@ export default function IndustriesPage() {
         </PinnedSection>
         {/*
           Positioned so it paints over the pinned section above. Like the Homepage Our Work it is
-          not pinned: its cards stay stacked while Final CTA rises over them.
+          not pinned: its cards stay stacked while the Footer rises over them.
         */}
         <div className="relative">
           <IndustriesSolutions />
         </div>
-        {/* The Homepage section, reused exactly as it is, pinned as on the other pages. */}
-        <PinnedSection>
-          <FinalCta />
-        </PinnedSection>
       </main>
-      <SiteFooter />
+      {/*
+        The shared Footer (Final CTA + footer, as on the Homepage). It ends the page, so it is not
+        pinned; it is positioned, so it rises over the Industry Solutions stack.
+      */}
+      <Footer />
     </>
   );
 }

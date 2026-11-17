@@ -5,7 +5,7 @@ import { ContactForm } from "@/components/contact/ContactForm";
 import { ContactHero } from "@/components/contact/ContactHero";
 import { ContactLocations } from "@/components/contact/ContactLocations";
 import { ContactOverview } from "@/components/contact/ContactOverview";
-import { SiteFooter } from "@/components/layout/SiteFooter";
+import { Footer } from "@/components/layout/Footer";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { Faq } from "@/components/services/Faq";
 
@@ -24,8 +24,8 @@ export const metadata: Metadata = {
 export default function ContactPage() {
   return (
     <>
-      {/* The red banner is Homepage only. */}
-      <SiteHeader showBanner={false} />
+      {/* The shared floating Homepage Navbar. */}
+      <SiteHeader showBanner={false} variant="floating" />
       <main>
         {/*
           Hero + Client Logo strip standard: one combined section, pinned as one unit, held while
@@ -33,15 +33,17 @@ export default function ContactPage() {
         */}
         <PinnedSection>
           <ContactHero />
-          <ClientLogos />
+          {/* The Homepage's 100px strip: Hero (842) + strip fill the 1920x942 frame. */}
+          <ClientLogos height="compact" />
         </PinnedSection>
         {/*
           Held while "Have a Project Idea?" rises over it, capped at that section's height (it can be
           shorter than this one's pin: 802px against 842px at 1440x900). The cap was needed while
           that section ended the page; with sections after it, it only shortens the hold slightly.
+          Since its 942 frame fit (2026-11-17) it first rests fully in view for 30svh.
           Only one Contact page is ever mounted, so the selector finds the visible section.
         */}
-        <PinnedSection limitCoverTo='[aria-labelledby="contact-locations-heading"]'>
+        <PinnedSection limitCoverTo='[aria-labelledby="contact-locations-heading"]' hold="30svh">
           <ContactOverview />
         </PinnedSection>
         {/*
@@ -49,22 +51,25 @@ export default function ContactPage() {
           cap was needed while that section ended the page (1080px against 1431px at 2560x1440); with
           sections after it, it only shortens the hold on wide screens.
         */}
-        <PinnedSection limitCoverTo="#contact-form">
+        {/* A 942 frame since 2026-11-17: it rests fully in view for 30svh before the form section rises. */}
+        <PinnedSection limitCoverTo="#contact-form" hold="30svh">
           <ContactLocations />
         </PinnedSection>
-        {/* Held while the FAQ rises over it. */}
-        <PinnedSection>
+        {/* Held while the FAQ rises over it; a 942 frame since 2026-11-17, so it first rests for 30svh. */}
+        <PinnedSection hold="30svh">
           <ContactForm />
         </PinnedSection>
         {/*
-          Held while the Footer rises over it. No limitCoverTo, as on /services: the Footer is at least
-          one screen tall when motion is allowed, so this pin never outlasts it.
+          Held while the shared Footer rises over it. The shared Footer (942px at 1920) can be shorter
+          than this pin on tall screens, so the pin is capped at this page's Footer, as on /services,
+          /about and /faq.
         */}
-        <PinnedSection>
+        <PinnedSection limitCoverTo="main:has(#contact-form) + footer" hold="30svh">
           <Faq />
         </PinnedSection>
       </main>
-      <SiteFooter />
+      {/* The shared Footer (Final CTA + footer), as on the Homepage. */}
+      <Footer />
     </>
   );
 }

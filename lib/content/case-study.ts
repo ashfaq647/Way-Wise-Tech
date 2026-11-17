@@ -22,7 +22,8 @@ export const caseStudyHero = {
 };
 
 /** Icon names for the Client Overview details. The reference draws one icon for every detail. */
-export type CaseStudyDetailIcon = "users";
+/** Icons for the Client Overview details ("users" is also used by the trust section's result cards). */
+export type CaseStudyDetailIcon = "users" | "building" | "clock" | "pin" | "globe" | "bulb" | "briefcase";
 
 /**
  * The Case Study "Client Overview" section, from Frame 2147239145.png. All wording is the
@@ -41,12 +42,12 @@ export const caseStudyOverview = {
     alt: "A laptop, phone and tablet on a sunlit stone plinth showing a property website design, with wireframe cards above",
   },
   details: [
-    { label: "Industry", value: "Law Farm/Personal Injury", icon: "users" },
-    { label: "Project Duration", value: "Law Farm/Personal Injury", icon: "users" },
-    { label: "Location", value: "Law Farm/Personal Injury", icon: "users" },
-    { label: "Website", value: "Law Farm/Personal Injury", icon: "users" },
-    { label: "Solution", value: "Law Farm/Personal Injury", icon: "users" },
-    { label: "Services", value: "Law Farm/Personal Injury", icon: "users" },
+    { label: "Industry", value: "Law Farm/Personal Injury", icon: "building" },
+    { label: "Project Duration", value: "Law Farm/Personal Injury", icon: "clock" },
+    { label: "Location", value: "Law Farm/Personal Injury", icon: "pin" },
+    { label: "Website", value: "Law Farm/Personal Injury", icon: "globe" },
+    { label: "Solution", value: "Law Farm/Personal Injury", icon: "bulb" },
+    { label: "Services", value: "Law Farm/Personal Injury", icon: "briefcase" },
   ] satisfies { label: string; value: string; icon: CaseStudyDetailIcon }[],
 };
 
@@ -67,10 +68,10 @@ export const caseStudyChallenges = {
     eyebrow: "The Challenge",
     heading: { first: "Key", second: "Challenges" },
     points: [
-      "Old and outdated website design",
+      "Old and outdated website\ndesign",
       "Low online visibility and organic traffic",
       "Unclear messaging and service information",
-      "Limited trust signals and case\nresults",
+      "Limited trust signals and case results",
       "Low conversion rate from visitors to inquiries",
       "Not mobile-friendly and slow performance",
     ],

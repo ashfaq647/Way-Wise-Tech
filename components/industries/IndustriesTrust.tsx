@@ -57,7 +57,7 @@ const statPadding = [
 export function IndustriesTrust() {
   return (
     <section aria-labelledby="industries-trust-heading" className="bg-[#d0d0c8]">
-      <Container className="py-12 md:py-16 lg:pt-[clamp(56px,6.198vw,119px)] lg:pb-[clamp(56px,6.25vw,120px)]">
+      <Container className="py-12 md:py-16 lg:pt-[clamp(48px,4.01vw,77px)] lg:pb-[clamp(48px,4.01vw,77px)]">
         <Reveal each>
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
             <div className="min-w-0">
@@ -81,13 +81,13 @@ export function IndustriesTrust() {
 
           <div
             style={revealOrder(4)}
-            className="ww-rise relative mt-8 aspect-3120/931 lg:mt-[clamp(24px,2.083vw,40px)]"
+            className="ww-rise relative mt-8 aspect-[1560/412] overflow-hidden rounded-2xl lg:mt-[clamp(24px,2.083vw,40px)]"
           >
             <AssetImage
               src={assets.industryTrustedPartner}
               alt={imageAlt}
               sizes="(min-width: 1600px) 1560px, 100vw"
-              className="object-contain"
+              className="object-cover object-top"
             />
           </div>
 

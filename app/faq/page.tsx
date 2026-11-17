@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { FaqHero } from "@/components/faq/FaqHero";
 import { FaqQuestions } from "@/components/faq/FaqQuestions";
 import { PinnedSection } from "@/components/home/PinnedSection";
-import { SiteFooter } from "@/components/layout/SiteFooter";
+import { Footer } from "@/components/layout/Footer";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { faqHero } from "@/lib/content/faq";
 
@@ -18,8 +18,8 @@ export const metadata: Metadata = {
 export default function FaqPage() {
   return (
     <>
-      {/* The red banner is Homepage only. */}
-      <SiteHeader showBanner={false} />
+      {/* The shared floating Homepage Navbar. */}
+      <SiteHeader showBanner={false} variant="floating" />
       <main>
         {/*
           The whole Hero + logos section holds while the questions section rises over it, capped at
@@ -31,18 +31,19 @@ export default function FaqPage() {
           <FaqHero />
         </PinnedSection>
         {/*
-          The questions section holds while the shared Footer rises over it. No limitCoverTo, as on
-          /contact and /services: the Footer is at least one screen tall when motion is allowed, so
-          this pin never outlasts it. The hold is the FAQ timeline's (FaqQuestions.tsx measures it
+          The questions section holds while the shared Footer rises over it. The shared Footer (942px
+          at 1920) can be shorter than this pin on tall screens, so the pin is capped at this page's
+          Footer (main:has(#faq-questions) + footer), as on /services and /about. The hold is the FAQ timeline's (FaqQuestions.tsx measures it
           and sets --wf-hold on this wrapper): the section stays fully in view, pinned, while the
           timeline line runs down the rest of the list, and only then does the Footer rise. 0px
           below md and with reduced motion.
         */}
-        <PinnedSection hold="var(--wf-hold, 0px)">
+        <PinnedSection limitCoverTo="main:has(#faq-questions) + footer" hold="var(--wf-hold, 0px)">
           <FaqQuestions />
         </PinnedSection>
       </main>
-      <SiteFooter />
+      {/* The shared Footer (Final CTA + footer), as on the Homepage. */}
+      <Footer />
     </>
   );
 }

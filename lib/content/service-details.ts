@@ -209,7 +209,7 @@ export const uiUxProductDesign: ServiceDetails = {
         tone: "#fedcdd",
       },
       {
-        title: ["From Idea to", "Final Design"],
+        title: ["From Idea to Final", "Design"],
         description: "Complete design support from concept to final delivery.",
         icon: "chat-check",
         tone: "#cef3e4",

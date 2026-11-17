@@ -48,7 +48,7 @@ function Field({ field }: { field: ContactField }) {
     <div className={field.type === "textarea" ? "sm:col-span-2" : undefined}>
       <label
         htmlFor={id}
-        className="block text-[max(17px,calc(var(--u)*24))] leading-[1.25] font-medium tracking-[-0.01em] text-black"
+        className="block text-[max(17px,calc(var(--u)*20))] leading-[1.25] font-medium tracking-[-0.01em] text-black"
       >
         {field.label}
         {field.required && (
@@ -58,7 +58,7 @@ function Field({ field }: { field: ContactField }) {
           </span>
         )}
       </label>
-      <div className="relative mt-[calc(var(--u)*10.4)]">
+      <div className="relative mt-[calc(var(--u)*11.2)]">
         {field.type === "textarea" ? (
           <textarea
             id={id}
@@ -110,8 +110,9 @@ function Field({ field }: { field: ContactField }) {
 }
 
 /**
- * "Send Us a Message" and "Our Offices" on the Contact Us page, from section.png. At 1920 two white
- * cards, 878px and 642px wide and 40px apart, sit on #f4f0e9; the offices card has a 1px #d0d8e0
+ * "Send Us a Message" and "Our Offices" on the Contact Us page, from Frame 2147239030.png (2026-11-17, 942
+ * frame). At 1920 two white cards, 820px and 660px wide and 40px apart in a 1520px row from x 180 (as
+ * drawn), each its own height, sit on #f4f0e9; the offices card has a 1px #d0d8e0
  * border. Below xl the cards stack, the form fields are two across from sm, and each office photo
  * stays beside its details.
  */
@@ -124,20 +125,20 @@ export function ContactForm() {
       aria-labelledby="contact-message-heading contact-offices-heading"
       className={`bg-[#f4f0e9] ${unit}`}
     >
-      <Container className="py-12 md:py-16 xl:py-[calc(var(--u)*97.5)]">
-        {/* The cards share one height, as drawn (885px at 1920); their contents differ by about 1px there. */}
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,878fr)_minmax(0,642fr)] xl:gap-[calc(var(--u)*40)]">
+      <Container className="py-12 md:py-16 xl:py-[calc(var(--u)*65)]">
+        {/* The cards keep their own heights, as drawn (806 and 812px at 1920). */}
+        <div className="grid gap-6 xl:max-w-[calc(var(--u)*1520)] xl:grid-cols-[minmax(0,820fr)_minmax(0,660fr)] xl:items-start xl:gap-[calc(var(--u)*40)]">
           {/* Form card. Visual only: there is no form backend, so nothing typed here is sent. */}
           <Reveal
             each
-            className="rounded-2xl bg-white p-5 sm:p-8 xl:rounded-[calc(var(--u)*16)] xl:px-[calc(var(--u)*48)] xl:pt-[calc(var(--u)*47.5)] xl:pb-[calc(var(--u)*48.2)]"
+            className="rounded-2xl bg-white p-5 sm:p-8 xl:rounded-[calc(var(--u)*16)] xl:px-[calc(var(--u)*40)] xl:pt-[calc(var(--u)*27.5)] xl:pb-[calc(var(--u)*29)]"
           >
             <SectionEyebrow weight="bold" tracking="0.06em" className="ww-rise">
               {eyebrow}
             </SectionEyebrow>
             <h2
               id="contact-message-heading"
-              className="mt-3 text-[clamp(28px,8.2vw,calc(var(--u)*48))] leading-[1.2083] font-semibold tracking-[-0.02em] text-navy xl:mt-[calc(var(--u)*6.2)]"
+              className="mt-3 text-[clamp(28px,8.2vw,calc(var(--u)*40))] leading-[1.2083] font-semibold tracking-[-0.02em] text-navy xl:mt-[calc(var(--u)*9.25)]"
             >
               <MaskLine order={1}>
                 {heading.first} <span className="text-brand">{heading.second}</span>
@@ -145,20 +146,20 @@ export function ContactForm() {
             </h2>
             <p
               style={revealOrder(2)}
-              className="ww-rise mt-3 text-[max(16px,calc(var(--u)*22))] leading-[1.4545] text-ink-muted xl:mt-[calc(var(--u)*15.8)]"
+              className="ww-rise mt-3 text-[max(16px,calc(var(--u)*20))] leading-[1.6] text-ink-muted xl:mt-[calc(var(--u)*3.4)]"
             >
               {description}
             </p>
 
             <form aria-labelledby="contact-message-heading" style={revealOrder(3)} className="ww-rise">
-              <div className="mt-6 grid gap-x-[calc(var(--u)*20)] gap-y-5 sm:grid-cols-2 xl:mt-[calc(var(--u)*24.1)] xl:gap-y-[calc(var(--u)*24.6)]">
+              <div className="mt-6 grid gap-x-[calc(var(--u)*20)] gap-y-5 sm:grid-cols-2 xl:mt-[calc(var(--u)*23.3)] xl:gap-y-[calc(var(--u)*23.8)]">
                 {fields.map((field) => (
                   <Field key={field.name} field={field} />
                 ))}
               </div>
               <button
                 type="button"
-                className="mt-6 h-[max(48px,calc(var(--u)*56))] w-full rounded-[calc(var(--u)*12)] bg-brand text-[max(16px,calc(var(--u)*17))] font-semibold tracking-[0.035em] text-white transition-colors duration-200 hover:bg-brand-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy xl:mt-[calc(var(--u)*23.8)]"
+                className="mt-6 h-[max(48px,calc(var(--u)*56))] w-full rounded-[calc(var(--u)*12)] bg-brand text-[max(16px,calc(var(--u)*17))] font-semibold tracking-[0.035em] text-white transition-colors duration-200 hover:bg-brand-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy xl:mt-[calc(var(--u)*23.5)]"
               >
                 {submitLabel}
               </button>
@@ -168,37 +169,35 @@ export function ContactForm() {
           {/* Offices card. */}
           <Reveal
             each
-            className="rounded-2xl border border-[#d0d8e0] bg-white p-5 sm:p-8 xl:rounded-[calc(var(--u)*16)] xl:px-[calc(var(--u)*48)] xl:pt-[calc(var(--u)*47.5)] xl:pb-[calc(var(--u)*49.4)]"
+            className="rounded-2xl border border-[#d0d8e0] bg-white p-5 sm:p-8 xl:rounded-[calc(var(--u)*16)] xl:px-[calc(var(--u)*40)] xl:pt-[calc(var(--u)*37.5)] xl:pb-[calc(var(--u)*40)]"
           >
             <SectionEyebrow weight="bold" tracking="0.06em" className="ww-rise">
               {offices.eyebrow}
             </SectionEyebrow>
             <h2
               id="contact-offices-heading"
-              className="mt-3 text-[clamp(28px,8.2vw,calc(var(--u)*48))] leading-[1.2083] font-semibold tracking-[-0.02em] text-navy xl:mt-[calc(var(--u)*14.2)]"
+              className="mt-3 text-[clamp(28px,8.2vw,calc(var(--u)*40))] leading-[1.2083] font-semibold tracking-[-0.02em] text-navy xl:mt-[calc(var(--u)*13.25)] min-[1360px]:whitespace-nowrap"
             >
-              {/* Two lines, as in the design: each MaskLine is its own line. */}
+              {/* One line from 1360px (as drawn at 1920; below that its 28px minimum would not fit), wrapping naturally on narrower cards. */}
               <MaskLine order={1}>
-                {offices.heading.first} <span className="text-brand">{offices.heading.accent}</span>{" "}
-              </MaskLine>
-              <MaskLine order={2} className="text-brand">
-                {offices.heading.second}
+                {offices.heading.first}{" "}
+                <span className="text-brand">{`${offices.heading.accent} ${offices.heading.second}`}</span>
               </MaskLine>
             </h2>
             <p
               style={revealOrder(3)}
-              className="ww-rise mt-3 text-[max(16px,calc(var(--u)*22))] leading-[1.4545] text-ink-muted xl:mt-[calc(var(--u)*15.8)]"
+              className="ww-rise mt-3 text-[max(16px,calc(var(--u)*20))] leading-[1.6] text-ink-muted xl:mt-[calc(var(--u)*15.4)]"
             >
               {offices.description}
             </p>
 
-            <ul className="mt-6 xl:mt-[calc(var(--u)*22.9)]">
+            <ul className="mt-6 xl:mt-[calc(var(--u)*23.5)]">
               {offices.offices.map((office, index) => (
                 <li
                   key={office.name}
                   style={revealOrder(index)}
                   className={`ww-rise flex items-start gap-4 sm:gap-[calc(var(--u)*24)] ${
-                    index > 0 ? "mt-5 border-t border-[#e1e1e1] pt-5 xl:mt-[calc(var(--u)*20)] xl:pt-[calc(var(--u)*20)]" : ""
+                    index > 0 ? "mt-5 border-t border-[#e1e1e1] pt-5 xl:mt-[calc(var(--u)*24)] xl:pt-[calc(var(--u)*24)]" : ""
                   }`}
                 >
                   <div

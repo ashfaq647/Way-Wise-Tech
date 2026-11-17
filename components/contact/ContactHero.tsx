@@ -12,22 +12,24 @@ const { eyebrow, heading, description, primaryAction, secondaryAction, imageAlt:
   contactHero;
 
 /**
- * The Contact Us page Hero, from "Hero Section (1).png". The artwork (3840x1614) carries its own
- * light fade on the left, so from lg it fills a section of the same ratio, shown whole, with the
- * text centred vertically on that side. Below lg the text comes first and the whole artwork
+ * The Contact Us page Hero (reference `Homepage.png`, 2026-11-17, which shows this page). From lg it
+ * follows the Homepage Hero standard, as on About and FAQ: the Homepage Hero's grid, top and bottom
+ * padding and an empty 760/562 right column, so the Hero is 842px at 1920 and the compact strip
+ * completes the 942 frame. The artwork (3840x1614) and its light left fade cover the whole area,
+ * with the text centred vertically on the left. Below lg the text comes first and the whole artwork
  * follows, its top edge faded, as on the Our Portfolio and Service Details Heroes.
  */
 export function ContactHero() {
   return (
-    <section className="relative overflow-hidden bg-[#f0ebe4] lg:flex lg:aspect-[3840/1614] lg:items-center">
+    <section className="relative overflow-hidden bg-[#f0ebe4]">
       <div className="absolute inset-0 hidden lg:block">
-        <AssetImage src={assets.contactHero} alt={heroImageAlt} sizes="100vw" priority className="object-contain" />
+        <AssetImage src={assets.contactHero} alt={heroImageAlt} sizes="100vw" priority className="object-cover" />
         {/*
           The design's gradient layer, measured against the export at 1920: left to right, solid
           sand (#eae2dd) at the left edge, fading linearly to a transparent white at 88%, the same
           from top to bottom. Figma fades colour and opacity separately, so the colour lightens as
           it fades; CSS would keep it sand, so the in-between stops are spelled out. The image
-          fills the section exactly, so percentages line up.
+          covers the section, so the fade spans the same width.
         */}
         <div
           aria-hidden="true"
@@ -35,12 +37,14 @@ export function ContactHero() {
         />
       </div>
 
-      <div className="relative mx-auto w-full max-w-[1600px] px-5 py-12 md:px-8 md:py-16 lg:py-0 xl:px-5">
+      {/* Below lg the text starts under the shared floating Navbar card, as on the Homepage Hero. */}
+      <div className="relative mx-auto grid w-full max-w-[1600px] px-5 pt-[116px] pb-12 md:px-8 md:pt-[124px] md:pb-16 lg:grid-cols-[minmax(0,800fr)_minmax(0,760fr)] lg:items-center lg:pt-[calc(76px+clamp(40px,4.167vw,80px))] lg:pb-[clamp(56px,5.208vw,100px)] xl:px-5 xl:pt-[calc(100px+clamp(40px,4.167vw,80px))]">
+        <div className="min-w-0">
         <SectionEyebrow
           weight="bold"
-          tracking="0.078em"
+          tracking="0.05em"
           barClassName="-translate-y-px"
-          className={`${textEnter} lg:text-[clamp(14px,0.9375vw,18px)]`}
+          className={`${textEnter} lg:text-[clamp(15px,1.042vw,20px)]`}
         >
           {eyebrow}
         </SectionEyebrow>
@@ -91,6 +95,10 @@ export function ContactHero() {
             {secondaryAction.label}
           </ButtonLink>
         </div>
+        </div>
+
+        {/* The Homepage photo grid's box (760x562 at 1920), left empty: the artwork shows through. */}
+        <div aria-hidden="true" className="hidden aspect-[760/562] w-full lg:block" />
       </div>
 
       {/* Below lg: the whole artwork, centred in its box with no crop or zoom, top edge faded. */}

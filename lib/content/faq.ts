@@ -85,13 +85,13 @@ export const faqQuestions = {
 
 /**
  * The shared FAQ section (components/services/Faq.tsx), on /services, every Service Details page
- * and /contact. Moved out of the component unchanged; layout, the accordion, the two-column split
- * and animation stay there. Separate from the /faq page's content above: the two sets of questions
+ * and /contact. Moved out of the component unchanged; layout, the accordion and animation stay there. Separate from the /faq page's content above: the two sets of questions
  * are different and are not to be merged.
  *
  * Questions are from the design. Answers are drafts: confirm them before launch.
  *
- * `items` is in display order: the left column's four questions, then the right column's four.
+ * `items` is in display order, one column (2026-11-17, Frame 2147239032.png): the reference's six
+ * questions in its order, then the two it does not show.
  * "Contact Us" is a "#" placeholder until its destination is confirmed.
  */
 export const servicesFaq = {
@@ -107,24 +107,14 @@ export const servicesFaq = {
         "We work with businesses across many sectors, including legal, healthcare, restaurants, retail, real estate, and home services. Every project starts with understanding your industry, so the solution fits how your business actually runs.",
     },
     {
-      question: "Do you provide ongoing support?",
-      answer:
-        "Yes. We offer support and maintenance after launch, including fixes, updates, and improvements. The level of support is agreed with you based on what your product needs.",
-    },
-    {
-      question: "What is the cost of a project?",
-      answer:
-        "Cost depends on your project's scope, features, and complexity, so there is no single price. After we discuss your goals, we'll send a proposal outlining the work and its cost before anything starts.",
-    },
-    {
-      question: "Will my website or app be mobile-friendly?",
-      answer:
-        "Yes. We design websites and apps to work well across phones, tablets, and desktops, and we check them on different screen sizes during development.",
-    },
-    {
       question: "How long does a typical project take?",
       answer:
         "It depends on the size and complexity of the project. We'll share a proposed timeline after discovery and keep you updated at each stage, so you always know where things stand.",
+    },
+    {
+      question: "Do you provide ongoing support?",
+      answer:
+        "Yes. We offer support and maintenance after launch, including fixes, updates, and improvements. The level of support is agreed with you based on what your product needs.",
     },
     {
       question: "Can you help with both design and development?",
@@ -132,9 +122,19 @@ export const servicesFaq = {
         "Yes. We can handle both, from UI/UX design through development and launch, or join at the stage where you need us. We tailor the work to your goals rather than using a one-size-fits-all approach.",
     },
     {
+      question: "What is the cost of a project?",
+      answer:
+        "Cost depends on your project's scope, features, and complexity, so there is no single price. After we discuss your goals, we'll send a proposal outlining the work and its cost before anything starts.",
+    },
+    {
       question: "Do you work with startups and small businesses?",
       answer:
         "Yes. We work with businesses of different sizes. If you're just starting out, we can help you plan a focused first version and build on it as you grow.",
+    },
+    {
+      question: "Will my website or app be mobile-friendly?",
+      answer:
+        "Yes. We design websites and apps to work well across phones, tablets, and desktops, and we check them on different screen sizes during development.",
     },
     {
       question: "Can you integrate third-party tools and APIs?",

@@ -1,5 +1,5 @@
 /*
-  The Our Process section (components/services/OurProcess.tsx), shared by /services, every Service
+  The Our Process section (components/sections/our-process/OurProcess.tsx), shared by /services, every Service
   Details page, /about, /case-study and /our-work. Moved out of the component unchanged; the
   component keeps the layout, styling, icons, colours and animation.
 */

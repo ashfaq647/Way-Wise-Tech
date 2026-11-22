@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { ClientLogos } from "@/components/home/ClientLogos";
-import { PinnedSection } from "@/components/home/PinnedSection";
+import { ClientLogos } from "@/components/sections/ClientLogos";
+import { PinnedSection } from "@/components/motion/PinnedSection";
 import { IndustriesAtAGlance } from "@/components/industries/IndustriesAtAGlance";
 import { IndustriesHero } from "@/components/industries/IndustriesHero";
 import { IndustriesSolutions } from "@/components/industries/IndustriesSolutions";
-import { IndustriesTrust } from "@/components/industries/IndustriesTrust";
+import { IndustriesTrust } from "@/components/sections/IndustriesTrust";
 import { Footer } from "@/components/layout/Footer";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 

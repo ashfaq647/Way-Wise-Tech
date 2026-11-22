@@ -39,7 +39,7 @@ export const assets = {
   ctaBackground: "/images/cto/final-cta-background.png",
   ctaChairman: "/images/cto/Chairman.png",
   ctaCeo: "/images/cto/CEO.png",
-  ctaCfo: "/images/cto/Fiona.png",
+  ctaCfo: "/images/cto/CFO.png",
   serviceListHero: "/images/service%20List/Service%20list%20hero.png",
   serviceDetailsHero: "/images/service%20details/service%20details%20hero.png",
   serviceDetailsWhyChoose:
@@ -262,4 +262,20 @@ export const clientLogos = [
     width: 104,
     height: 34,
   },
+  // Added 2026-11-18 (owner-supplied exports, in export order). All are 34px-high grey marks with
+  // transparent backgrounds; ak-printing, Bui-IQ, calgrove, Captivate, pleage and "Zealous Law" wrap
+  // PNGs (ak-printing and "Zealous Law" are about 1MB each). Names are the wording on each logo.
+  { name: "Super Speciosa Raw Leaf", src: "/images/logos/speciosa.svg", width: 45, height: 34 },
+  { name: "MilkyMama", src: "/images/logos/MilkyMama.svg", width: 163, height: 34 },
+  { name: "Fiera", src: "/images/logos/Fiera.svg", width: 116, height: 34 },
+  { name: "GleeFull Supplements", src: "/images/logos/GleeFull.svg", width: 116, height: 34 },
+  { name: "Numin", src: "/images/logos/numin.svg", width: 128, height: 35 },
+  { name: "Feno", src: "/images/logos/feno.svg", width: 116, height: 34 },
+  { name: "AK Printing", src: "/images/logos/ak-printing.svg", width: 100, height: 34 },
+  { name: "Pleage", src: "/images/logos/pleage.svg", width: 115, height: 34 },
+  { name: "Zealous Law", src: "/images/logos/Zealous%20Law.svg", width: 116, height: 34 },
+  { name: "Calgrove Rentals", src: "/images/logos/calgrove.svg", width: 196, height: 34 },
+  { name: "Maison Lumen", src: "/images/logos/Maison-Lumen.svg", width: 116, height: 34 },
+  { name: "BU-IQ", src: "/images/logos/Bui-IQ.svg", width: 83, height: 34 },
+  { name: "Captivate", src: "/images/logos/Captivate.svg", width: 175, height: 34 },
 ];

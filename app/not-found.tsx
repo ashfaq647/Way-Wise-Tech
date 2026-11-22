@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PinnedSection } from "@/components/home/PinnedSection";
+import { PinnedSection } from "@/components/motion/PinnedSection";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { ButtonLink } from "@/components/ui/ButtonLink";

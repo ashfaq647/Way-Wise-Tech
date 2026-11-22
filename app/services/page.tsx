@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { ClientLogos } from "@/components/home/ClientLogos";
-import { Industries } from "@/components/home/Industries";
-import { PinnedSection } from "@/components/home/PinnedSection";
-import { Services } from "@/components/home/Services";
+import { ClientLogos } from "@/components/sections/ClientLogos";
+import { Industries } from "@/components/sections/industries/Industries";
+import { PinnedSection } from "@/components/motion/PinnedSection";
+import { Services } from "@/components/sections/Services";
 import { Footer } from "@/components/layout/Footer";
 import { SiteHeader } from "@/components/layout/SiteHeader";
-import { Faq } from "@/components/services/Faq";
-import { OurProcess } from "@/components/services/OurProcess";
+import { Faq } from "@/components/sections/Faq";
+import { OurProcess } from "@/components/sections/our-process/OurProcess";
 import { ServicesHero } from "@/components/services/ServicesHero";
 import { homeIndustryCards, servicesPageCards } from "@/lib/content/home";
 import { servicesSection } from "@/lib/content/services";
@@ -26,7 +26,7 @@ export default function ServicesPage() {
         {/* Hero + Client Logo strip standard: one combined section, pinned as one unit. */}
         <PinnedSection>
           <ServicesHero />
-          <ClientLogos />
+          <ClientLogos height="compact" />
         </PinnedSection>
         {/*
           The hold keeps Services still, fully revealed, for 30svh of scrolling before Our Process starts
@@ -40,7 +40,7 @@ export default function ServicesPage() {
           <Services variant="compact" services={servicesPageCards} action={servicesSection.pageAction} />
         </PinnedSection>
         {/* Hold as for Services: Our Process rests in its 942 frame before Industries rises. */}
-        <PinnedSection hold="30svh">
+        <PinnedSection hold="var(--op-hold, 30svh)">
           {/* 2026-11-16 redesign (Frame 2147238780.png): the 942 frame. Other pages keep the default. */}
           <OurProcess />
         </PinnedSection>

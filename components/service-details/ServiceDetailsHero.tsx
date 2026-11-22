@@ -11,19 +11,25 @@ const textEnter = "animate-hero-text motion-reduce:animate-hero-fade";
 type ServiceDetailsHeroProps = ServiceDetails["hero"];
 
 /**
- * The Service Details hero. The image is always shown whole, with object-fit: contain.
- * From lg it fills the section, whose 1920/808 ratio equals the export's 3840/1616, and the text
- * sits on top. Below lg the text comes first and the whole image sits underneath.
+ * The Service Details hero, shared by every Details page.
+ * From lg it follows the Homepage Hero standard (owner, 2026-11-18): the frame of
+ * components/home/Hero.tsx, as on the other inner pages. The content sits in the Homepage's
+ * two-column grid with its top padding (bar height plus clamp(40px, 4.167vw, 80px)) and bottom
+ * padding (clamp(56px, 5.208vw, 100px)); the right column is an empty 760/562 box in place of the
+ * Homepage photo grid, so the Hero is 842px at 1920 with the text centred against it, and the image
+ * covers the whole area (object-cover; about 40px of its 3840x1616 export is trimmed at each side at
+ * 1920). Below lg the text comes first and the whole image sits underneath (object-contain).
  */
 export function ServiceDetailsHero({ breadcrumb, headline, description, image }: ServiceDetailsHeroProps) {
   return (
-    <section className="relative overflow-hidden bg-[#ebe0d8] lg:flex lg:aspect-[1920/808] lg:items-center">
+    <section className="relative overflow-hidden bg-[#ebe0d8]">
       <div className="absolute inset-0 hidden lg:block">
-        <AssetImage src={image.src} alt="" sizes="100vw" priority className="object-contain" />
+        <AssetImage src={image.src} alt="" sizes="100vw" priority className="object-cover" />
       </div>
 
       {/* Below lg the text starts under the shared floating Navbar card (76px), as on the Homepage Hero. */}
-      <div className="relative mx-auto w-full max-w-[1600px] px-5 pt-[116px] pb-12 md:px-8 md:pt-[124px] md:pb-16 lg:py-0 xl:px-5">
+      <div className="relative mx-auto grid w-full max-w-[1600px] px-5 pt-[116px] pb-12 md:px-8 md:pt-[124px] md:pb-16 lg:grid-cols-[minmax(0,800fr)_minmax(0,760fr)] lg:items-center lg:pt-[calc(76px+clamp(40px,4.167vw,80px))] lg:pb-[clamp(56px,5.208vw,100px)] xl:px-5 xl:pt-[calc(100px+clamp(40px,4.167vw,80px))]">
+        <div className="min-w-0 lg:pr-6">
         <nav aria-label="Breadcrumb" className={textEnter}>
           <ol className="flex flex-wrap items-center gap-x-[0.3em] text-[16px] leading-5 font-semibold tracking-[0.003em] text-brand uppercase lg:text-[clamp(14px,0.9375vw,18px)]">
             <li>
@@ -39,7 +45,7 @@ export function ServiceDetailsHero({ breadcrumb, headline, description, image }:
           </ol>
         </nav>
 
-        <h1 className="mt-[23px] text-[min(calc((100vw-40px)/8.9),64px)] leading-[1.04] font-[630] tracking-[-0.008em] text-ink lg:mt-[clamp(14px,1.2vw,23px)] lg:text-[clamp(38px,3.75vw,72px)]">
+        <h1 className="mt-[23px] text-[min(calc((100vw-40px)/8.9),64px)] leading-[1.04] font-[630] tracking-[-0.008em] text-ink lg:mt-[clamp(14px,1.2vw,23px)] lg:text-[clamp(38px,3.75vw,72px)] lg:whitespace-nowrap">
           {headline.map((line, index) => (
             <MaskLine key={line.text} onLoad order={index + 1}>
               {line.text}
@@ -98,6 +104,10 @@ export function ServiceDetailsHero({ breadcrumb, headline, description, image }:
             <StaggerText text="Watch Our Work" />
           </Link>
         </div>
+        </div>
+
+        {/* The Homepage photo grid's box (760x562 at 1920), left empty: the image shows through. */}
+        <div aria-hidden="true" className="hidden aspect-[760/562] w-full lg:block" />
       </div>
 
       {/* The approved image box. The whole image shows inside it, centred, with no crop or zoom. */}

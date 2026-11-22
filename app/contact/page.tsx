@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
-import { ClientLogos } from "@/components/home/ClientLogos";
-import { PinnedSection } from "@/components/home/PinnedSection";
+import { ClientLogos } from "@/components/sections/ClientLogos";
+import { PinnedSection } from "@/components/motion/PinnedSection";
 import { ContactForm } from "@/components/contact/ContactForm";
 import { ContactHero } from "@/components/contact/ContactHero";
 import { ContactLocations } from "@/components/contact/ContactLocations";
 import { ContactOverview } from "@/components/contact/ContactOverview";
 import { Footer } from "@/components/layout/Footer";
 import { SiteHeader } from "@/components/layout/SiteHeader";
-import { Faq } from "@/components/services/Faq";
+import { Faq } from "@/components/sections/Faq";
 
 export const metadata: Metadata = {
   title: "Contact Us | Way-Wise Tech",

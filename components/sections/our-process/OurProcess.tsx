@@ -5,6 +5,7 @@ import { MaskLine } from "@/components/motion/MaskLine";
 import { Reveal } from "@/components/motion/Reveal";
 import { revealOrder } from "@/components/motion/revealOrder";
 import { ourProcess } from "@/lib/content/process";
+import { ProcessJourney, ProcessPill } from "./ProcessJourney";
 
 /** Each icon is drawn in the coordinates of its 104px circle, so it scales and centres with it. */
 function StepIcon({ children }: { children: ReactNode }) {
@@ -13,7 +14,7 @@ function StepIcon({ children }: { children: ReactNode }) {
       viewBox="0 0 104 104"
       fill="none"
       aria-hidden="true"
-      className="absolute inset-0 size-full text-black duration-300 ease-out motion-safe:transition-[scale] motion-safe:group-hover/step:scale-[1.08]"
+      className="absolute inset-0 size-full text-black duration-300 ease-out motion-safe:transition-[scale] motion-safe:group-hover/step:scale-[1.08] motion-safe:group-data-[state=active]/step:scale-[1.08] motion-safe:group-data-[state=done]/step:scale-[1.08]"
     >
       {children}
     </svg>
@@ -122,6 +123,8 @@ export function OurProcess() {
     const step = (event.target as Element).closest("li");
     if (!box || !step || event.pointerType === "touch") return;
     const index = Array.from(event.currentTarget.children).indexOf(step);
+    // A pointer over the steps takes the panel; ProcessRope leaves it alone until the pointer leaves.
+    box.setAttribute("data-hover", "");
 
     // Coming from outside the list, it appears at the step instead of sliding across from the last one.
     if (!box.hasAttribute("data-active")) {
@@ -133,6 +136,16 @@ export function OurProcess() {
     } else {
       box.style.setProperty("--ww-step", String(index));
     }
+  };
+
+  // When the pointer leaves, the panel returns to the step the scroll rope has reached (if any).
+  const releasePanel = () => {
+    const box = panel.current;
+    if (!box) return;
+    box.removeAttribute("data-hover");
+    const scrollStep = box.dataset.scrollStep;
+    if (scrollStep === undefined) box.removeAttribute("data-active");
+    else box.style.setProperty("--ww-step", scrollStep);
   };
 
   return (
@@ -171,9 +184,10 @@ export function OurProcess() {
 
         <Reveal className={`group/steps relative mt-10 ${l.steps}`}>
           <div ref={panel} className="ww-process__panel" aria-hidden="true" />
+          <ProcessJourney />
           <ol
           onPointerOver={movePanel}
-          onPointerLeave={() => panel.current?.removeAttribute("data-active")}
+          onPointerLeave={releasePanel}
           className="relative grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 lg:gap-x-12 lg:gap-y-12 xl:grid-cols-5 xl:gap-x-[clamp(32px,3.333vw,64px)]"
         >
           {steps.map((step, index) => (
@@ -183,25 +197,29 @@ export function OurProcess() {
               className="group/step min-w-0 duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-safe:group-data-[reveal=pending]/steps:translate-y-4 motion-safe:group-data-[reveal=pending]/steps:opacity-0 motion-safe:group-data-[reveal=running]/steps:transition-[opacity,translate]"
             >
               <div
-                className={`relative size-[104px] rounded-full duration-300 ease-out motion-safe:transition-[translate,box-shadow] motion-safe:group-hover/step:-translate-y-1 motion-safe:group-hover/step:shadow-[inset_0_1px_0_rgb(255_255_255/0.35),0_10px_24px_rgb(35_31_32/0.12)] ${step.circle}`}
+                className={`relative size-[104px] rounded-full duration-300 ease-out motion-safe:transition-[translate,box-shadow] motion-safe:group-hover/step:-translate-y-1 motion-safe:group-hover/step:shadow-[inset_0_1px_0_rgb(255_255_255/0.35),0_10px_24px_rgb(35_31_32/0.12)] motion-safe:group-data-[state=active]/step:-translate-y-1 motion-safe:group-data-[state=active]/step:shadow-[inset_0_1px_0_rgb(255_255_255/0.35),0_10px_24px_rgb(35_31_32/0.12)] motion-safe:group-data-[state=done]/step:-translate-y-1 motion-safe:group-data-[state=done]/step:shadow-[inset_0_1px_0_rgb(255_255_255/0.35),0_10px_24px_rgb(35_31_32/0.12)] after:pointer-events-none after:absolute after:-inset-2 after:scale-90 after:rounded-full after:border-2 after:border-[#24a872]/50 after:opacity-0 after:transition-[opacity,scale] after:duration-500 group-data-[state=active]/step:after:scale-100 group-data-[state=active]/step:after:opacity-100 ${step.circle}`}
               >
                 <StepIcon>{step.icon}</StepIcon>
               </div>
-              <p
-                style={{ transitionDelay: `${index * 110 + 120}ms` }}
-                className="mt-6 text-[28px] leading-10 font-medium text-black duration-500 ease-out motion-safe:group-data-[reveal=pending]/steps:opacity-0 motion-safe:group-data-[reveal=running]/steps:transition-opacity lg:text-[clamp(26px,1.667vw,32px)]"
-              >
-                {String(index + 1).padStart(2, "0")}
-              </p>
-              <h3 className="mt-1 text-[24px] leading-9 font-medium text-black lg:text-[clamp(20px,1.458vw,28px)]">
-                {step.title}
-              </h3>
-              <p className="mt-[23px] text-[17px] leading-[1.364] text-[#3d4e5c] max-[1599px]:text-pretty lg:text-[clamp(16px,1.146vw,22px)]">
-                {step.description}
-              </p>
+              {/* Journey states (ProcessJourney): steps not reached yet rest dimmed; a completed step's number turns green. */}
+              <div className="transition-opacity duration-500 ease-out group-data-[state=todo]/step:opacity-45">
+                <p
+                  style={{ transitionDelay: `${index * 110 + 120}ms` }}
+                  className="mt-6 text-[28px] leading-10 font-medium text-black duration-500 ease-out group-data-[state=done]/step:text-[#24a872] group-data-[state=active]/step:text-[#24a872] motion-safe:group-data-[reveal=pending]/steps:opacity-0 motion-safe:group-data-[reveal=running]/steps:transition-opacity lg:text-[clamp(26px,1.667vw,32px)]"
+                >
+                  {String(index + 1).padStart(2, "0")}
+                </p>
+                <h3 className="mt-1 text-[24px] leading-9 font-medium text-black lg:text-[clamp(20px,1.458vw,28px)]">
+                  {step.title}
+                </h3>
+                <p className="mt-[23px] text-[17px] leading-[1.364] text-[#3d4e5c] max-[1599px]:text-pretty lg:text-[clamp(16px,1.146vw,22px)]">
+                  {step.description}
+                </p>
+              </div>
             </li>
           ))}
           </ol>
+          <ProcessPill />
         </Reveal>
       </div>
     </section>

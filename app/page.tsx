@@ -1,10 +1,10 @@
-import { ClientLogos } from "@/components/home/ClientLogos";
+import { ClientLogos } from "@/components/sections/ClientLogos";
 import { Hero } from "@/components/home/Hero";
-import { Industries } from "@/components/home/Industries";
+import { Industries } from "@/components/sections/industries/Industries";
 import { MissionVision } from "@/components/home/MissionVision";
 import { OurWork } from "@/components/home/OurWork";
-import { PinnedSection } from "@/components/home/PinnedSection";
-import { Services } from "@/components/home/Services";
+import { PinnedSection } from "@/components/motion/PinnedSection";
+import { Services } from "@/components/sections/Services";
 import { Footer } from "@/components/layout/Footer";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { homeIndustryCards, homeServiceCards } from "@/lib/content/home";

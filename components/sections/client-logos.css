@@ -1,0 +1,88 @@
+/*
+  Client Logo Strip marquee (ClientLogos.tsx), CSS only.
+
+  The track holds two identical sets of logos. Each logo has half the gap as padding on both sides,
+  so one set's width includes all of its spacing and translating the track by exactly -50% lands
+  the second set where the first began: the loop point is invisible. Linear timing keeps the speed
+  constant. Only transform animates, on the compositor.
+
+  --cl-h is the logo height (the 34px design height from lg), --cl-gap the space between logos and
+  --cl-duration one full set's travel time. ClientLogos.tsx sets all three per width (suffix 0 base,
+  1 md, 2 lg) on the strip, with each duration computed from that set's exact width so the speed is
+  exactly 60px/s at every size: 1px per 60Hz frame, so the logos never shift sub-pixel position.
+*/
+.cl-strip {
+  --cl-h: var(--cl-h0);
+  --cl-gap: var(--cl-gap0);
+  --cl-duration: var(--cl-duration0);
+}
+
+@media (min-width: 768px) {
+  .cl-strip {
+    --cl-h: var(--cl-h1);
+    --cl-gap: var(--cl-gap1);
+    --cl-duration: var(--cl-duration1);
+  }
+}
+
+@media (min-width: 1024px) {
+  .cl-strip {
+    --cl-h: var(--cl-h2);
+    --cl-gap: var(--cl-gap2);
+    --cl-duration: var(--cl-duration2);
+  }
+}
+
+.cl-logo {
+  padding-inline: calc(var(--cl-gap) / 2);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Logos fade in and out at the strip's edges instead of being cut off. */
+  .cl-viewport {
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+  }
+
+  /*
+    --cl-rate (ClientLogosTiming) scales the duration so each frame moves a whole number of device
+    pixels on this screen; 1 (the nominal 60px/s) until it is set. The strip holds still until then
+    (data-cl-ready), so changing the rate never makes it jump. Without JavaScript a noscript style in
+    ClientLogos.tsx lets it run at the nominal rate.
+  */
+  .cl-track {
+    animation: cl-marquee calc(var(--cl-duration) * var(--cl-rate, 1)) linear infinite;
+  }
+
+  .cl-strip:not([data-cl-ready]) .cl-track {
+    animation-play-state: paused;
+  }
+
+  /* A resting mouse pauses the strip, so a logo can be looked at. */
+  @media (hover: hover) {
+    .cl-viewport:hover .cl-track {
+      animation-play-state: paused;
+    }
+  }
+}
+
+/* Reduced motion: no movement; one set of logos in a row that can be scrolled by hand. */
+@media (prefers-reduced-motion: reduce) {
+  .cl-viewport {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .cl-set[aria-hidden="true"] {
+    display: none;
+  }
+}
+
+@keyframes cl-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}

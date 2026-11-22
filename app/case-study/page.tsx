@@ -4,11 +4,11 @@ import { CaseStudyHero } from "@/components/case-study/CaseStudyHero";
 import { CaseStudyOverview } from "@/components/case-study/CaseStudyOverview";
 import { CaseStudyResults } from "@/components/case-study/CaseStudyResults";
 import { CaseStudyTech } from "@/components/case-study/CaseStudyTech";
-import { PinnedSection } from "@/components/home/PinnedSection";
-import { PortfolioTestimonials } from "@/components/portfolio/PortfolioTestimonials";
+import { PinnedSection } from "@/components/motion/PinnedSection";
+import { PortfolioTestimonials } from "@/components/sections/testimonials/PortfolioTestimonials";
 import { Footer } from "@/components/layout/Footer";
-import { RecentProjects } from "@/components/service-details/RecentProjects";
-import { OurProcess } from "@/components/services/OurProcess";
+import { RecentProjects } from "@/components/sections/recent-projects/RecentProjects";
+import { OurProcess } from "@/components/sections/our-process/OurProcess";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { caseStudyHero } from "@/lib/content/case-study";
 import { recentProjects } from "@/lib/content/service-details";
@@ -74,7 +74,7 @@ export default function CaseStudyPage() {
           <CaseStudyResults />
         </PinnedSection>
         {/* Our Process is one shared 942 frame (2026-11-17): it rests in view for 30svh before the next section rises. */}
-        <PinnedSection hold="30svh">
+        <PinnedSection hold="var(--op-hold, 30svh)">
           <OurProcess />
         </PinnedSection>
         {/* 30svh holds here and below: each section rests in its 942 frame before the next rises. */}

@@ -13,7 +13,7 @@ import type { ProjectCard } from "@/lib/content/service-details";
 
 /*
   The Recent Projects carousel. Its behaviour follows the Industries carousel
-  (components/home/IndustryCarousel.tsx), which is frozen and only takes a description per card, so
+  (components/sections/industries/IndustryCarousel.tsx), which is frozen and only takes a description per card, so
   the scrolling logic is repeated here rather than shared. Keep the two in step if one changes.
 */
 

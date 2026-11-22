@@ -75,8 +75,8 @@ Preparation only. No CMS, database, backend, API route, Server Action, package o
   | Section | Content | Component |
   |---|---|---|
   | Hero | `homeHero` in `lib/content/home.ts` (new file, Homepage-only content) | `components/home/Hero.tsx` |
-  | Services | `serviceCards` (now with `href`) and `servicesSection` in `lib/content/services.ts` | `components/home/Services.tsx` |
-  | Industries | `industryCards`, `industriesSection`, `industryPhases` in `lib/content/industries.ts` | `components/home/Industries.tsx` |
+  | Services | `serviceCards` (now with `href`) and `servicesSection` in `lib/content/services.ts` | `components/home/Services.tsx` (now `components/sections/Services.tsx`) |
+  | Industries | `industryCards`, `industriesSection`, `industryPhases` in `lib/content/industries.ts` | `components/home/Industries.tsx` (now `components/sections/industries/Industries.tsx`) |
   | Our Work | `homeOurWork` in `lib/content/home.ts` | `components/home/OurWork.tsx` |
   | Final CTA | `finalCta` in `lib/content/contact.ts` | `components/home/FinalCta.tsx` |
 - **Verified:** visual baseline (pixel-identical screenshots), responsive layout, copy, links, interactions, animations, card stacking and pinning all unchanged. Lint, TypeScript and the production build pass; 18 static routes are generated.
@@ -106,10 +106,10 @@ Text moved out of components into `lib/content/`, one owner-approved task at a t
 |---|---|---|
 | R1 | The duplicate `serviceRoutes` map is removed; each service link uses its card's `href` (`services[].card.href`, `"#"` for the two services without a card) | `lib/content/navigation.ts` |
 | R2 | The Footer reads its labels from content: Services column from `services`, Industries from `footerIndustries`, Company from `companyLinks`, plus `socialLinks`, `legalLinks` and `navBrandCard` (intro and regions). **Link destinations unchanged:** column links still come from the Footer's own `linkHrefs` (only About Us and Insights have a page), and the social, legal and action links stay `"#"` in the component. Column titles, action labels, copyright, "Start a Conversation" and "Get in Touch" stay in the component | `components/layout/SiteFooter.tsx` |
-| R4 | Our Process eyebrow, heading, description and the five steps moved to `ourProcess`. Circle colours and SVG icons stay in the component (`stepVisuals`), matched to the steps **by position** | `lib/content/process.ts` (new), `components/services/OurProcess.tsx` |
+| R4 | Our Process eyebrow, heading, description and the five steps moved to `ourProcess`. Circle colours and SVG icons stay in the component (`stepVisuals`), matched to the steps **by position** | `lib/content/process.ts` (new), `components/services/OurProcess.tsx` (now `components/sections/our-process/OurProcess.tsx`) |
 | R5 | The four older Heroes: `contactHero` (`contact.ts`), `portfolioHero` (`portfolio.ts`, beside the untouched on-hold `portfolioTestimonials`), `servicesHero` (`services.ts`), `industriesHero` (`industries.ts`). Text, button labels and `href`s (all still `"#"`), checklists and alt text moved; image files, sizes and framing stay in the components (owner's instruction). `servicesHero` has no alt text: its artwork is decorative (`alt=""`). Industries Hero alt texts are keyed by image name (`imageAlts`) | the four content files and `ContactHero`, `PortfolioHero`, `ServicesHero`, `IndustriesHero` |
 | R6 | Industries page section headers: `industriesAtAGlanceSection`, `industriesTrustSection` (header and image alt; also renders on `/our-work`), `industrySolutionsSection` | `lib/content/industries.ts`, `IndustriesAtAGlance.tsx`, `IndustriesTrust.tsx`, `IndustriesSolutions.tsx` |
-| R7.1 | The shared FAQ section's header, "Contact Us" action (still `"#"`) and 8 questions moved to `servicesFaq`, one flat list in display order; the component splits it into two equal columns. The answer-draft note moved with it | `lib/content/faq.ts`, `components/services/Faq.tsx` (frozen; edited with the owner's explicit approval) |
+| R7.1 | The shared FAQ section's header, "Contact Us" action (still `"#"`) and 8 questions moved to `servicesFaq`, one flat list in display order; the component splits it into two equal columns. The answer-draft note moved with it | `lib/content/faq.ts`, `components/services/Faq.tsx` (now `components/sections/Faq.tsx`) (frozen; edited with the owner's explicit approval) |
 | R7.2 | Read-only browser test of the shared FAQ accordion on `/services` and `/services/ui-ux-product-design` | none |
 
 **Verified:**
@@ -168,6 +168,52 @@ These add to "Working rules" and "Conventions for new pages"; they do not replac
 - **Duplication:** reduce it only when it is safe and useful, and never inside frozen or protected sections without the owner's approval.
 - **No premature infrastructure:** avoid unnecessary abstractions and any CMS or backend infrastructure, packages or code.
 
+### Folder organization (owner, 2026-11-18)
+
+Applies to new files from now on. Existing files stay where they are until the owner approves a move (see "Current exceptions").
+
+| Folder | Holds | Does not hold |
+|---|---|---|
+| `components/home/` | Homepage-only sections | Anything another page renders |
+| `components/ui/` | Reusable, content-free building blocks (`Container`, `SectionEyebrow`, `ButtonLink`…) | Section content, page logic |
+| `components/motion/` | Shared animation and scroll-behaviour primitives (reveal, masks, counters, pinning, stacking) and their CSS | Content, section layouts |
+| `components/layout/` | Shared site structure: Navbar, Footer and their parts | Page sections |
+| `components/<page or domain>/` (`services/`, `about/`, `case-study/`…) | Sections specific to that page or domain | Parts used by other pages |
+| `lib/content/` (or the future data layer) | CMS-managed content and its typed content models | JSX, CSS classes, colours, animation settings |
+
+- **Shared means used by more than one page.** When a page-specific section starts being used by a second page, it belongs in the matching shared folder. Moving an existing file still needs the owner's approval.
+- **Three separate layers:**
+  - **Presentation:** layout and styling in the components.
+  - **Animation logic:** behaviour in `components/motion/` or the section's own CSS file.
+  - **Content:** in `lib/content/`.
+  
+  This extends "Content separate from presentation" above: animation timings, scroll logic and visual mappings stay out of content files, and content stays out of motion primitives.
+- **Before creating a component**, check, in order:
+  1. `components/ui/` (see "Shared UI components");
+  2. `components/motion/`;
+  3. `components/layout/`;
+  4. the shared sections listed under "Current exceptions".
+  
+  Extend an existing component (an optional prop, as with `variant` and `height`) only where it stays one consistent design and does not touch frozen or protected sections without approval.
+- **Plain helpers beside client components:** a value or function a Server Component imports must not come from a `"use client"` file, because it arrives as a client reference and not as the value. Keep such helpers in a plain `.ts` file in the same folder as their client component (as `motion/revealOrder.ts` does).
+
+**Current exceptions (recorded, not moved; each move needs the owner's approval):**
+
+| File | Rule it breaks | Used by | Rule-compliant home |
+|---|---|---|---|
+| ~~`home/PinnedSection.tsx`, `pinned-section.css`~~ | **Moved to `components/motion/` on 2026-11-18** (owner-approved, in two steps: the component, then its stylesheet, imported again as `./pinned-section.css`) | every page | done |
+| ~~`home/CardStack.tsx`, `cardStackClasses.ts`~~ | **Moved to `components/motion/` on 2026-11-18** (owner-approved; imports in `OurWork.tsx` and `IndustriesSolutions.tsx` updated) | `/`, `/industries` | done |
+| ~~`home/ClientLogos.tsx`~~ | **Moved to `components/sections/ClientLogos.tsx` on 2026-11-18** (owner-approved, step 1 of the sections migration; 10 importers updated) | every Hero | done |
+| ~~`home/Services.tsx`~~ | **Moved to `components/sections/Services.tsx` on 2026-11-18** (owner-approved, step 7 of the sections migration; 2 importers updated) | `/`, `/services` | done |
+| ~~`home/Industries.tsx`, `IndustryCarousel.tsx`~~ | **Moved together to `components/sections/industries/` on 2026-11-18** (owner-approved, step 8 of the sections migration; 2 importers updated) | `/`, `/services` | done |
+| ~~`services/OurProcess.tsx`~~ | **Moved to `components/sections/our-process/OurProcess.tsx` on 2026-11-18** (owner-approved, step 2 of the sections migration; 5 importers updated) | `/services`, `/about`, `/case-study`, `/our-work`, the detail template | done |
+| ~~`services/Faq.tsx`~~ | **Moved to `components/sections/Faq.tsx` on 2026-11-18** (owner-approved, step 3 of the sections migration; 3 importers updated) | `/services`, `/contact`, the detail template | done |
+| ~~`service-details/RecentProjects.tsx`, `ProjectCarousel.tsx`~~ | **Moved together to `components/sections/recent-projects/` on 2026-11-18** (owner-approved, step 5 of the sections migration; 3 importers updated, `ServiceDetailsPage` from a relative to an `@/` import) | the detail template, `/case-study`, `/our-work` | done |
+| ~~`industries/IndustriesTrust.tsx`~~ | **Moved to `components/sections/IndustriesTrust.tsx` on 2026-11-18** (owner-approved, step 4 of the sections migration; 2 importers updated) | `/industries`, `/our-work` | done |
+| ~~`portfolio/PortfolioTestimonials.tsx`, `TestimonialFlow.tsx`, `portfolio-testimonials.css`~~ | **Moved together to `components/sections/testimonials/` on 2026-11-18** (owner-approved, step 6 of the sections migration; 2 importers updated) | `/our-work`, `/case-study` | done |
+
+No shared-sections folder exists yet. Its name (for example `components/sections/`) is for the owner to decide when the moves are approved.
+
 ### Deferred to the backend/CMS phase
 
 These will be handled together in steps 3–4:
@@ -191,8 +237,8 @@ The six static Service Details route files stay unchanged for now. Any future fo
 
 **Confirmed structural issues (recorded, not to be fixed without the owner's instruction):**
 - **Folder names are misleading.** Several shared parts live in page folders:
-  - In `components/home/`: `PinnedSection` (every page), `ClientLogos` (every page), `FinalCta`, `CardStack` (also `/industries`), `Services` and `Industries` (also `/services`).
-  - In `components/services/`: `Faq` and `OurProcess`, which are used by other pages too.
+  - In `components/home/`: `PinnedSection` (every page), `ClientLogos` (every page), `FinalCta`, `CardStack` (also `/industries`), `Services` and `Industries` (also `/services`). *Update 2026-11-18: `PinnedSection` and `CardStack` moved to `components/motion/`, `ClientLogos`, `Services` and `Industries` to `components/sections/` (see "Folder organization").*
+  - In `components/services/`: `Faq` and `OurProcess`, which are used by other pages too. *Update 2026-11-18: `OurProcess` and `Faq` moved to `components/sections/`.*
   
   They are not to be moved: moving them would touch frozen files for clarity only.
 - **Content inside components:** the older, mostly frozen components still hold their own text (see "Central content"). *Update 2026-11-14: largely superseded by Phases B and C; the section texts now come from `lib/content/`. What remains in components is mostly interface labels, Navbar and Footer leftovers (banner, profile card, column titles, copyright), the 404 page copy and page metadata.*
@@ -274,7 +320,7 @@ The Figma design was redesigned. Every section's reference frame is now **1920 �
   - **Next section:** Services starts at y 942.
 - **Logo files re-imported 2026-11-16:** all seven `public/images/logos/*.svg` were replaced with re-exports. Names, dimensions and viewBoxes are unchanged, and they render pixel-identical to the previous files at 4× (0–14 anti-aliasing pixels). FileWyse and FlyArzan still wrap JPEGs with white backgrounds. No scripts, handlers or external references. `lib/assets.ts` is unchanged.
 - **Implementation:**
-  - **`components/home/ClientLogos.tsx`** (frozen; changed with the owner's approval): new optional prop `height`. `"default"` is `lg:h-[132px]`, every inner page, unchanged. `"compact"` is `lg:h-[100px]`. Nothing else changed: same logos, sizes, `justify-between` spacing and below-`lg` wrapping layout.
+  - **`components/home/ClientLogos.tsx`** (now `components/sections/ClientLogos.tsx`, moved 2026-11-18; frozen; changed with the owner's approval): new optional prop `height`. `"default"` is `lg:h-[132px]`, every inner page, unchanged. `"compact"` is `lg:h-[100px]`. Nothing else changed: same logos, sizes, `justify-between` spacing and below-`lg` wrapping layout.
   - **`app/page.tsx`:** `<ClientLogos height="compact" />`. The other ten users pass nothing.
 - **Verified 2026-11-16** (Playwright, Chrome, 1920 layout width):
   - **Boundaries:** Hero 0–842, strip 842–942, Services from 942.
@@ -284,6 +330,69 @@ The Figma design was redesigned. Every section's reference frame is now **1920 �
   - **Widths:** no horizontal overflow at 2560, 1280, 1024, 768 or 320; logos inside the strip at every width.
   - **Checks:** `tsc` and `eslint` pass; no console errors.
 - **Later:** once every page is redesigned on 942 frames, `"compact"` can become the default and the prop can be removed. Services (1081px), Industries (1080), Final CTA (1080) and Our Work (3193) are still the old designs; each will be fitted to its own 942 frame when its reference arrives.
+
+### Client Logo Strip marquee (built 2026-11-18, owner's instruction; **awaiting the owner's visual approval**)
+
+- **Logos:** 20, the original 7 plus 13 owner-supplied exports added to `clientLogos` in `lib/assets.ts` in export order: Super Speciosa, MilkyMama, Fiera, GleeFull, Numin, Feno, AK Printing, Pleage, Zealous Law, Calgrove Rentals, Maison Lumen, BU-IQ, Captivate.
+  - **Files:** all 34px-high grey marks with transparent backgrounds, checked for scripts, handlers and external references (none).
+  - **Embedded PNGs:** six wrap PNGs (AK Printing, Bui-IQ, Calgrove, Captivate, Pleage, Zealous Law).
+  - **Names:** the wording on each logo. "BU-IQ" is drawn as "BU~IQ" and the file is `Bui-IQ.svg`, so it is to confirm.
+  - **Weight:** `ak-printing.svg` and `Zealous Law.svg` are about 1MB each (embedded PNGs). Lighter exports would help page weight.
+- **Files:** `components/sections/ClientLogos.tsx` (rewritten; same props, `height` `"default"` / `"compact"`, same users) and `components/sections/client-logos.css` (new, prefix `cl-`).
+- **How it works (CSS only, no JavaScript, no dependency):**
+  - **Track:** two identical `<ul>` sets in one track, animated `translate3d(0 → −50%)`, linear and infinite. Each logo carries half the gap as padding on both sides, so −50% is exactly one set and the loop point is invisible.
+  - **Sizes by width:**
+
+    | Width | Logo height | Gap | Duration |
+    |---|---|---|---|
+    | Base | 24px | 48px | 45.40s (60s before the smoothness fix) |
+    | `md` | 28px | 64px | 55.64s (75s before) |
+    | `lg` | 34px (the design height) | 88px | 70.99s (90s before) |
+
+    Nominal 60px/s (was about 45–47px/s); on screens with fractional scaling the rate is adjusted (see "Display-scale fix"). The sizes and the speed live in one place, `sizes` and `SPEED` in `ClientLogos.tsx`, which passes them to the CSS as `--cl-h0..2`, `--cl-gap0..2` and `--cl-duration0..2`; each duration is that width's exact loop distance ÷ 60.
+  - **Frame and fade:** within the 1560px content frame, with a soft mask fade over the outer 7% at each side.
+  - **Hover:** a resting mouse pauses it (`(hover: hover)` only).
+- **Heights:** from `lg` unchanged (132px default, 100px compact), so every 942 Hero frame is unchanged. Below `lg` the old wrapping grid (about 310px at 390) became one row: 88px, or 100px from `md`.
+- **Accessibility:** the section keeps `aria-label="Our clients"`. The first set has each logo's name as alt text; the duplicate set is `aria-hidden` with empty alt text.
+- **Reduced motion:** no animation and no mask; the duplicate set is hidden, and the row can be scrolled by hand (`overflow-x: auto`, hidden scrollbar).
+- **QA (Playwright CLI):**
+  - **Sizes:** 1920×942 (`/` compact, `/services` default), 1440, 1024, 768, 390 and 320.
+  - **Loop:** both sets are identical in width, with a 0.000px jump at the loop point and even per-frame steps.
+  - **Logos:** 40 of 40 images load, every logo has one height and one vertical centre, and there is no overflow.
+  - **Hover:** stops the movement (0px in 1s) and it resumes on leave.
+  - **Reduced motion:** static and scrollable.
+  - **Pinning at 390:** every page still holds its Hero unit while the next section rises and ends at the Footer.
+  - **Checks:** no console errors; `tsc` and `eslint app components lib` pass.
+- **Smoothness fix (2026-11-18, owner's instruction):**
+  - **Cause, measured:** the earlier speed (4259.53px per 90s) moved the strip about 0.79px per 60Hz frame (0.76px at 390). Chrome renders a moving layer with sub-pixel resampling: at a half-pixel offset the logos were about 12% softer (edge energy) and lost 16% of their solid dark pixels. With an irregular fraction per frame, every logo kept alternating between sharp and soft renders in an uneven rhythm, which reads as jitter. On screens that snap to whole pixels the same fraction gives uneven 0/1px steps.
+  - **Ruled out:** compositing and repaints (0 layer repaints over three full cycles), lazy-loading (all 40 images decoded before the first frame), frame pacing (no frame over 17ms), the duplicate track, SVG rasterisation and the mask.
+  - **Fix:**
+    - **Speed:** exactly 60px/s, so each 60Hz frame moves exactly 1px and the sub-pixel position never changes (0.5px per frame at 120Hz alternates evenly between two positions).
+    - **Duration:** computed from the set's exact width. Each logo's width is rounded down to the browser's 1/64px layout unit, which reproduces the measured widths exactly.
+    - **`will-change: transform`:** removed. The running animation is composited anyway, and pause and resume cause no repaints.
+  - **Unchanged:** sizes, spacing, order, the seamless −50% loop, hover pause, reduced motion and the component's props.
+  - **QA:**
+    - **Speed:** 60.0000px/s at 1920 and 390. Real-time frame steps across a loop boundary measured 0.99–1.01px per 60Hz frame, with no spike at the reset.
+    - **Loop and repaints:** loop points continuous over three cycles; 0 repaints over three cycles and across a hover pause and resume.
+    - **Hover and reduced motion:** hover stops the strip at 0px; reduced motion is static.
+    - **Checks:** `tsc` and `eslint` pass.
+- **Display-scale fix (2026-11-18, owner's report that the shake remained):**
+  - **Root cause, measured:** the previous fix made the strip move 1 **CSS** pixel per frame, but the screen draws in **device** pixels.
+    - **The effect:** at 125% or 150% display scaling (common on Windows) or with browser zoom, 1 CSS px is 1.25 or 1.5 device px. The logos then land on a different sub-pixel position every frame and are resampled sharper and softer in turn.
+    - **Evidence:** tracking one logo through the live compositor output, its sharpness swung 23.5% at 1.25× (cycling through all four quarter-pixel positions every 4 frames, a 15Hz shimmer) and 20.5% at 1.5×, against 7.9% measurement noise at 1×.
+  - **Fix:** `components/sections/ClientLogosTiming.tsx` (new, client, renders a hidden `<span>`).
+    - **What it measures:** it reads `devicePixelRatio` and measures the refresh rate from about 24 `requestAnimationFrame` intervals, once. It re-runs only when the pixel ratio changes (another monitor or zoom), through a `resolution` media query.
+    - **What it sets:** a whole number of device pixels per frame (at most 75Hz), or an exact half-pixel (faster screens, alternating between two positions), as close as possible to the nominal 60px/s. It sets `--cl-rate` (nominal ÷ actual speed) on the strip; `client-logos.css` scales the duration by it.
+    - **Start:** the strip holds still until `data-cl-ready` is set, so a rate change never makes it jump.
+    - **No JavaScript:** a `noscript` style lets it run at the nominal rate.
+    - **The movement:** still the compositor CSS animation; there is no per-frame script.
+  - **Resulting speeds:** 60px/s at 1×, 2× and 3×; 48px/s at 1.25×; 40px/s at 1.5×. Slower on fractional scales by design, so that each step is a whole device pixel.
+  - **QA (Playwright CLI, emulated scales):**
+    - **Steps:** at 1920 @1×, 1.25× and 1.5× and 390 @1× and 3×, every frame moves exactly 1 (or 3 at 3×) device pixels, across a real loop boundary.
+    - **Sharpness:** the tracked-logo swing fell to 6.4% at 1.25× and 7.3% at 1.5×, the noise level.
+    - **Other:** no movement before ready, then a start from 0; loop points continuous over three cycles; 0 repaints; hover pause, leaving and returning, and reduced motion all work; no console errors; `tsc` and `eslint` pass.
+  - **Not covered:** real 120/144Hz monitors (the half-pixel rule is untested on hardware), Safari and Firefox.
+- **Not tested:** Safari, Firefox and real touch devices.
 
 ### Homepage Our Services (re-implemented 2026-11-16, **awaiting the owner's approval**)
 
@@ -296,7 +405,7 @@ The Figma design was redesigned. Every section's reference frame is now **1920 �
   - **Cards:** match the reference (about 5px corners).
   - **Frame rule:** the whole section must fit its 1920×942 frame. 942 is a design target, not a CSS height: no forced height, hidden overflow or clipping, and natural heights at other widths.
 - **Files:**
-  - **`components/home/Services.tsx`** (frozen; changed with the owner's approval): new optional prop `variant` (`"default"` | `"compact"`). The class strings live in a `styles` map; `"default"` holds the original strings verbatim, so `/services` renders byte-identical (the SHA-256 of its section HTML equals the pre-change baseline).
+  - **`components/home/Services.tsx`** (now `components/sections/Services.tsx`, moved 2026-11-18; frozen; changed with the owner's approval): new optional prop `variant` (`"default"` | `"compact"`). The class strings live in a `styles` map; `"default"` holds the original strings verbatim, so `/services` renders byte-identical (the SHA-256 of its section HTML equals the pre-change baseline).
   - **`lib/content/home.ts`:** new `homeServiceCards`, the shared `serviceCards` with the Homepage-only descriptions, matched by title. Two use a non-breaking space ("digital experiences", "easy access") so their lines break where the reference does; Outfit is narrower than the reference's face.
   - **`app/page.tsx`:** `<Services variant="compact" services={homeServiceCards} />`, wrapped in `<PinnedSection hold="30svh">`.
 - **Pin hold (fix 2026-11-16, after the owner saw Industries peeking into the 1920×942 frame):**
@@ -351,7 +460,7 @@ The Figma design was redesigned. Every section's reference frame is now **1920 �
 - **Reference:** `Frame 2147239126.png` (project root, 1920×942). No new assets were supplied; the cards use the existing `public/images/industries/*.png` (1008×740).
 - **Owner instructions (2026-11-16):** keep the card behaviour and autoplay; exactly three cards in the frame; the other cards keep entering through the autoplay; no Phase 1/2/3 elements in this section.
 - **Files (Homepage only, `/services` byte-identical):**
-  - **`components/home/Industries.tsx`** and **`IndustryCarousel.tsx`** (frozen; changed with the owner's instruction): optional `variant` (`"default"` | `"compact"`), each with a `layouts` map whose `"default"` strings are the originals. The `/services` Industries section's HTML hash is the same before and after (SHA-256 `8847447…`, with the carousel's runtime `scroll-snap-type` style excluded). `"compact"` renders no Phase cards and no rule. `Industries` also takes an optional `cards` prop.
+  - **`components/home/Industries.tsx`** and **`IndustryCarousel.tsx`** (now in `components/sections/industries/`) (frozen; changed with the owner's instruction): optional `variant` (`"default"` | `"compact"`), each with a `layouts` map whose `"default"` strings are the originals. The `/services` Industries section's HTML hash is the same before and after (SHA-256 `8847447…`, with the carousel's runtime `scroll-snap-type` style excluded). `"compact"` renders no Phase cards and no rule. `Industries` also takes an optional `cards` prop.
   - **`lib/content/home.ts`:** `homeIndustryCards`, the shared `industryCards` with the reference's shorter descriptions for Attorney & Lawyers, Restaurant and Retailers. Doctor and Plumbers are not in the reference and keep their shared descriptions (to confirm).
   - **`app/page.tsx`:** `<Industries variant="compact" cards={homeIndustryCards} />` in `<PinnedSection hold="30svh">`.
 - **Compact layout at 1920:**
@@ -420,15 +529,39 @@ The Figma design was redesigned. Every section's reference frame is now **1920 �
   - **Difference from the reference:** the frame's bottom 37px (y 905–942) show the top of the third row, where the reference (which shows six cards) is plain background.
   - **QA:** 1920 mean difference 9.42/255 overall (heading 8.27, cards' text 9.15 / 9.98, images 12.41). `tsc` and `eslint` pass.
 - **Our Process (2026-11-16, reference `Frame 2147238780.png`, project root, 1920×942; awaiting the owner's approval):** the existing section's content, steps, icons and colours, redesigned to a 942 frame.
-  - **`components/services/OurProcess.tsx`** (shared by six pages): new optional `variant` (`"default"` | `"compact"`) with a `layouts` map. `"default"` holds the original classes, so every other page is unchanged (`/about` still 1080px at 1920). `/services` passes `variant="compact"`. *Superseded 2026-11-17: no variants; one shared design on every page (see "Our Process, one shared design" under the About Us notes).*
+  - **`components/services/OurProcess.tsx` (now `components/sections/`)** (shared by six pages): new optional `variant` (`"default"` | `"compact"`) with a `layouts` map. `"default"` holds the original classes, so every other page is unchanged (`/about` still 1080px at 1920). `/services` passes `variant="compact"`. *Superseded 2026-11-17: no variants; one shared design on every page (see "Our Process, one shared design" under the About Us notes).*
   - **Compact:** `lg:min-h-[clamp(628px,49.0625vw,942px)]` plus `lg:pt-1` (content centred, 2px lower), eyebrow 18px at 0.072em (`lg:-mt-1`), heading 53.5px (`lg:mt-2`), and the description top-aligned beside the heading (`lg:items-start`, `lg:pt-[clamp(27px,2.1875vw,42px)]`).
   - **Pin:** `hold="30svh"`, as for Services, so Industries never peeks into its frame. With the hold the section is at least one screen tall (1080 at 1920×1080).
   - **QA:** 1920 match within 0–1px on every measured element, mean difference 0.96/255. With real 100px wheel steps at 1920×942, 1920×1080, 1440×900, 1024×768, 768×1024, 390×844 and 320×640, Services rests 2–3 steps fully revealed before Our Process enters, Our Process rests 2–3 steps before Industries rises, and the section under a rising one never moves while visible. No overflow; reduced motion: page height equals the sum of the sections. `tsc` and `eslint` pass.
 - **Industries We Serve (2026-11-16, owner's instruction):** the Homepage Industries section reused exactly: `<Industries variant="compact" cards={homeIndustryCards} />` in `<PinnedSection hold="30svh">`, the same as `app/page.tsx`. No component or content changed. Verified: the section's HTML on `/services` is identical to the Homepage's (runtime styles and data attributes excluded), 942px at 1920×942, autoplay running; with real 100px wheel steps at 1920×942, 1440×900, 1024×768 and 390×844 Our Process rests 2–3 steps before Industries enters and Industries rests 3 steps before FAQ rises, with no overlap and no overflow. The original Phase-card Industries layout is no longer used on `/services` (still the `default` variant, now unused).
-- **FAQ (2026-11-16, owner's instruction: frame adjustment only):** `components/services/Faq.tsx` (frozen; changed with the owner's permission) has a new optional `frame` (`"default"` | `"compact"`) that changes only the vertical padding from `lg`: compact is 69px less above and below (`clamp(64px,8.802vw,169px)` / `clamp(64px,8.880vw,170.5px)`), so the same content stays centred in 941.8px at 1920 (default 1079.8). Design, content, sizes, accordion and animation unchanged; every other page keeps the default. On `/services` the FAQ pin also has `hold="30svh"` (with its Footer cap), so the Footer does not peek into its frame. *Superseded 2026-11-17: the `frame` variants are gone; see "Shared FAQ, one column" under the Contact Us page.*
+- **FAQ (2026-11-16, owner's instruction: frame adjustment only):** `components/services/Faq.tsx` (now `components/sections/`) (frozen; changed with the owner's permission) has a new optional `frame` (`"default"` | `"compact"`) that changes only the vertical padding from `lg`: compact is 69px less above and below (`clamp(64px,8.802vw,169px)` / `clamp(64px,8.880vw,170.5px)`), so the same content stays centred in 941.8px at 1920 (default 1079.8). Design, content, sizes, accordion and animation unchanged; every other page keeps the default. On `/services` the FAQ pin also has `hold="30svh"` (with its Footer cap), so the Footer does not peek into its frame. *Superseded 2026-11-17: the `frame` variants are gone; see "Shared FAQ, one column" under the Contact Us page.*
   - **QA:** at 1920 every FAQ element sits exactly 69px higher than on `/contact` (default) and the rows keep their 775×80 size; the accordion opens. With real 100px wheel steps at 1920×942, 1920×1080, 1440×900, 1024×768 and 390×844, Industries rests 3 steps before FAQ enters, FAQ rests 2–3 steps before the Footer rises and never moves while the Footer rises, the page ends at the Footer (sub-pixel), no overflow. `tsc` and `eslint` pass.
   - **All `/services` sections now follow the frame rule.**
 
+- **Hero + logos on the Homepage Hero standard (2026-11-18, owner's instruction; awaiting approval; supersedes the 1920/810 frame and the logo-strip notes above, and the 1920/808 Details frame below):** `/services` and all 8 Service Details pages now use the Homepage frame, as About, Contact, FAQ, Insights, Our Portfolio, Case Study and Industries already did.
+  - **Files:** two shared components and two prop changes:
+    - **`components/services/ServicesHero.tsx`:** `/services`.
+    - **`components/service-details/ServiceDetailsHero.tsx`:** all 8 Details pages.
+    - **`app/services/page.tsx` and `ServiceDetailsPage.tsx`:** `<ClientLogos height="compact" />`, the shared strip, in the same `PinnedSection` as before.
+  - **From `lg`:**
+    - **Grid and padding:** the Homepage Hero's grid (`800fr / 760fr`, text column `lg:pr-6`, centred), top padding (bar + `clamp(40px,4.167vw,80px)`) and bottom padding (`clamp(56px,5.208vw,100px)`).
+    - **Right column:** an empty `aspect-[760/562]` box (`aria-hidden`).
+    - **Artwork:** `object-cover` behind the whole area. The Details image was `object-contain`; at 1920 about 40px of each 3840-wide export is trimmed at each side.
+    - **Heading:** `lg:whitespace-nowrap`, as on the Case Study Hero. "Smart Digital Solutions" is wider than the 800fr column, and its line runs into the empty right column instead of wrapping.
+    - **Removed:** the old `aspect-[1920/810]` / `aspect-[1920/808]` sections and the `/services` extra top padding.
+  - **Below `lg`:** unchanged.
+  - **Content:** unchanged: headings, descriptions, buttons, checklists, breadcrumbs, images and animations. `id="services-hero"` is kept, because the FAQ cap uses it.
+  - **QA (Playwright CLI):**
+    - **1920×942, all 9 pages and the Homepage:**
+      - **Frame:** Hero 0–842, strip 842–942 (100px), logos at y 875 and the next section from 942, identical to the Homepage.
+      - **Text:** the text block is centred at y 461; text tops are 235 on `/services` and 257 on Details, against the Navbar card's 100.
+      - **Lines and hand-off:** two heading lines each, and the Hero unit holds at 0 over real wheel steps while the next section rises.
+    - **Other widths:** 2560, 1440 and 1280 have the same frame proportions as the Homepage (739.3 + 100 at 1440). At 1024 the Heroes are natural height (540px `/services`, 520px Details, against the Homepage's 597) with the text clear of the 76px card.
+    - **Overflow:** none at 2560, 1920, 1440, 1280, 1024, 768, 390 or 320.
+    - **Checks:** `tsc` and `eslint app components lib` pass; no console errors.
+  - **Remaining mismatches:**
+    - **UI/UX master:** it is no longer pixel-identical in its Hero (frame and cover crop), by this instruction.
+    - **No new reference:** none was supplied for these Heroes, so the text sits where the standard places it, not against a drawn reference. All 8 Details pages still show the temporary UI/UX image.
 ### Service Details pages: shared Navbar + Footer (2026-11-16, **awaiting the owner's approval**)
 
 - **Scope:** the first step of the Service Details redesign: only the shared Navbar and Footer, in the template, so all six Details pages change together. Section content not redesigned yet.
@@ -461,7 +594,7 @@ The Figma design was redesigned. Every section's reference frame is now **1920 �
 
 - **Testimonials (2026-11-16, owner's instruction):** the `/our-work` testimonial carousel (`PortfolioTestimonials`) reused unchanged as the last section, after Recent Projects and before the shared Footer.
   - **`app/case-study/page.tsx`:** Recent Projects and the testimonials each in `PinnedSection hold="30svh"` (the testimonials also capped with `limitCoverTo="main:has(#case-study-overview) + footer"`; the cap moved off Recent Projects). Without the holds both sections were shorter than the frame (testimonials 873px at 1920) and the next section showed in it; with them each fills at least one screen and rests before the next rises (content stays at the top, background extends).
-  - **`components/portfolio/TestimonialFlow.tsx`:** autoplay pauses while the next section covers the carousel; it found that section as its pin wrapper's next sibling, which does not exist when the carousel is the last section in `<main>`. It now falls back to the element after `<main>` (the Footer). `/our-work` is unaffected (it still has a next sibling).
+  - **`components/portfolio/TestimonialFlow.tsx` (now `components/sections/testimonials/`):** autoplay pauses while the next section covers the carousel; it found that section as its pin wrapper's next sibling, which does not exist when the carousel is the last section in `<main>`. It now falls back to the element after `<main>` (the Footer). `/our-work` is unaffected (it still has a next sibling).
   - **QA 2026-11-16** (real 100px wheel steps at 1920×942, 1920×1080, 1440×900, 1024×768 and 390×844): order Our Process → Recent Projects → Testimonials → Footer; Recent Projects rests 2–3 steps before the testimonials enter, the testimonials rest 2–3 steps before the Footer and never move while it rises; the page ends at the Footer (sub-pixel), no overflow. Autoplay advances in view (1 → 2 of 6) and pauses under the Footer. No console errors. `tsc` and `eslint` pass.
 
 ### About Us page: shared Navbar + Footer (2026-11-16, **awaiting the owner's approval**)
@@ -483,10 +616,37 @@ The Figma design was redesigned. Every section's reference frame is now **1920 �
   - **Card text fix (2026-11-17, owner's instruction):** against the same reference, the location, "Key Operations:" and the list sat 2 / 1 / 1px high. From `lg`: location top margin 3px (was 1), "Key Operations:" 24.3px (was 25.3), body bottom padding 20px (was 21), so the card bottom (893) and the section (942) are unchanged. Every card text line now starts on the reference's pixel row; wording, sizes and line breaks were already identical. Remaining width differences of 1–4px per list line are font rendering (the reference's list looks like Inter). No overflow or clipped text at 2560–320; `tsc` and `eslint` pass.
   - **Open point, photo framing:** the reference shows each photo whole at 300px high (about 432×300, centred) with more scene at the sides than the supplied 1008×700 files contain, so the cover crop is about 17% tighter (photo mean difference about 35/255). An exact match needs re-exported photos.
 - **Our Process, one shared design (2026-11-17, reference `Frame 2147239038.png`, project root, 1920×942; owner: one design on every page, no About variant; awaiting the owner's approval):**
-  - **`components/services/OurProcess.tsx`:** the `variant` prop and `layouts` map are removed; one class set (`l`) for every page. From `lg`: min-height `clamp(628px,49.0625vw,942px)`, padding 48 / 49px, eyebrow 18px at 0.09em, heading 53.5px on 60px lines (`leading-[1.1215]`, 8px below the eyebrow), the description on the heading's bottom line (`items-end`, 14px up), steps 46px below the header. Content, steps, icons, colours, hover panel and reveal unchanged. Below `lg` unchanged.
+  - **`components/services/OurProcess.tsx` (now `components/sections/`):** the `variant` prop and `layouts` map are removed; one class set (`l`) for every page. From `lg`: min-height `clamp(628px,49.0625vw,942px)`, padding 48 / 49px, eyebrow 18px at 0.09em, heading 53.5px on 60px lines (`leading-[1.1215]`, 8px below the eyebrow), the description on the heading's bottom line (`items-end`, 14px up), steps 46px below the header. Content, steps, icons, colours, hover panel and reveal unchanged. Below `lg` unchanged.
   - **Pages:** `/services` drops `variant="compact"`. Every Our Process pin has `hold="30svh"` (`/services`, `/about`, `/case-study`, `/our-work`, `ServiceDetailsPage.tsx`), because the section is now 942px instead of 1080 and the next section otherwise showed 58px into its frame at 1920×942. Existing caps unchanged.
   - **QA (Playwright CLI):** at 1920×942 on `/about` and `/services`, eyebrow, both heading lines, description lines, circles (407–510, x 180 / 505 / 830 / 1154 / 1479), numbers, titles and the three description lines all within 0–1px of the reference. Section 942px at 1920. Real 100px wheel steps on `/about`, `/services`, `/case-study`, `/our-work`, UI/UX and Web Details: Our Process rests at 0 for three steps with 0px of the next section visible, then holds still while the next section rises 1:1; each page ends at the Footer. No horizontal overflow or clipped text at 2560, 1920, 1440, 1280, 1024, 768, 390 and 320. `tsc` and `eslint app components lib` pass.
   - **Note:** Our Process is no longer 1080px at 1920 on any page, so earlier per-page notes quoting that height are out of date.
+- **Scroll-driven green rope (2026-11-18, owner-approved plan; awaiting visual approval):** the shared Our Process section, on every page that uses it.
+  - **Files:**
+    - **Moved:** `components/sections/OurProcess.tsx` → `components/sections/our-process/OurProcess.tsx`, with its 5 importers updated (`/services`, `/about`, `/case-study`, `/our-work`, `ServiceDetailsPage.tsx`) and the `lib/content/process.ts` comment.
+    - **New:** `components/sections/our-process/ProcessRope.tsx` (client). There is no new CSS file; the rope's styles are Tailwind classes.
+  - **Rope (from `xl` only):**
+    - **Shape:** an SVG behind the steps with one path through the five circle centres, built from their measured offsets and rebuilt by a `ResizeObserver`. Alternating curves (control points ±44px) give one continuous wave; the circles cover it at their centres.
+    - **Colours:** the track is `#24a872` at 20% and the progress line `#24a872`, both 3px with round caps.
+    - **Drawing:** the line is `pathLength="1"`, with stroke-dashoffset going from 1 to 0.
+    - **Below `xl`:** hidden, because the stacked steps would put it across their text. The steps still activate in order.
+  - **Scroll range:** from the first circle's centre reaching 90% of the screen height to the end of the section's existing pin rest (`--pin-hold`, read from its pin wrapper). Pinning, page length and hand-offs are unchanged.
+  - **Sync:**
+    - **One handler:** a single passive scroll listener writes the line's offset and the steps' `data-state` (`active` for the latest reached step, `done` for the earlier ones) in the same handler.
+    - **Thresholds:** even quarters of the rope (the circles are evenly spaced). Below `xl` a step also waits until its own circle is in view.
+    - **No re-renders or timers:** attributes change only when a step is crossed; there are no React re-renders and no timers.
+    - **Reverse and pause:** progress is a pure function of the scroll position, so reverse and pause are exact.
+  - **Step states:** the existing hover classes, repeated as `group-data-[state]/step:` variants: the circle lifts with its shadow, and the icon scales to 1.08.
+    - **Panel:** the active step also gets the white hover panel (`.ww-process__panel`, unchanged CSS: from `xl` with a real pointer). A pointer over the steps takes the panel (`data-hover`), and leaving returns it to the scroll step (`data-scroll-step`).
+  - **Reduced motion:** the rope is shown fully drawn and the steps rest. Without JavaScript the rope is not drawn.
+  - **QA (Playwright CLI, `/services` and `/about` at 1920×942, 1440×900, 1024×768, 768×1024 and 390×844, real 50px wheel steps down and back):**
+    - **Order:** 01 → 05 in strict order at every size.
+    - **Sync:** 0 mismatches between the line's drawn end and the active step (about 1,400 samples).
+    - **Direction:** progress monotonic going down; identical values at the same scroll positions going up; a 1s pause changes nothing; it returns to the start state at the top.
+    - **Completion:** the sequence completes inside the existing rest (section at 0 on desktop).
+    - **Hover:** priority works.
+    - **Unchanged:** pinning, hand-offs and page ends on `/services`, UI/UX Details, `/our-work`, `/about` and `/case-study`.
+    - **Checks:** no console errors; `tsc` and `eslint app components lib` pass.
+  - **Not tested:** Safari, Firefox and touch devices.
 - **Not done:** the Footer at the end of the About page.
 
 ### Industries page: Hero + logos on the Homepage Hero standard (2026-11-17, **awaiting the owner's approval**)
@@ -504,13 +664,14 @@ The Figma design was redesigned. Every section's reference frame is now **1920 �
   - **Missing asset:** the reference's Construction photo (three workers in hi-vis vests with a tablet, a concrete truck behind) is not in the project; `construction.png` shows a high-rise with tower cranes (75/255 against the reference). It is kept unchanged, with its existing alt text, until the owner supplies the file.
   - **Open point, framing:** Real Estate is framed differently in the reference (closest crop of `Real State.png` 50/255; a 1.08× zoom gives 42); Healthcare 17.5/255.
 - **Trust section frame fit (2026-11-17, reference `Trust Section (1).png`, project root, 1920×942; awaiting the owner's approval):**
-  - **`components/industries/IndustriesTrust.tsx`** (shared by `/industries` and `/our-work`, so both change): padding from `lg` `clamp(48px,4.01vw,77px)` above and below (was 119 / 120px); the image frame `aspect-[1560/412]` with `overflow-hidden rounded-2xl` and `object-cover object-top` (was the file's whole 3120/931 shown `object-contain`, 465px tall; the reference crops it, and the crop removes the file's own rounded corners, so they are drawn in CSS, 16px as drawn). Header, stats bar, icons, `RollingNumber` and reveal unchanged. The stats bar stays in step with the About leadership bar.
+  - **`components/industries/IndustriesTrust.tsx` (now `components/sections/`)** (shared by `/industries` and `/our-work`, so both change): padding from `lg` `clamp(48px,4.01vw,77px)` above and below (was 119 / 120px); the image frame `aspect-[1560/412]` with `overflow-hidden rounded-2xl` and `object-cover object-top` (was the file's whole 3120/931 shown `object-contain`, 465px tall; the reference crops it, and the crop removes the file's own rounded corners, so they are drawn in CSS, 16px as drawn). Header, stats bar, icons, `RollingNumber` and reveal unchanged. The stats bar stays in step with the About leadership bar.
   - **Pins:** unchanged (`hold="70svh"` on both pages, and the `/our-work` cap).
   - **QA (Playwright CLI):** 941.94px at 1920. Heading lines (114, 174), description (166 / 198 against 167 / 199), image (263–674) and bar (715–864) as drawn; eyebrow 2px low; stat numbers, labels, circles and dividers within 1–3px. Real 100px wheel steps at 1920×942 on both pages: the section above holds while this one rises 1:1, this one rests at 0 through its hold with 0px of the next section visible, then the next rises 1:1. No horizontal overflow at 2560, 1920, 1440, 1280, 1024, 768, 390 and 320; no clipped text. `tsc` and `eslint app components lib` pass.
   - **Open point, image:** the reference shows a slightly different crop of `Trusted partner.png` (best plain top crop 18/255; a 1.02× zoom 16.5).
 - **Industry Solutions frame fit (2026-11-17, reference `Our Work Section.png`, project root, 1920×942: the section's arrival frame, header + card 1 + the top of card 2; awaiting the owner's approval):**
   - **`components/industries/IndustriesSolutions.tsx`** (used only on `/industries`), all from `lg`: eyebrow the default 18px (was `size="lg"`, 20px); the header top-aligned (`lg:items-start`) with the description 42px down (`clamp(28px,2.188vw,42px)`), level with the heading's first line, as drawn (was on the heading's bottom line); in each card the number circle aligned to the text's top (`lg:items-start`; was centred on the text); title 32px (`clamp(22px,1.667vw,32px)`, was 34); description `lg:tracking-normal` (was 0.035em, so it breaks after "tailored" as drawn) and 10px below the title (was 20); tags 30px below (was 32). Cards, images, colours, stacking and the scroll-linked layering unchanged; below `lg` unchanged.
   - **Hold:** Final CTA showed up to 206px (1920×942; 135–345px at other sizes) before card 4 pinned. As in the Homepage Our Work, the card list's `::after` spacer now grows by `--hold` (negative margin unchanged): `30svh + max(0px, 100svh − --p4 − 18.75vw − bottom padding)`, with `--p4` card 4's pin (144 / 162 / 196px by breakpoint), from `lg` with motion allowed only.
+  - **Sticky header (2026-11-18, owner's instruction; awaiting approval; consolidated the same day, see "Shared card stack + sticky header" under Behaviour):** from `lg` with motion allowed, the header (eyebrow, heading, description; the `Reveal` wrapper) is `sticky` at its arrival position (the section's top padding, 100px at 1920) and leaves with the section. Card 1 pins where it arrives, below the header (306px at 1920, 236 at 1440, 213 at 1280, 192 at 1024; it replaced the 114 / 148px pins), and `--p4` = that pin + 48px for the hold. Stacking, layering animation, hold, cards and design unchanged; below `lg` unchanged (not sticky). QA (Playwright CLI, real 100px wheel steps at 1920×942, 1920×1080, 1440×900, 1280×720, 1024×768, 390×844): header top constant through the whole stack (100 / 75 / 67 / 56px), cards never closer than the original gap to its bottom (60px at 1920), no overflow; `tsc` and `eslint app components lib` pass. On short screens where a card cannot fit below the header, the existing `min(…, 100svh − card − 12px)` cap would lift it under the header (not seen at the checked sizes).
   - **Shared Footer (2026-11-17, owner's instruction; awaiting approval):** `app/industries/page.tsx` drops the pinned `FinalCta` and `SiteFooter` and renders the shared `Footer` after `<main>`, as on the Homepage (not pinned; positioned, so it rises over the Industry Solutions stack). No change to `Footer.tsx` or the stack. QA (real 100px wheel steps): at 1920×942, 1920×1080, 1440×900, 1280×720 and 1024×768, 0px of the Footer before card 4 pins, the stack rests 2–4 steps, the page ends at the Footer (0px gap); at 1920×1080 the Footer's top sits at 138px at the page end, identical to the Homepage. Below `lg` there is no hold (as on the Homepage), so at 390×844 the Footer starts rising about 135px before card 4 pins. Reduced motion: page height equals the sum of the sections. No overflow, no console errors; `tsc` and `eslint app components lib` pass. *With this, every Industries section is on the redesign.*
   - **QA (Playwright CLI):** at 1920 the header, card edges, image (346–626), title, description lines, tags and circle all within 0–1px of the reference, identical line breaks; mean difference 2.48/255. Real 100px wheel steps at 1920×942, 1920×1080, 1440×900, 1280×720 and 1024×768: 0px of Final CTA before card 4 pins, then the finished stack rests 2–4 steps before Final CTA rises; the page ends at the Footer (sub-pixel), also with reduced motion. No horizontal overflow or clipped text at 2560, 1920, 1440, 1280, 1024, 768, 390 and 320. `tsc` and `eslint app components lib` pass.
 
@@ -602,11 +763,11 @@ These 15 are the only routes. Nothing links to `/case-study` yet. The Blog Detai
 | Section | Component | Notes |
 |---|---|---|
 | Hero | `components/home/Hero.tsx` | **Approved and frozen** (2026-11-06 design). Reopened by the owner for the 2026-11-16 Figma redesign; the redesigned Hero is **awaiting review** (see "Figma redesign 2026-11-16") |
-| Client Logo Strip | `components/home/ClientLogos.tsx` | **Approved and frozen**. Used on every page. 2026-11-16 (owner-approved): optional `height` prop; the Homepage uses `"compact"` (100px), every other page the unchanged 132px default (see "Figma redesign 2026-11-16") |
+| Client Logo Strip | `components/sections/ClientLogos.tsx` (moved from `home/` 2026-11-18), `client-logos.css` | **Approved and frozen** (2026-11-16 static design). Since 2026-11-18 a 20-logo marquee by the owner's instruction, **awaiting approval** (see "Client Logo Strip marquee"). Used on every page. 2026-11-16 (owner-approved): optional `height` prop; the Homepage uses `"compact"` (100px), every other page the unchanged 132px default (see "Figma redesign 2026-11-16") |
 | Contact Us "Have a Project Idea?" (world map) | `components/contact/ContactLocations.tsx`, `contactLocations` in `lib/content/contact.ts` | **APPROVED** by the owner 2026-11-10, with permission to proceed to the next Contact section. Its Navbar overlap on near-16:9 screens is an accepted known limitation (see "Contact Us page") |
-| Services | `components/home/Services.tsx` | **Approved and frozen**. Used on `/` and `/services`. Changed once after freezing (2026-11-09): each of the six cards now links to its Service Details page. The owner **approved this permanently** on 2026-11-10: the links must stay and must not be reverted. Everything else in the section stays frozen. *2026-11-16 (owner-approved): optional `variant` prop; the Homepage uses the redesigned `"compact"` layout (awaiting approval), `/services` the unchanged default (see "Figma redesign 2026-11-16")* |
-| Industries | `components/home/Industries.tsx`, `IndustryCarousel.tsx` | **Frozen** (the owner listed it as approved and frozen). Used on `/` and `/services`. *2026-11-16 (owner's instruction): optional `variant`; the Homepage uses the redesigned `"compact"` layout (three cards, no Phase cards; awaiting approval), `/services` the unchanged default (see "Figma redesign 2026-11-16")* |
-| FAQ | `components/services/Faq.tsx` | **Frozen** by the owner with the UI/UX Details page (2026-11-08). Shared by `/services` and every Details page |
+| Services | `components/sections/Services.tsx` (moved from `home/` 2026-11-18) | **Approved and frozen**. Used on `/` and `/services`. Changed once after freezing (2026-11-09): each of the six cards now links to its Service Details page. The owner **approved this permanently** on 2026-11-10: the links must stay and must not be reverted. Everything else in the section stays frozen. *2026-11-16 (owner-approved): optional `variant` prop; the Homepage uses the redesigned `"compact"` layout (awaiting approval), `/services` the unchanged default (see "Figma redesign 2026-11-16")* |
+| Industries | `components/sections/industries/Industries.tsx`, `IndustryCarousel.tsx` (moved from `home/` 2026-11-18) | **Frozen** (the owner listed it as approved and frozen). Used on `/` and `/services`. *2026-11-16 (owner's instruction): optional `variant`; the Homepage uses the redesigned `"compact"` layout (three cards, no Phase cards; awaiting approval), `/services` the unchanged default (see "Figma redesign 2026-11-16")* |
+| FAQ | `components/sections/Faq.tsx` (moved from `services/` 2026-11-18) | **Frozen** by the owner with the UI/UX Details page (2026-11-08). Shared by `/services` and every Details page |
 | Final CTA | `components/home/FinalCta.tsx` | **Frozen** by the owner with the UI/UX Details page (2026-11-08). Shared by `/`, `/services`, every Details page, `/industries`, `/about` (added 2026-11-11) and `/our-work` (added 2026-11-12); not on `/contact` |
 | UI/UX Details page | `app/services/ui-ux-product-design/page.tsx` and the `components/service-details/*` sections it renders | **Complete** (owner, 2026-11-08). The master Service Details design: any change to the shared template must keep this page pixel-identical |
 | About Us Our Global Presence | `components/about/AboutPresence.tsx`, `aboutPresence` in `lib/content/about.ts`, office photo entries `aboutOfficeUsa`/`aboutOfficeUae`/`aboutOfficeInternational` in `lib/assets.ts` | **Approved and frozen** by the owner 2026-11-11, including its tablet layout. The final implementation and QA, and the accepted 320px location wrapping and shorter third tablet card, are under "About Us page" |
@@ -620,7 +781,7 @@ These 15 are the only routes. Nothing links to `/case-study` yet. The Blog Detai
 | Section | Component | Notes |
 |---|---|---|
 | Navbar | `components/layout/SiteHeader.tsx` | Was frozen, reopened by the owner for sticky behaviour; later requests say not to modify it. Final version not explicitly re-approved. One change since, **approved** by the owner 2026-11-10: the Contact item links to `/contact` (see "Approved decisions"). Later on 2026-11-10 the owner asked for dropdown menus: these are built and **awaiting the owner's review** (see "Navbar dropdown menus"). The bar's own layout, logo, sizes, sticky/shrink behaviour and Contact link are unchanged. Make no further Navbar changes without the owner's instruction. *2026-11-16: the Homepage now uses the redesigned floating variant (owner's instruction, awaiting review); inner pages keep this bar unchanged (see "Figma redesign 2026-11-16"). Also 2026-11-16: hide-on-scroll on every route (owner's instruction, awaiting approval; see "Behaviour")* |
-| Our Work | `components/home/OurWork.tsx`, `CardStack.tsx` | Protected by later requests. `OurWork` is Homepage only; `CardStack` is also imported by Industry Solutions on `/industries`, so a change to it affects both |
+| Our Work | `components/home/OurWork.tsx`, `components/motion/CardStack.tsx` (moved from `home/` 2026-11-18) | Protected by later requests. `OurWork` is Homepage only; `CardStack` is also imported by Industry Solutions on `/industries`, so a change to it affects both |
 
 ### Implemented, awaiting owner review
 
@@ -628,15 +789,15 @@ These 15 are the only routes. Nothing links to `/case-study` yet. The Blog Detai
 |---|---|---|
 | Footer | `components/layout/SiteFooter.tsx`, `FooterBackground.tsx`, `footer-background.css` | Built; **awaiting owner review**. On every page except `/insights` so far (added to `/contact` 2026-11-10, `/faq` 2026-11-11, `/about` 2026-11-11, `/case-study` 2026-11-12 and `/our-work` 2026-11-12) |
 | Service List Hero (`/services`) | `components/services/ServicesHero.tsx` | Built; **awaiting owner visual review**. Responsive layout is not final until reviewed |
-| Our Process | `components/services/OurProcess.tsx` | Built; **awaiting owner visual review**. Shared by `/services`, every Details page, `/about`, `/case-study` and `/our-work` (both added 2026-11-12) |
+| Our Process | `components/sections/our-process/OurProcess.tsx` (moved from `services/` 2026-11-18) | Built; **awaiting owner visual review**. Shared by `/services`, every Details page, `/about`, `/case-study` and `/our-work` (both added 2026-11-12) |
 | Section motion | `components/motion/*` | Built 2026-11-06; **awaiting owner review** |
-| Overlapping scroll | `components/home/PinnedSection.tsx`, `pinned-section.css` | Built; **awaiting comprehensive QA and owner approval** |
+| Overlapping scroll | `components/motion/PinnedSection.tsx`, `pinned-section.css` (both moved from `home/` 2026-11-18) | Built; **awaiting comprehensive QA and owner approval** |
 | Custom Software Development page | `app/services/custom-software-development/page.tsx`, its entry in `lib/content/service-details.ts` | Built 2026-11-08 from the master template; **awaiting owner review**. Images are temporary |
 | Web Development page | `app/services/web-development/page.tsx`, `webDevelopment` in `lib/content/service-details.ts` | **Implemented** 2026-11-09 from the master template. Reviewed by the owner: content kept unchanged for now (project-wide content and SEO pass planned later). Images are temporary |
 | Mobile App Development, AI Data & Automation, Branding & Digital Growth pages | their `app/services/<slug>/page.tsx` and entries in `lib/content/service-details.ts` | **Implemented** 2026-11-09 from the master template; **awaiting owner review**. Copy written without dedicated Figma designs, accepted for now under the Content & SEO policy. Images are temporary |
 | Industries page (all five page sections) | `app/industries/page.tsx`, `components/industries/*`, `components/motion/RollingNumber.tsx`, `rolling-number.css` | Built 2026-11-09; **awaiting owner review**. No approval or freeze recorded |
 | Our Portfolio Hero | `components/portfolio/PortfolioHero.tsx` | Built 2026-11-09. No explicit approval or freeze recorded |
-| Our Portfolio testimonials (after Our Process, before Final CTA) | `components/portfolio/PortfolioTestimonials.tsx`, `TestimonialFlow.tsx`, `portfolio-testimonials.css`, `portfolioTestimonials` in `lib/content/portfolio.ts`, six `portfolioTestimonial*` assets | Built 2026-11-12, on hold, restored 2026-11-15, then rebuilt the same day as the autoplaying carousel after the Framer Testimonial Flow Pro reference with the Figma white text panel (all quotes are draft sample copy). QA complete; **awaiting the owner's visual review**, not approved or frozen. See "Our Portfolio page" |
+| Our Portfolio testimonials (after Our Process, before Final CTA) | `components/sections/testimonials/PortfolioTestimonials.tsx` (moved from `portfolio/` 2026-11-18), `TestimonialFlow.tsx`, `portfolio-testimonials.css`, `portfolioTestimonials` in `lib/content/portfolio.ts`, six `portfolioTestimonial*` assets | Built 2026-11-12, on hold, restored 2026-11-15, then rebuilt the same day as the autoplaying carousel after the Framer Testimonial Flow Pro reference with the Figma white text panel (all quotes are draft sample copy). QA complete; **awaiting the owner's visual review**, not approved or frozen. See "Our Portfolio page" |
 | Contact Us Hero, Client Overview | `components/contact/ContactHero.tsx`, `ContactOverview.tsx` | Built 2026-11-09. No explicit approval or freeze recorded |
 | Contact Us "Send Us a Message / Our Offices" | `components/contact/ContactForm.tsx`, `contactMessage` and `contactOffices` in `lib/content/contact.ts` | Built 2026-11-10; implementation and QA complete; **awaiting the owner's visual review**. Not approved or frozen |
 | Case Study Hero + Client Logos | `components/case-study/CaseStudyHero.tsx`, `caseStudyHero` in `lib/content/case-study.ts` | Built 2026-11-12; QA complete; **awaiting the owner's visual review**. See "Case Study page" |
@@ -666,14 +827,15 @@ These 15 are the only routes. Nothing links to `/case-study` yet. The Blog Detai
 - `app/services/page.tsx` order: `SiteHeader showBanner={false}`, then `<main>` with `ServicesHero`, `ClientLogos`, `Services`, `OurProcess`, `Industries`, `Faq` and `FinalCta`, then `SiteFooter`. `Services`, `Industries`, `ClientLogos` and `FinalCta` are the Homepage components, reused unchanged. Do not invent further sections. The Homepage `OurWork` is not on this page: the owner withdrew that request. If it is added before a section other than the tall Footer, recheck its card spacer, which overflows the section by about 690px from 1024 and 970px below, and could add scrolling past a short Footer.
 - Service Details pages: see "Service Details pages". Industries, Our Portfolio and Contact Us: see their own sections below.
 - Folders:
-  - `components/home/`: Homepage sections, `PinnedSection` and `pinned-section.css`, `CardStack`.
-  - `components/services/`: `ServicesHero`, `OurProcess`, `Faq`.
-  - `components/service-details/`: the Details template.
-  - `components/industries/`: `IndustriesHero`, `IndustriesAtAGlance`, `IndustriesTrust`, `IndustriesSolutions`, `industries-solutions.css`.
-  - `components/portfolio/`: `PortfolioHero`.
+  - `components/home/`: Homepage sections. (`PinnedSection`, `pinned-section.css`, `CardStack` and `cardStackClasses` moved to `motion/`, and `ClientLogos`, `Services`, `Industries` and `IndustryCarousel` to `sections/`, on 2026-11-18.)
+  - `components/services/`: `ServicesHero`. (`OurProcess` and `Faq` moved to `sections/` on 2026-11-18.)
+  - `components/service-details/`: the Details template. (`RecentProjects` and `ProjectCarousel` moved to `sections/recent-projects/` on 2026-11-18.)
+  - `components/industries/`: `IndustriesHero`, `IndustriesAtAGlance`, `IndustriesSolutions`, `industries-solutions.css`. (`IndustriesTrust` moved to `sections/` on 2026-11-18.)
+  - `components/portfolio/`: `PortfolioHero`, `PortfolioShowcase`, `ShowcaseFan`, `showcase-fan.css`. (The testimonials moved to `sections/testimonials/` on 2026-11-18.)
   - `components/contact/`: `ContactHero`, `ContactOverview`, `ContactLocations`, `ContactForm`.
   - `components/layout/`: Navbar, Footer, Footer background.
-  - `components/motion/`: `MaskLine`, `Reveal`, `revealOrder`, `StaggerText`, `RollingNumber`, `motion.css`, `rolling-number.css`.
+  - `components/motion/`: `MaskLine`, `Reveal`, `revealOrder`, `StaggerText`, `RollingNumber`, `motion.css`, `rolling-number.css`, and since 2026-11-18 `PinnedSection`, `pinned-section.css`, `CardStack`, `cardStackClasses`.
+  - `components/sections/` (since 2026-11-18): page sections shared by several pages: `ClientLogos` (with `client-logos.css` and `ClientLogosTiming`), `Faq`, `IndustriesTrust`, `Services`, `our-process/` (`OurProcess`, `ProcessRope`), `industries/` (`Industries`, `IndustryCarousel`), `recent-projects/` (`RecentProjects`, `ProjectCarousel`) and `testimonials/` (`PortfolioTestimonials`, `TestimonialFlow`, `portfolio-testimonials.css`). See "Folder organization".
   - `components/ui/`: shared parts.
   - `lib/assets.ts`: image paths and client logos. `lib/content/`: content data.
 - Shared: `components/ui/AssetImage.tsx`, `components/ui/ButtonLink.tsx` (details under "Shared UI components"), `lib/assets.ts`.
@@ -689,7 +851,7 @@ Every service page renders one shared template. The UI/UX & Product Design page 
 - `components/service-details/ServiceDetailsPage.tsx`: the template. It takes one `service: ServiceDetails` prop and renders `SiteHeader showBanner={false}`, then in `<main>`, each in its own `PinnedSection` (except `ServiceDetailsHero` and `ClientLogos`, which share one as the combined Hero section): `ServiceDetailsHero`, `ClientLogos`, `WhyChoose`, `OurProcess`, `RecentProjects`, `WhyChooseUs`, `Faq`, `FinalCta`; then `SiteFooter`.
 - `ServiceDetailsHero.tsx`: breadcrumb (Home • service), two-line `h1`, description, "Get Started" and "Watch Our Work" (both `#`), and the hero artwork shown whole (`object-contain`). From `lg` the artwork fills a 1920/808 section with the text on top; below `lg` the text comes first and the artwork sits underneath with its top edge faded.
 - `WhyChoose.tsx`: image card beside eyebrow, heading, description and checklist. Uses `Container`, `SectionEyebrow`, `MaskLine`, `Reveal`.
-- `RecentProjects.tsx` and `ProjectCarousel.tsx`: heading and intro above a looping project carousel. `ProjectCarousel` repeats the frozen `IndustryCarousel`'s scrolling logic rather than sharing it; keep the two in step if one changes.
+- `RecentProjects.tsx` and `ProjectCarousel.tsx` (in `components/sections/recent-projects/` since 2026-11-18, because `/case-study` and `/our-work` use them too): heading and intro above a looping project carousel. `ProjectCarousel` repeats the frozen `IndustryCarousel`'s scrolling logic rather than sharing it; keep the two in step if one changes.
 - `WhyChooseUs.tsx`: heading, description and image above four reason cards with drawn icons (`lightbulb`, `team`, `laptop`, `chat-check`).
 - Reused unchanged: `ClientLogos`, `OurProcess`, `Faq`, `FinalCta`, `SiteHeader`, `SiteFooter`, `PinnedSection`.
 
@@ -747,9 +909,9 @@ Built 2026-11-09, section by section; **awaiting owner review**, with no approva
 | Section | File | Notes |
 |---|---|---|
 | Hero | `components/industries/IndustriesHero.tsx` | 808px section at 1920, the background export's ratio, with the text and a 620×567 photo grid centred in it. The photos' rounded corners are in the files. Below `lg` the text comes first and the grid follows at full width |
-| Client Logos | `components/home/ClientLogos.tsx` | The frozen shared strip |
+| Client Logos | `components/sections/ClientLogos.tsx` | The frozen shared strip |
 | Industries at a Glance | `components/industries/IndustriesAtAGlance.tsx` | At 1920 the text sits in the left 610px and four 459px cards fill the right 950px, 32px apart, centred in a 1080px section. Cards share the Services card styles, including the hover lift. Two across from `md`, one below |
-| Trust ("A Trusted Partner Across Industries") | `components/industries/IndustriesTrust.tsx` | Wide image (`Trusted partner.png`, 3120×931) and a bar of four stats from `industryStats`, each a `RollingNumber`. Pinned with `hold="70svh"` so the stats have time to roll |
+| Trust ("A Trusted Partner Across Industries") | `components/sections/IndustriesTrust.tsx` (moved from `industries/` 2026-11-18) | Wide image (`Trusted partner.png`, 3120×931) and a bar of four stats from `industryStats`, each a `RollingNumber`. Pinned with `hold="70svh"` so the stats have time to roll |
 | Industry Solutions | `components/industries/IndustriesSolutions.tsx`, `industries-solutions.css` | Four 1560×360 cards at 1920 (number circle, text, 660×280 image), 30px apart; image on top below `lg` |
 | Final CTA, Footer | shared | Unchanged |
 
@@ -782,7 +944,7 @@ Labelled "Our Portfolio" (title "Our Portfolio | Way-Wise Tech"), at the URL of 
     - **Page end:** the page ends at the Footer (≤0.5px), also with reduced motion.
     - **Other:** one footer, the shared one; no overflow or console errors; `tsc` and `eslint app components lib` pass.
 - **Recent Projects, one shared 942 design (2026-11-17, reference `quill-pen-ai-line.png`, project root, 1920×942; owner's decision: apply on every page; awaiting the owner's approval):**
-  - **Scope:** `components/service-details/RecentProjects.tsx` and `ProjectCarousel.tsx`, shared by `/our-work`, all six Service Details pages (so the UI/UX master is no longer pixel-identical here, by the owner's decision) and `/case-study`. All from `lg`; below `lg` unchanged.
+  - **Scope:** `components/service-details/RecentProjects.tsx` and `ProjectCarousel.tsx` (now in `components/sections/recent-projects/`), shared by `/our-work`, all six Service Details pages (so the UI/UX master is no longer pixel-identical here, by the owner's decision) and `/case-study`. All from `lg`; below `lg` unchanged.
   - **Section:** padding `clamp(48px,3.438vw,66px)` / `clamp(40px,2.604vw,50px)` (was 118 / 108).
   - **Header:**
     - **Left column:** eyebrow tracking 0.07em (was 0.1em). Heading 53.5px on 63px lines (was 64px), broken as drawn, "Our Recent **Design**" / "**Projects**": the red `heading.second` is split in the component, first word on line 1. Content unchanged.
@@ -900,7 +1062,7 @@ Labelled "Our Portfolio" (title "Our Portfolio | Way-Wise Tech"), at the URL of 
       - **Autoplay:** it advances while resting (1 → 2 of 6) and pauses while covered.
       - **Widths:** no overflow or clipped text at 2560–320.
       - **Checks:** `tsc` and `eslint app components lib` pass.
-- **Testimonials, final redesign (2026-11-15, owner's instruction)** (`components/portfolio/PortfolioTestimonials.tsx`, `TestimonialFlow.tsx` (new), `portfolio-testimonials.css`, `portfolioTestimonials` and the `PortfolioTestimonial` type in `lib/content/portfolio.ts`, `id="portfolio-testimonials"`). After Our Process, before Final CTA. **Awaiting the owner's visual review; not approved or frozen.** It replaced the scroll-built six-card stack of earlier the same day (and the 2026-11-12 build below); nothing in the section is scroll-driven any more.
+- **Testimonials, final redesign (2026-11-15, owner's instruction)** (`components/sections/testimonials/PortfolioTestimonials.tsx` (moved from `components/portfolio/` 2026-11-18, with `TestimonialFlow.tsx` and the CSS), `TestimonialFlow.tsx` (new), `portfolio-testimonials.css`, `portfolioTestimonials` and the `PortfolioTestimonial` type in `lib/content/portfolio.ts`, `id="portfolio-testimonials"`). After Our Process, before Final CTA. **Awaiting the owner's visual review; not approved or frozen.** It replaced the scroll-built six-card stack of earlier the same day (and the 2026-11-12 build below); nothing in the section is scroll-driven any more.
   - **Card widths (owner, 2026-11-15):** phones as above (76vw, max 360px, centred). 640–1023: unchanged; the white panel already fills the content width (585px at 640, 689 at 768), so it could only widen by shrinking the page gutters. 1024–1079: the text panel widened from 534 to 600px (still beside the portraits). 1080 and up: unchanged (534px at 1080). Verified with Playwright at 320, 390, 639, 640, 768, 1024, 1079 and 1080: no horizontal overflow, controls inside the panel.
   - **Phone layout (below `sm`, owner's mobile reference, 2026-11-15):** a separate composition from `Screenshot 2026-11-15 174223.png` (project root, 351×716, from another site; only its layout is used: its copy, heading, colours and company logo are not). From `sm` up nothing changed (640, 768, 1024, 1440 and 1920 re-measured identical).
     - **Structure:** `TestimonialFlow` renders a phone deck (`.pt-mobile`, `.pt-mdeck`, `.pt-mcard`) beside the desktop panel and portrait row. Below `sm` the panel and row are `display: none`; from `sm` the deck is. So only one is in the accessibility tree, and only one set of progress segments runs (their fill times the autoplay). Both share the same state, autoplay, keys and swipe.
@@ -1055,9 +1217,9 @@ Labelled "Our Portfolio" (title "Our Portfolio | Way-Wise Tech"), at the URL of 
     - **Checks:** `tsc` and `eslint .` pass; no console errors.
   - **Not checked:** Safari and Firefox (no `animation-timeline` there yet, so they get the static finished stack with no hold), real touch devices and trackpads.
 - **Shared sections (added 2026-11-12, owner's instruction):** after the Hero + logos, three existing shared components, reused exactly with their existing data, props, styling and animations. No component, other page or content was changed.
-  - **Recent Projects:** `<RecentProjects {...recentProjects} />` (`components/service-details/RecentProjects.tsx` with the shared `recentProjects` from `lib/content/service-details.ts`), as on the Service Details and Case Study pages.
-  - **Industries trust section:** `IndustriesTrust` (`components/industries/IndustriesTrust.tsx`), as on `/industries`.
-  - **Our Process:** `OurProcess` (`components/services/OurProcess.tsx`).
+  - **Recent Projects:** `<RecentProjects {...recentProjects} />` (`components/sections/recent-projects/RecentProjects.tsx` with the shared `recentProjects` from `lib/content/service-details.ts`), as on the Service Details and Case Study pages.
+  - **Industries trust section:** `IndustriesTrust` (`components/sections/IndustriesTrust.tsx`), as on `/industries`.
+  - **Our Process:** `OurProcess` (`components/sections/our-process/OurProcess.tsx`).
   - **Page assembly:** `SiteHeader showBanner={false}`, then `<main>`:
     - `PinnedSection` around `PortfolioHero` + `ClientLogos` (one unit; the `relative` wrapper it had while it ended the page was replaced).
     - `PinnedSection` around Recent Projects.
@@ -1087,11 +1249,11 @@ Being built section by section; the owner approves each one before the next star
 | # | Section | File | Status |
 |---|---|---|---|
 | 1 | Hero | `components/contact/ContactHero.tsx` | Built 2026-11-09. Handshake artwork (`contact us/contact.png`, 3840×1614) with the design's sand-to-transparent gradient on the left, text vertically centred. Below `lg` the text comes first, then the whole artwork with a faded top. Eyebrow "Case Study", headline "Let's Discuss Your Next Project", buttons "Visit Live Website" and "Discuss a Similar Project" (both `#`). No explicit approval recorded |
-| 2 | Client Logos | `components/home/ClientLogos.tsx` | Frozen shared strip, pinned here |
+| 2 | Client Logos | `components/sections/ClientLogos.tsx` | Frozen shared strip, pinned here |
 | 3 | Client Overview | `components/contact/ContactOverview.tsx`, `contactOverview` in `lib/content/contact.ts` | Built 2026-11-09 from `Frame 2147239128.png`. Text beside a 750×272 image, then four contact cards (Call Us, Email Us, Live Chat, Meeting), two across. The card icons repeat the Why Choose Us paths (keep them in step), and the card descriptions repeat the Why Choose Us text word for word, as drawn. No explicit approval recorded |
 | 4 | "Have a Project Idea? / Let's get started" (world map) | `components/contact/ContactLocations.tsx`, `contactLocations` in `lib/content/contact.ts` | Built 2026-11-10 from `Frame 2147239130 (1).png`. QA done; **APPROVED** by the owner 2026-11-10 |
 | 5 | "Send Us a Message / Our Offices" | `components/contact/ContactForm.tsx`, `contactMessage` and `contactOffices` in `lib/content/contact.ts` | Built 2026-11-10 from `section.png` (project root). Implementation and QA complete; **awaiting the owner's visual review**, not approved or frozen. `section.png` is no longer in the project root |
-| 6 | FAQ (shared) | `components/services/Faq.tsx` | Added 2026-11-10 by the owner's instruction, reused unchanged (frozen component). Pinned over the form section; accordion checked on this page. **Awaiting the owner's visual review** |
+| 6 | FAQ (shared) | `components/sections/Faq.tsx` | Added 2026-11-10 by the owner's instruction, reused unchanged (frozen component). Pinned over the form section; accordion checked on this page. **Awaiting the owner's visual review** |
 | 7 | Footer (shared) | `components/layout/SiteFooter.tsx` | Added 2026-11-10, reused unchanged. Rises over the pinned FAQ. **Awaiting the owner's visual review** |
 
 **Hero + logos on the Homepage Hero standard (2026-11-17, reference `Homepage.png`, project root, which shows the Contact Hero; awaiting the owner's approval):** as on About, Industries and FAQ.
@@ -1142,7 +1304,7 @@ Being built section by section; the owner approves each one before the next star
 - **Other:** one footer, the shared one; no overflow; no console errors; `tsc` and `eslint app components lib` pass.
 
 **Shared FAQ, one column (2026-11-17, reference `Frame 2147239032.png`, project root, 1920×942; owner's decisions: one column on every page, keep all eight questions; awaiting the owner's approval):**
-- **`components/services/Faq.tsx`** (frozen; changed with the owner's instruction; shared by `/services`, all six Service Details pages and `/contact`, so all change together):
+- **`components/services/Faq.tsx` (now `components/sections/Faq.tsx`)** (frozen; changed with the owner's instruction; shared by `/services`, all six Service Details pages and `/contact`, so all change together):
   - **Layout:** the `frame` prop and its two paddings are removed; one design everywhere. From `lg`, padding `clamp(48px,3.906vw,75px)` / `clamp(48px,3.958vw,76px)`. The questions are one column of full-width rows (was two columns), 20px apart (was 24), keeping the 14.5px overhang from 1600, the 60.5px gap below the header and every row style.
   - **Header:** eyebrow 18px (was 20), heading 53.5px on 62px lines, 8px below the eyebrow (was 52px, 4px), description 33px lines (`leading-[1.5]`), and the right column no longer nudged down 2px.
   - **Unchanged:** accordion, plus/minus, answers, button and animation. Rows reveal 0.3 apart in order.
@@ -1308,7 +1470,7 @@ Started 2026-11-11, one section at a time; the owner reviews each before the nex
       - **Fallback:** without `animation-timeline` support the one-time Reveal applies.
     - **Testing note:** in a background tab or hidden iframe, scroll-timeline values in `getComputedStyle` go stale; force a frame (for example a screenshot) before reading them.
   - **Pinning:** the frozen `AboutLeadership` is wrapped (on the page only, component unchanged) in `PinnedSection` with `limitCoverTo="#about-presence"`. That cap was needed while Our Global Presence ended the page; it now only shortens that hold on some screens. Since 2026-11-11 Our Global Presence is itself in a `PinnedSection` (no cap), held while Our Process rises.
-- **Shared Our Process, Final CTA and Footer (added 2026-11-11, owner's instruction):** `OurProcess` (`components/services/OurProcess.tsx`), `FinalCta` (`components/home/FinalCta.tsx`) and `SiteFooter` are reused exactly as on `/services`. None takes props, and none was modified.
+- **Shared Our Process, Final CTA and Footer (added 2026-11-11, owner's instruction):** `OurProcess` (`components/sections/our-process/OurProcess.tsx`), `FinalCta` (`components/home/FinalCta.tsx`) and `SiteFooter` are reused exactly as on `/services`. None takes props, and none was modified.
   - **Pinning:** Our Process and Final CTA are each in a `PinnedSection` with no `limitCoverTo`, as on `/services`. The Footer follows `<main>` and is at least one screen tall when motion is allowed, so the Final CTA pin never outlasts it.
   - **Verified** (Chrome, same-origin iframes at 1920×1080, 1440×900, 1280×720, 768×1024 and 390×844): the section order is Hero + logos → Our Story → leadership → Our Global Presence → Our Process → Final CTA → Footer. For Presence→Process, Process→CTA and CTA→Footer, the lower section holds while the next rises 1:1. There is no horizontal overflow, and the page ends exactly at the Footer (no end gap).
   - **Not run:** pixel comparison of the reused sections on this page (they are unchanged components) and a separate reduced-motion pass. The pin CSS is unchanged, so reduced motion falls back to normal flow as on the other pages.
@@ -1672,7 +1834,7 @@ Started 2026-11-12, one section at a time; the owner reviews each before the nex
       - **Scrolling:** real 100px wheel steps at 1920×942, 1920×1080, 1440×900, 1024×768 and 390×844. Technologies holds while this rises, and it rests 2–3 steps with 0px of Our Process visible.
       - **Animations:** the numbers roll and "High" fades in when reached.
       - **Other:** no overflow or clipped text at 2560–320; `tsc` and `eslint app components lib` pass.
-- **Shared Our Process, Recent Projects and Footer (added 2026-11-12, owner's instruction; the page is complete):** `OurProcess` (`components/services/OurProcess.tsx`), `RecentProjects` (`components/service-details/RecentProjects.tsx`, given `{...recentProjects}` from `lib/content/service-details.ts`, as on the Service Details pages) and `SiteFooter` are reused exactly as elsewhere. None was modified, and the approved Case Study sections are unchanged.
+- **Shared Our Process, Recent Projects and Footer (added 2026-11-12, owner's instruction; the page is complete):** `OurProcess` (`components/sections/our-process/OurProcess.tsx`), `RecentProjects` (`components/sections/recent-projects/RecentProjects.tsx`, given `{...recentProjects}` from `lib/content/service-details.ts`, as on the Service Details pages) and `SiteFooter` are reused exactly as elsewhere. None was modified, and the approved Case Study sections are unchanged.
   - **Page assembly:** `SiteHeader showBanner={false}`, then `<main>`: Hero + logos, Client Overview, The Challenge & Our Solution, Technologies We Used, the trust section, Our Process, Recent Projects (each in a `PinnedSection`), then `SiteFooter`.
   - **Pinning:**
     - **Trust section:** wrapped on the page only (component unchanged) in `PinnedSection` with no cap.
@@ -1985,7 +2147,7 @@ Production assets are in `public/images/`: hero files at the root, then `logos/`
 
 ## Pinned sections (overlapping scroll)
 
-Status: built and used on every page, **awaiting comprehensive QA and owner approval**. Files: `components/home/PinnedSection.tsx` and `components/home/pinned-section.css`. Do not replace or bypass this architecture; new sections use it as described here.
+Status: built and used on every page, **awaiting comprehensive QA and owner approval**. Files: `components/motion/PinnedSection.tsx` and `components/motion/pinned-section.css` (both moved from `components/home/` on 2026-11-18). Do not replace or bypass this architecture; new sections use it as described here.
 
 ### How it works
 
@@ -2095,7 +2257,8 @@ Since 2026-11-11 every "Hero + Client Logos" below is one combined pinned unit (
 - **Mount-time positions after client navigation (fixed 2026-11-12):** Next resets the scroll for a client-side navigation in a parent `useLayoutEffect` (`InnerScrollHandler` in the layout router), which runs after the page's own layout effects. So any element that reads its screen position while mounting sees the previous page's scroll. `Reveal` and `RollingNumber` did, and marked everything above that old position as "already reached" (`data-reveal="none"`, `data-roll="done"`), leaving those pages static after Navbar or Footer links but not after a direct load. Both now take that one-time reading in a `requestAnimationFrame`: after Next's reset, still before the first paint. CSS scroll timelines, pins and the Footer never read positions on mount, which is why they kept working. New components must not decide animation state from `getBoundingClientRect()` inside a mount effect without the same deferral.
 - **Revisiting a kept-mounted page (fixed 2026-11-12):** a second cause of static pages after Navbar/Footer links. A visited route stays in the DOM (see "Visited pages stay mounted") with its `data-reveal`/`data-roll` attributes, and both components used to skip anything that had played, so returning to a page by link showed it at the top with every section already in its final state. Now, each time a page is shown (the effects re-run), anything that has not reached the reveal line goes back to waiting and plays again as it is scrolled to, while anything on screen or above stays as it is: the same result as a fresh load at that scroll position. Back/forward restores the scroll first, so its played sections stay played. The waiting look has no transition, so the reset is instant and never visible. CSS load-time Hero entrances restart by themselves when a hidden page is shown, and the CSS view timelines, pins, FAQ timeline and carousels re-measure on showing, so none needed changes. Verified 2026-11-12 on all 14 routes (first visit and revisit by Navbar, Footer, card links and the mobile menu; back/forward; reduced motion; no overflow, layout shift or console errors).
 - **Visited pages stay mounted:** `cacheComponents` makes Next keep visited routes in the DOM, hidden with `<Activity>`. So `document.querySelector` and text searches can hit a hidden page, and ids such as `footer-Services` can appear twice. Check visibility with `getClientRects().length` in tests. `limitCoverTo` uses `document.querySelector`; both navigation orders between `/` and `/services` work because the visible Footer came first in the DOM. Navigation between the Homepage or `/services` and the Details pages has **not been rechecked** since the Details pages were added. It is now a normal path, because the Services cards link there. The same effect duplicates the Details sections' fixed ids (`why-choose-heading`, `recent-projects-heading`, `why-choose-us-heading`) once two Details pages have been visited.
-- **Our Work stacking:** plain CSS `position: sticky`, no scale or rotation. First pin is 148px at 1280 and up on screens 820px or taller, 114px at 1280 and up on shorter screens, 96px at 768–1279, 88px below 768, then 16px per card.
+- **Shared card stack + sticky header (2026-11-18, owner-approved consolidation; awaiting visual approval):** the Homepage Our Work and the Industries Industry Solutions now share one implementation. `components/motion/cardStackClasses.ts` (moved from `components/home/` on 2026-11-18, with `CardStack.tsx`) (a plain module: a constant imported from a `"use client"` file reaches a Server Component as a client reference, not a string) exports `stackHeader` (the header: `lg:motion-safe:sticky lg:top-(--stack-head)`) and `stackCard` (each `<li>`: the 16px stacking, 88 / 96px pins below `lg`, `var(--stack-top)` from `lg`). `CardStack.tsx` measures, with its existing `ResizeObserver` (now also on the list's parent and header), `--stack-head` (the parent's top padding) on the parent and `--stack-top` (the list's layout offset in the parent, i.e. its arrival position) on the list. So the header must be the first child of the list's parent, and card 1 pins where it arrives, just under the header. Each section keeps its own hold (`--p5` / `--p4` = `--stack-top` + 64 / 48px). Our Work's header (the grid div) stays at y 98 at 1920 and its cards pin 323…387 (were 148…212), stack bottom 917. Verified at 1920×942 with real wheel steps on `/` and `/industries`: header constant through the whole stack, both ways, cards never closer than the original gap (59 / 60px), header leaves with the section as the Footer rises, no overflow, no console errors; `tsc` and `eslint app components lib` pass. Not re-run at other sizes in this pass. On screens too short for a card below the header, the existing 12px fit cap lifts it under the header.
+- **Our Work stacking (pins superseded by the entry above):** plain CSS `position: sticky`, no scale or rotation. First pin is 148px at 1280 and up on screens 820px or taller, 114px at 1280 and up on shorter screens, 96px at 768–1279, 88px below 768, then 16px per card.
 - **Pin height is measured, not guessed (fixed 2026-11-06):** the old width-and-height media queries disabled stacking on common browser sizes such as 1366x641 and 1536x695, where cards fit. `CardStack` now gives each card `--card-height` through one `ResizeObserver`, and `top` is `min(usual pin, 100svh - card height - 12px)`. A card that would not fit stops higher, so its bottom is never cut off; on such screens later cards lose the 16px edge or the top slides under the Navbar. Sticky is `motion-safe`, and without JavaScript `top` is invalid, so cards scroll normally.
 
 - **Our Work → Final CTA:** the card list's `::after` spacer (`--cover`: 760px from 1024, 1000px below) is cancelled by a negative margin, so cards stay pinned while Final CTA rises over them with no height change. If card or Final CTA heights change, recheck that the distance moved stays above 64px + card height + section padding, and below Final CTA height + padding. The distance moved is `--cover` + 30px.

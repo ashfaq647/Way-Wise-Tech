@@ -1,7 +1,7 @@
 import { assets } from "@/lib/assets";
 
 /*
-  Central service list. The Services section (components/home/Services.tsx) reads its cards and
+  Central service list. The Services section (components/sections/Services.tsx) reads its cards and
   header from here. The Footer (components/layout/SiteFooter.tsx) reads its Services column labels
   from `services`, in this order; its links stay "#" (set in the Footer, not here).
 */
@@ -132,7 +132,7 @@ export const serviceCards: ServiceCard[] = services.flatMap(({ title, featured, 
 );
 
 /**
- * The Services section header (components/home/Services.tsx), shown on the Homepage and /services.
+ * The Services section header (components/sections/Services.tsx), shown on the Homepage and /services.
  * `action` is the Homepage button; /services, which already shows every service, uses `pageAction`.
  */
 export const servicesSection = {

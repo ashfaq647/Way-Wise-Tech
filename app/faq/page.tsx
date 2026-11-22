@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { FaqHero } from "@/components/faq/FaqHero";
 import { FaqQuestions } from "@/components/faq/FaqQuestions";
-import { PinnedSection } from "@/components/home/PinnedSection";
+import { PinnedSection } from "@/components/motion/PinnedSection";
 import { Footer } from "@/components/layout/Footer";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { faqHero } from "@/lib/content/faq";

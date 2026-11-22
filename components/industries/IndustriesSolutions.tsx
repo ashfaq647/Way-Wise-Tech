@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
-import { CardStack } from "@/components/home/CardStack";
+import { CardStack } from "@/components/motion/CardStack";
+import { stackCard, stackHeader } from "@/components/motion/cardStackClasses";
 import { AssetImage } from "@/components/ui/AssetImage";
 import { Container } from "@/components/ui/Container";
 import { SectionEyebrow } from "@/components/ui/SectionEyebrow";
@@ -13,21 +14,6 @@ import "./industries-solutions.css";
 const { eyebrow, heading, description } = industrySolutionsSection;
 
 /**
- * The Homepage Our Work stacking, repeated here because that section is protected and keeps it
- * private. Plain CSS: each card pins 16px lower than the last and later cards paint on top, so every
- * earlier card stays visible as a 16px edge; scrolling up reverses it. --t is the first card's pin
- * (the compact navbar plus a gap); a card too tall for that pin stops 12px above the screen bottom.
- * --card-height comes from CardStack. Sticky only with motion allowed; without JavaScript `top` is
- * invalid and the cards scroll normally.
- */
-const stacking = [
-  "motion-safe:sticky",
-  "top-[min(calc(var(--t)+var(--i)*16px),calc(100svh-var(--card-height)-12px))]",
-  "[--t:88px] md:[--t:96px] xl:[--t:114px]",
-  "[@media(min-width:1280px)_and_(min-height:820px)]:[--t:148px]",
-].join(" ");
-
-/**
  * "Industry Solutions" on the Industries page, from Our Work Section.png (section) and
  * Frame 2147238556.png (cards). At 1920 each card is 1560x360 with 40px padding, a 96px number
  * circle, the text, and a 660x280 image on the right with 12px rounded corners; cards are 30px
@@ -38,7 +24,11 @@ export function IndustriesSolutions() {
   return (
     <section aria-labelledby="industries-solutions-heading" className="bg-[#eee9e1]">
       <Container className="py-12 md:py-16 lg:pt-[clamp(56px,5.208vw,100px)] lg:pb-[clamp(56px,5.208vw,100px)]">
-        <Reveal each>
+        {/*
+          The shared sticky header (stackHeader in CardStack): from lg it stays at its arrival position
+          while the cards stack below it, and leaves with the section.
+        */}
+        <Reveal each className={stackHeader}>
           <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between lg:gap-10">
             <div className="min-w-0">
               <SectionEyebrow weight="semibold" tracking="0.094em" className="ww-rise">
@@ -77,11 +67,11 @@ export function IndustriesSolutions() {
           1920; smaller widths only make it taller, so the hold errs longer) and the bottom padding.
           From lg with motion allowed only; elsewhere --hold is unset (0).
         */}
-        <CardStack className="ws-solutions mt-8 flex flex-col gap-5 [--cover:1000px] after:block after:h-[calc(var(--cover)+var(--hold,0px))] mb-[calc(-20px-var(--cover))] lg:mt-[clamp(32px,3.125vw,60px)] lg:gap-[30px] lg:[--cover:600px] lg:mb-[calc(-30px-var(--cover))] [--p4:144px] xl:[--p4:162px] [@media(min-width:1280px)_and_(min-height:820px)]:[--p4:196px] lg:motion-safe:[--hold:calc(30svh+max(0px,100svh-var(--p4)-18.75vw-clamp(56px,5.208vw,100px)))]">
+        <CardStack className="ws-solutions mt-8 flex flex-col gap-5 [--cover:1000px] after:block after:h-[calc(var(--cover)+var(--hold,0px))] mb-[calc(-20px-var(--cover))] lg:mt-[clamp(32px,3.125vw,60px)] lg:gap-[30px] lg:[--cover:600px] lg:mb-[calc(-30px-var(--cover))] [--p4:144px] lg:[--p4:calc(var(--stack-top)+48px)] lg:motion-safe:[--hold:calc(30svh+max(0px,100svh-var(--p4)-18.75vw-clamp(56px,5.208vw,100px)))]">
           {industrySolutions.map((solution, index) => (
             <li
               key={solution.number}
-              className={`ws-solution ${stacking}`}
+              className={`ws-solution ${stackCard}`}
               style={
                 {
                   "--i": index,

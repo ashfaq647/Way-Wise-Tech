@@ -38,7 +38,7 @@ export type PortfolioTestimonial = {
 
 /**
  * The Our Portfolio page's testimonial section ("What Our Clients Say About Us"), shown since
- * 2026-11-15 as a testimonial carousel (components/portfolio/TestimonialFlow.tsx): the first entry
+ * 2026-11-15 as a testimonial carousel (components/sections/testimonials/TestimonialFlow.tsx): the first entry
  * is shown first, and Prev/Next step through them in this order.
  *
  * SAMPLE CONTENT, NOT VERIFIED REVIEWS (every entry has `draft: true`). Every quote and headline is

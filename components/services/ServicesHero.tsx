@@ -12,8 +12,15 @@ const textEnter = "animate-hero-text motion-reduce:animate-hero-fade";
 
 export function ServicesHero() {
   return (
-    <section id="services-hero" className="relative overflow-hidden bg-[#eedac2] lg:flex lg:aspect-[1920/810] lg:items-center lg:overflow-visible lg:pt-[clamp(0px,calc(320px-20vw),64px)]">
-      {/* From lg the artwork fills the section. Below that it sits under the text, cropped to the devices. */}
+    <section id="services-hero" className="relative overflow-hidden bg-[#eedac2]">
+      {/*
+        Homepage Hero standard (owner, 2026-11-18): the frame of components/home/Hero.tsx, as on the
+        other inner pages. From lg the content sits in the Homepage's two-column grid with its top
+        padding (bar height plus clamp(40px, 4.167vw, 80px)) and bottom padding (clamp(56px, 5.208vw,
+        100px)); the right column is an empty 760/562 box in place of the Homepage photo grid, so the
+        Hero is 842px at 1920 and the text is centred against it. The artwork covers the whole area.
+        From lg the artwork fills the section. Below that it sits under the text, cropped to the devices.
+      */}
       <div className="absolute inset-0 hidden lg:block">
         <AssetImage
           src={assets.serviceListHero}
@@ -24,7 +31,8 @@ export function ServicesHero() {
         />
       </div>
 
-      <div className="relative mx-auto w-full max-w-[1600px] px-5 pt-[116px] pb-12 md:px-8 md:pt-[124px] md:pb-16 lg:pt-[38px] lg:pb-10 xl:px-5">
+      <div className="relative mx-auto grid w-full max-w-[1600px] px-5 pt-[116px] pb-12 md:px-8 md:pt-[124px] md:pb-16 lg:grid-cols-[minmax(0,800fr)_minmax(0,760fr)] lg:items-center lg:pt-[calc(76px+clamp(40px,4.167vw,80px))] lg:pb-[clamp(56px,5.208vw,100px)] xl:px-5 xl:pt-[calc(100px+clamp(40px,4.167vw,80px))]">
+        <div className="min-w-0 lg:pr-6">
         <p
           className={`${textEnter} text-[16px] leading-5 font-bold tracking-[0.066em] text-brand uppercase lg:text-[clamp(14px,0.833vw,16px)]`}
         >
@@ -32,7 +40,7 @@ export function ServicesHero() {
         </p>
 
         <h1
-          className="mt-[23px] text-[min(calc((100vw-40px)/10.3),64px)] leading-[1.04] font-[660] tracking-[-0.0096em] text-ink lg:text-[clamp(38px,3.75vw,72px)]"
+          className="mt-[23px] text-[min(calc((100vw-40px)/10.3),64px)] leading-[1.04] font-[660] tracking-[-0.0096em] text-ink lg:text-[clamp(38px,3.75vw,72px)] lg:whitespace-nowrap"
         >
           <MaskLine onLoad order={1}>
             {heading.first}
@@ -89,6 +97,10 @@ export function ServicesHero() {
             </li>
           ))}
         </ul>
+        </div>
+
+        {/* The Homepage photo grid's box (760x562 at 1920), left empty: the artwork shows through. */}
+        <div aria-hidden="true" className="hidden aspect-[760/562] w-full lg:block" />
       </div>
 
       <div className="relative aspect-[6/5] [mask-image:linear-gradient(to_bottom,transparent,black_48px)] md:aspect-[2/1] lg:hidden">

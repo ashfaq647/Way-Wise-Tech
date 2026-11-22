@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
-import { CardStack } from "@/components/home/CardStack";
+import { CardStack } from "@/components/motion/CardStack";
+import { stackCard, stackHeader } from "@/components/motion/cardStackClasses";
 import { AssetImage } from "@/components/ui/AssetImage";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { homeOurWork } from "@/lib/content/home";
@@ -16,24 +17,11 @@ const projects = homeOurWork.projects.map((project, index) => ({
   background: cardBackgrounds[index],
 }));
 
-/**
- * Plain CSS stacking: each card pins 16px lower than the last, and later cards paint on top.
- * --t is the first card's pin: the compact navbar height (72px, or 90px from 1280px) plus a gap.
- * A card too tall for that pin stops higher, 12px above the screen bottom, so all of it gets seen.
- * --card-height comes from CardStack.
- */
-const stacking = [
-  "motion-safe:sticky",
-  "top-[min(calc(var(--t)+var(--i)*16px),calc(100svh-var(--card-height)-12px))]",
-  "[--t:88px] md:[--t:96px] xl:[--t:114px]",
-  "[@media(min-width:1280px)_and_(min-height:820px)]:[--t:148px]",
-].join(" ");
-
 export function OurWork() {
   return (
     <section aria-labelledby="our-work-heading" className="bg-[#eee9e1]">
       <div className="mx-auto w-full max-w-[1600px] px-5 py-12 md:px-8 md:py-16 lg:pt-[98px] lg:pb-[100px] xl:px-5">
-        <div className="grid gap-5 lg:grid-cols-[minmax(0,968fr)_minmax(0,592fr)] lg:gap-0">
+        <div className={`grid gap-5 lg:grid-cols-[minmax(0,968fr)_minmax(0,592fr)] lg:gap-0 ${stackHeader}`}>
           <div>
             <p className="flex items-center gap-2 text-[16px] leading-5 font-semibold tracking-[0.078em] text-brand uppercase lg:text-[clamp(16px,1.042vw,20px)]">
               <span
@@ -81,9 +69,9 @@ export function OurWork() {
           show when card 5 pins (its pin --p5 + its height, about 27.6vw from lg, + the 100px bottom
           padding, short of the screen height). From lg with motion allowed only; elsewhere 0.
         */}
-        <CardStack className="mt-8 flex flex-col gap-[30px] [--cover:1000px] after:block after:h-[calc(var(--cover)+var(--hold,0px))] mb-[calc(-30px-var(--cover))] lg:mt-[59px] lg:[--cover:760px] [--p5:160px] xl:[--p5:178px] [@media(min-width:1280px)_and_(min-height:820px)]:[--p5:212px] lg:motion-safe:[--hold:calc(30svh+max(0px,100svh-var(--p5)-27.604vw-100px))]">
+        <CardStack className="mt-8 flex flex-col gap-[30px] [--cover:1000px] after:block after:h-[calc(var(--cover)+var(--hold,0px))] mb-[calc(-30px-var(--cover))] lg:mt-[59px] lg:[--cover:760px] [--p5:calc(var(--stack-top)+64px)] lg:motion-safe:[--hold:calc(30svh+max(0px,100svh-var(--p5)-27.604vw-100px))]">
           {projects.map((project, index) => (
-            <li key={project.number} className={stacking} style={{ "--i": index } as CSSProperties}>
+            <li key={project.number} className={stackCard} style={{ "--i": index } as CSSProperties}>
               <article
                 className={`grid gap-6 rounded-3xl p-4 sm:p-6 md:grid-cols-2 md:items-center lg:grid-cols-[minmax(0,737fr)_minmax(0,683fr)] lg:gap-[clamp(24px,3.125vw,60px)] lg:p-[clamp(24px,2.083vw,40px)] ${project.background}`}
               >

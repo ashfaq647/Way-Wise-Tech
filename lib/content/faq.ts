@@ -84,7 +84,7 @@ export const faqQuestions = {
 };
 
 /**
- * The shared FAQ section (components/services/Faq.tsx), on /services, every Service Details page
+ * The shared FAQ section (components/sections/Faq.tsx), on /services, every Service Details page
  * and /contact. Moved out of the component unchanged; layout, the accordion and animation stay there. Separate from the /faq page's content above: the two sets of questions
  * are different and are not to be merged.
  *

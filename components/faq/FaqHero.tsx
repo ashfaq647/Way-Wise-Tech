@@ -1,4 +1,4 @@
-import { ClientLogos } from "@/components/home/ClientLogos";
+import { ClientLogos } from "@/components/sections/ClientLogos";
 import { AssetImage } from "@/components/ui/AssetImage";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { SectionEyebrow } from "@/components/ui/SectionEyebrow";

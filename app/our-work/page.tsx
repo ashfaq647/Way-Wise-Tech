@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
-import { ClientLogos } from "@/components/home/ClientLogos";
-import { PinnedSection } from "@/components/home/PinnedSection";
-import { IndustriesTrust } from "@/components/industries/IndustriesTrust";
+import { ClientLogos } from "@/components/sections/ClientLogos";
+import { PinnedSection } from "@/components/motion/PinnedSection";
+import { IndustriesTrust } from "@/components/sections/IndustriesTrust";
 import { Footer } from "@/components/layout/Footer";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { PortfolioHero } from "@/components/portfolio/PortfolioHero";
 import { PortfolioShowcase } from "@/components/portfolio/PortfolioShowcase";
-import { PortfolioTestimonials } from "@/components/portfolio/PortfolioTestimonials";
-import { RecentProjects } from "@/components/service-details/RecentProjects";
-import { OurProcess } from "@/components/services/OurProcess";
+import { PortfolioTestimonials } from "@/components/sections/testimonials/PortfolioTestimonials";
+import { RecentProjects } from "@/components/sections/recent-projects/RecentProjects";
+import { OurProcess } from "@/components/sections/our-process/OurProcess";
 import { recentProjects } from "@/lib/content/service-details";
 
 export const metadata: Metadata = {
@@ -61,7 +61,7 @@ export default function OurPortfolioPage() {
           <IndustriesTrust />
         </PinnedSection>
         {/* Held while the testimonials rise over it; since the shared 942 frame (2026-11-17) it first rests for 30svh. */}
-        <PinnedSection hold="30svh">
+        <PinnedSection hold="var(--op-hold, 30svh)">
           <OurProcess />
         </PinnedSection>
         {/*

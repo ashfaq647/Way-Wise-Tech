@@ -3,10 +3,10 @@ import { AboutHero } from "@/components/about/AboutHero";
 import { AboutLeadership } from "@/components/about/AboutLeadership";
 import { AboutPresence } from "@/components/about/AboutPresence";
 import { AboutStory } from "@/components/about/AboutStory";
-import { PinnedSection } from "@/components/home/PinnedSection";
+import { PinnedSection } from "@/components/motion/PinnedSection";
 import { Footer } from "@/components/layout/Footer";
 import { SiteHeader } from "@/components/layout/SiteHeader";
-import { OurProcess } from "@/components/services/OurProcess";
+import { OurProcess } from "@/components/sections/our-process/OurProcess";
 import { aboutHero } from "@/lib/content/about";
 
 export const metadata: Metadata = {
@@ -64,7 +64,7 @@ export default function AboutPage() {
           Since 2026-11-17 (Frame 2147239038.png, 1920x942) it uses the existing compact 942-frame
           layout from /services, and rests fully in view for 30svh before the Footer rises.
         */}
-        <PinnedSection limitCoverTo="main:has(#about-presence) + footer" hold="30svh">
+        <PinnedSection limitCoverTo="main:has(#about-presence) + footer" hold="var(--op-hold, 30svh)">
           <OurProcess />
         </PinnedSection>
       </main>

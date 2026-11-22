@@ -1,11 +1,11 @@
-import { ClientLogos } from "@/components/home/ClientLogos";
-import { PinnedSection } from "@/components/home/PinnedSection";
+import { ClientLogos } from "@/components/sections/ClientLogos";
+import { PinnedSection } from "@/components/motion/PinnedSection";
 import { Footer } from "@/components/layout/Footer";
 import { SiteHeader } from "@/components/layout/SiteHeader";
-import { Faq } from "@/components/services/Faq";
-import { OurProcess } from "@/components/services/OurProcess";
+import { Faq } from "@/components/sections/Faq";
+import { OurProcess } from "@/components/sections/our-process/OurProcess";
 import { recentProjects, type ServiceDetails } from "@/lib/content/service-details";
-import { RecentProjects } from "./RecentProjects";
+import { RecentProjects } from "@/components/sections/recent-projects/RecentProjects";
 import { ServiceDetailsHero } from "./ServiceDetailsHero";
 import { WhyChoose } from "./WhyChoose";
 import { WhyChooseUs } from "./WhyChooseUs";
@@ -28,14 +28,14 @@ export function ServiceDetailsPage({ service }: { service: ServiceDetails }) {
         {/* Hero + Client Logo strip standard: one combined section, pinned as one unit. */}
         <PinnedSection>
           <ServiceDetailsHero {...service.hero} />
-          <ClientLogos />
+          <ClientLogos height="compact" />
         </PinnedSection>
         {/* A 942 frame since 2026-11-17: it rests in view for 30svh before Our Process rises. */}
         <PinnedSection hold="30svh">
           <WhyChoose {...service.whyChoose} />
         </PinnedSection>
         {/* The /services section, reused exactly as it is, with the same 30svh rest in its 942 frame. */}
-        <PinnedSection hold="30svh">
+        <PinnedSection hold="var(--op-hold, 30svh)">
           <OurProcess />
         </PinnedSection>
         {/* A 942 frame since 2026-11-17: it rests in view for 30svh before the next section rises. */}

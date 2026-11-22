@@ -20,7 +20,7 @@ export const homeHero = {
     "We design and develop high-performing websites, custom software, mobile apps, and AI-powered solutions that help businesses grow.",
   primaryAction: { label: "Explore Our Work", href: "#" },
   secondaryAction: { label: "Discuss Your Project", href: "#" },
-  features: ["Web Development", "Mobile Apps", "UI/UX Design", "AI & Automation"],
+  features: ["Web Development", "Saas Programme", "Mobile Apps", "Custom Software Development", "UI/UX Design", "AI & Automation"],
   /** The photo grid, in order: the tall left image, then the top and bottom right images. */
   images: [
     { src: assets.heroAi, width: 880, height: 1216, alt: "AI head made of circuitry in a city of data" },
@@ -89,7 +89,7 @@ export const homeOurWork = {
 };
 
 /**
- * The Homepage Our Services cards (components/home/Services.tsx, `variant="compact"`), from the
+ * The Homepage Our Services cards (components/sections/Services.tsx, `variant="compact"`), from the
  * 2026-11-16 Figma redesign. The redesign shortened each card description; the owner approved the
  * new copy for the Homepage only (2026-11-16), so the shared `serviceCards` (used by /services and
  * the Navbar's Services dropdown) keep their descriptions. Titles, links and images are shared.
@@ -162,7 +162,7 @@ export const homeMissionVision = {
 };
 
 /**
- * The Homepage Industries cards (components/home/Industries.tsx, `variant="compact"`), from the
+ * The Homepage Industries cards (components/sections/industries/Industries.tsx, `variant="compact"`), from the
  * 2026-11-16 reference (`Frame 2147239126.png`). The reference shortens the three cards it shows;
  * that copy is used on the Homepage only (as for Services), so the shared `industryCards` (also on
  * /services) are unchanged. Doctor and Plumbers are not in the reference and keep their shared

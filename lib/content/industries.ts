@@ -1,7 +1,7 @@
 import { assets } from "@/lib/assets";
 
 /*
-  Central industry lists. The Industries section (components/home/Industries.tsx) reads its carousel
+  Central industry lists. The Industries section (components/sections/industries/Industries.tsx) reads its carousel
   cards, header and pricing phases from here. The Footer (components/layout/SiteFooter.tsx) reads its
   Industries column labels from `footerIndustries`, in this order; its links stay "#" (set in the
   Footer, not here).
@@ -65,7 +65,7 @@ export const industryCards: Industry[] = [
 ];
 
 /**
- * The Industries section header (components/home/Industries.tsx), shown on the Homepage and
+ * The Industries section header (components/sections/industries/Industries.tsx), shown on the Homepage and
  * /services. "View All Industries" is a "#" placeholder until its destination is confirmed.
  */
 export const industriesSection = {
@@ -160,7 +160,7 @@ export const industriesAtAGlance = [
 
 /**
  * The "A Trusted Partner Across Industries" header and image alt text
- * (components/industries/IndustriesTrust.tsx, on /industries and /our-work), as written in its
+ * (components/sections/IndustriesTrust.tsx, on /industries and /our-work), as written in its
  * reference. Moved out of the component unchanged; the image file, layout, stats bar and animation
  * stay there. The Case Study trust section has the same header wording but its own content
  * (`caseStudyResults` in case-study.ts); the two are kept separate.
